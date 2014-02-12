@@ -6,6 +6,9 @@ module Main where
   
   foreign import toJSON "function toJSON (obj) { return obj; }" :: forall a. a -> JSON
   
+  instance Prelude.Show a where
+    show = showJSON <<< toJSON
+  
   subtree json = do
     x <- prop "x" json >>= num
     y <- prop "y" json >>= num
@@ -19,7 +22,9 @@ module Main where
     return { foo: foo, bar: bar, baz: baz, list: list }
   
   main = do
-    let obj = toJSON { foo: "hello", bar: true, baz: 1, list: [{ x: 1, y: 2 }, { x: 3, y: 4 }] }
-    case parse obj of
-      Left err -> Trace.print err
-      Right result -> Trace.print $ toJSON result
+    let obj = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4}]}" 
+    case obj of
+      Left err -> Trace.print $ "Error parsing: " ++ err
+      Right obj -> case parse obj of
+        Left err -> Trace.print err
+        Right result -> Trace.print $ result

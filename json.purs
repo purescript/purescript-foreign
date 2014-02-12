@@ -10,11 +10,9 @@ module JSON where
                             \  try { \
                             \    return _ps.Either.Right(JSON.parse(str)); \
                             \  } catch (e) { \
-                            \    return e.toString(); \
+                            \    return _ps.Either.Left(e.toString()); \
                             \  } \
-                            \};" :: String -> Either String JSON
-  
-  foreign import showJSON "function showJSON (obj) { return JSON.stringify(obj); }" :: JSON -> String
+                            \}" :: String -> Either String JSON
   
   foreign import readPrimType "function readPrimType (typeName) { \
                               \  return function (value) { \
@@ -23,7 +21,7 @@ module JSON where
                               \    } \
                               \    return _ps.Either.Left('Value is not a ' + typeName + ''); \
                               \  }; \
-                              \};" :: forall a. String -> JSON -> Either String a
+                              \}" :: forall a. String -> JSONParser a
                               
   foreign import prop "function prop (k) { \
                       \  return function (obj) { \
@@ -32,24 +30,28 @@ module JSON where
                       \    } \
                       \    return _ps.Either.Left('Unknown property ' + k + ''); \
                       \  }; \
-                      \};" :: forall a. String -> JSON -> Either String JSON
+                      \}" :: forall a. String -> JSONParser JSON
+  
+  foreign import showJSON "function showJSON (obj) { \
+                          \  return JSON.stringify(obj); \
+                          \}" :: JSON -> String
                       
   instance Prelude.Show JSON where
     show = showJSON
-    
-  data JSONParser a = JSONParser (JSON -> Either String a)
   
-  str :: JSON -> Either String String
+  type JSONParser a = JSON -> Either String a
+  
+  str :: JSONParser String
   str = readPrimType "String"
   
-  num :: JSON -> Either String Number
+  num :: JSONParser Number
   num = readPrimType "Number"
   
-  bool :: JSON -> Either String Boolean
+  bool :: JSONParser Boolean
   bool = readPrimType "Boolean"
   
-  arr :: JSON -> Either String [JSON]
+  arr :: JSONParser [JSON]
   arr = readPrimType "Array"
   
-  arrOf :: forall a. (JSON -> Either String a) -> JSON -> Either String [a]
+  arrOf :: forall a. JSONParser a -> JSONParser [a]
   arrOf t json = arr json >>= mapM t 
