@@ -6,8 +6,8 @@ module Main where
   
   foreign import toJSON "function toJSON (obj) { return obj; }" :: forall a. a -> JSON
   
-  instance Prelude.Show a where
-    show = showJSON <<< toJSON
+  showUnsafe :: forall a. a -> String
+  showUnsafe = showJSON <<< toJSON
   
   subtree json = do
     x <- prop "x" json >>= num
@@ -27,4 +27,4 @@ module Main where
       Left err -> Trace.print $ "Error parsing: " ++ err
       Right obj -> case parse obj of
         Left err -> Trace.print err
-        Right result -> Trace.print $ result
+        Right result -> Trace.print $ showUnsafe result
