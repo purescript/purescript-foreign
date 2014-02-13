@@ -25,10 +25,7 @@ module JSON where
                               
   foreign import prop "function prop (k) { \
                       \  return function (obj) { \
-                      \    if (obj.hasOwnProperty(k)) { \
-                      \      return _ps.Either.Right(obj[k]);\
-                      \    } \
-                      \    return _ps.Either.Left('Unknown property ' + k + ''); \
+                      \    return _ps.Either.Right(obj[k]);\
                       \  }; \
                       \}" :: forall a. String -> JSONParser JSON
   
