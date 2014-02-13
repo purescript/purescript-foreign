@@ -11,8 +11,7 @@ module Main where
   showUnsafe = showJSON <<< toJSON
   
   class ReadJSON a where
-    readJSON :: JSON -> Either String a
-    -- readJSON :: JSONParser -- bug, type synoym here doesn't work
+    readJSON :: JSONParser a
     
   instance ReadJSON String where
     readJSON = str
