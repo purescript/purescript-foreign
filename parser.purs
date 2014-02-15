@@ -3,6 +3,7 @@ module JSON where
   import Prelude
   import Either
   import Monad
+  import Maybe
   
   foreign import data JSON :: *
   
@@ -27,7 +28,7 @@ module JSON where
                            \  return value === undefined || value === null ? _ps.Maybe.Nothing : _ps.Maybe.Just(value); \
                            \}" :: forall a. JSON -> Maybe.Maybe JSON
                               
-  foreign import readProp "function prop (k) { \
+  foreign import readProp "function readProp (k) { \
                           \  return function (obj) { \
                           \    return _ps.Either.Right(obj[k]);\
                           \  }; \
@@ -54,8 +55,8 @@ module JSON where
   arr :: JSONParser [JSON]
   arr = JSONParser $ readPrimType "Array"
   
-  maybe :: JSONParser (Maybe.Maybe JSON)
-  maybe = JSONParser $ Right <<< readMaybe
+  mayb :: JSONParser (Maybe.Maybe JSON)
+  mayb = JSONParser $ Right <<< readMaybe
   
   prop :: String -> JSONParser JSON
   prop p = JSONParser \x -> readProp p x
@@ -69,3 +70,81 @@ module JSON where
         Left err -> Left err
         Right x' -> runParser (f x') x
   
+  instance Prelude.Applicative JSONParser where
+    pure x = JSONParser \_ -> Right x
+    (<*>) (JSONParser f) (JSONParser p) = JSONParser \x -> case f x of
+        Left err -> Left err
+        Right f' -> f' <$> p x
+      
+  instance Prelude.Functor JSONParser where
+    (<$>) f (JSONParser p) = JSONParser \x -> f <$> p x
+    
+  class ReadJSON a where
+    readJSON :: JSONParser a
+    
+  instance ReadJSON String where
+    readJSON = str
+    
+  instance ReadJSON Number where
+    readJSON = num
+    
+  instance ReadJSON Boolean where
+    readJSON = bool
+    
+  instance (ReadJSON a) => ReadJSON [a] where
+    readJSON = arr >>= \xs -> JSONParser $ \_ -> (runParser readJSON) `mapM` xs
+    
+  instance (ReadJSON a) => ReadJSON (Maybe a) where
+    readJSON = mayb >>= \x -> JSONParser $ \_ -> case x of
+      Just x' -> runParser readJSON x' >>= return <<< Just
+      Nothing -> return Nothing
+  
+  readJSONProp :: forall a. (ReadJSON a) => String -> JSONParser a
+  readJSONProp p = (prop p) >>= \x -> JSONParser $ \_ -> runParser readJSON x
+
+  
+module Main where
+
+  import Prelude
+  import JSON
+  import Either
+  import Monad
+  import Maybe
+  import Trace
+  
+  foreign import toJSON "function toJSON (obj) { return obj; }" :: forall a. a -> JSON
+
+  showUnsafe :: forall a. a -> String
+  showUnsafe = showJSON <<< toJSON
+  
+  data Object = Object { foo :: String
+                       , bar :: Boolean
+                       , baz :: Number
+                       , list :: [ListItem] }
+                       
+  data ListItem = ListItem { x :: Number
+                           , y :: Number
+                           , z :: Maybe Number }
+                           
+  instance JSON.ReadJSON ListItem where
+    readJSON = do
+      x <- readJSONProp "x"
+      y <- readJSONProp "y"
+      z <- readJSONProp "z"
+      return $ ListItem { x: x, y: y, z: z }
+  
+  instance JSON.ReadJSON Object where
+    readJSON = do
+      foo <- readJSONProp "foo"
+      bar <- readJSONProp "bar"
+      baz <- readJSONProp "baz"
+      list <- readJSONProp "list"
+      return $ Object { foo: foo, bar: bar, baz: baz, list: list }
+      
+  main = do
+    let obj = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}" 
+    case obj of
+      Left err -> Trace.print $ "Error parsing: " ++ err
+      Right obj -> case runParser readJSON obj of
+        Left err -> Trace.print err
+        Right (Object result) -> Trace.print $ showUnsafe result
