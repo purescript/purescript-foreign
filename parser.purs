@@ -4,6 +4,8 @@ module JSON where
   import Either
   import Monad
   import Maybe
+  import Arrays
+  import Tuples
   
   foreign import data JSON :: *
   
@@ -92,7 +94,13 @@ module JSON where
     readJSON = bool
     
   instance (ReadJSON a) => ReadJSON [a] where
-    readJSON = arr >>= \xs -> JSONParser $ \_ -> (runParser readJSON) `mapM` xs
+    readJSON = arr >>= \xs -> JSONParser $ \_ -> 
+      readArrayItem `mapM` (zip (range 0 (length xs)) xs)
+    
+  readArrayItem :: forall a. (ReadJSON a) => Tuple Number JSON -> Either String a
+  readArrayItem (Tuple i x) = case runParser readJSON x of
+      Right result -> Right result
+      Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
     
   instance (ReadJSON a) => ReadJSON (Maybe a) where
     readJSON = mayb >>= \x -> JSONParser $ \_ -> case x of
@@ -100,7 +108,10 @@ module JSON where
       Nothing -> return Nothing
   
   readJSONProp :: forall a. (ReadJSON a) => String -> JSONParser a
-  readJSONProp p = (prop p) >>= \x -> JSONParser $ \_ -> runParser readJSON x
+  readJSONProp p = (prop p) >>= \x -> JSONParser $ \_ -> 
+    case runParser readJSON x of
+      Right result -> Right result
+      Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
 
   
 module Main where
@@ -110,7 +121,7 @@ module Main where
   import Either
   import Monad
   import Maybe
-  import Trace
+  import Eff
   
   foreign import toJSON "function toJSON (obj) { return obj; }" :: forall a. a -> JSON
 
@@ -142,9 +153,19 @@ module Main where
       return $ Object { foo: foo, bar: bar, baz: baz, list: list }
       
   main = do
-    let obj = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}" 
-    case obj of
-      Left err -> Trace.print $ "Error parsing: " ++ err
+  
+    let objPass = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}" 
+    Trace.print $ case objPass of
+      Left err ->  "Error parsing JSON string: " ++ err
       Right obj -> case runParser readJSON obj of
-        Left err -> Trace.print err
-        Right (Object result) -> Trace.print $ showUnsafe result
+        Left err -> "Error parsing JSON object: " ++ err
+        Right (Object result) -> showUnsafe result
+    
+    Trace.trace ""
+    
+    let objFail = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":false}]}" 
+    Trace.print $ case objFail of
+      Left err ->  "Error parsing JSON string: " ++ err
+      Right obj -> case runParser readJSON obj of
+        Left err -> "Error parsing JSON object: " ++ err
+        Right (Object result) -> showUnsafe result
