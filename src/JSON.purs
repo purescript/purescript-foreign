@@ -45,24 +45,6 @@ module JSON where
   
   data JSONParser a = JSONParser (JSON -> Either String a)
   
-  str :: JSONParser String
-  str = JSONParser $ readPrimType "String"
-  
-  num :: JSONParser Number
-  num = JSONParser $ readPrimType "Number"
-  
-  bool :: JSONParser Boolean
-  bool = JSONParser $ readPrimType "Boolean"
-  
-  arr :: JSONParser [JSON]
-  arr = JSONParser $ readPrimType "Array"
-  
-  mayb :: JSONParser (Maybe.Maybe JSON)
-  mayb = JSONParser $ Right <<< readMaybe
-  
-  prop :: String -> JSONParser JSON
-  prop p = JSONParser \x -> readProp p x
-  
   runParser :: forall a. JSONParser a -> JSON -> Either String a
   runParser (JSONParser p) x = p x
   
@@ -85,87 +67,36 @@ module JSON where
     readJSON :: JSONParser a
     
   instance ReadJSON String where
-    readJSON = str
+    readJSON = JSONParser $ readPrimType "String"
     
   instance ReadJSON Number where
-    readJSON = num
+    readJSON = JSONParser $ readPrimType "Number"
     
   instance ReadJSON Boolean where
-    readJSON = bool
+    readJSON = JSONParser $ readPrimType "Boolean"
     
   instance (ReadJSON a) => ReadJSON [a] where
-    readJSON = arr >>= \xs -> JSONParser $ \_ -> 
-      readArrayItem `mapM` (zip (range 0 (length xs)) xs)
+    readJSON = (JSONParser $ readPrimType "Array") >>= \xs -> JSONParser \_ -> 
+      readJSONArrayItem `mapM` (zip (range 0 (length xs)) xs)
     
-  readArrayItem :: forall a. (ReadJSON a) => Tuple Number JSON -> Either String a
-  readArrayItem (Tuple i x) = case runParser readJSON x of
+  readJSONArrayItem :: forall a. (ReadJSON a) => Tuple Number JSON -> Either String a
+  readJSONArrayItem (Tuple i x) = case runParser readJSON x of
       Right result -> Right result
       Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
     
   instance (ReadJSON a) => ReadJSON (Maybe a) where
-    readJSON = mayb >>= \x -> JSONParser $ \_ -> case x of
-      Just x' -> runParser readJSON x' >>= return <<< Just
-      Nothing -> return Nothing
+    readJSON = (JSONParser $ Right <<< readMaybe) >>= \x -> JSONParser \_ -> 
+      case x of
+        Just x' -> runParser readJSON x' >>= return <<< Just
+        Nothing -> return Nothing
   
   readJSONProp :: forall a. (ReadJSON a) => String -> JSONParser a
-  readJSONProp p = (prop p) >>= \x -> JSONParser $ \_ -> 
+  readJSONProp p = (JSONParser \x -> readProp p x) >>= \x -> JSONParser \_ -> 
     case runParser readJSON x of
       Right result -> Right result
       Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
-
-  
-module Main where
-
-  import Prelude
-  import JSON
-  import Either
-  import Monad
-  import Maybe
-  import Eff
-  
-  foreign import toJSON "function toJSON (obj) { return obj; }" :: forall a. a -> JSON
-
-  showUnsafe :: forall a. a -> String
-  showUnsafe = showJSON <<< toJSON
-  
-  data Object = Object { foo :: String
-                       , bar :: Boolean
-                       , baz :: Number
-                       , list :: [ListItem] }
-                       
-  data ListItem = ListItem { x :: Number
-                           , y :: Number
-                           , z :: Maybe Number }
-                           
-  instance JSON.ReadJSON ListItem where
-    readJSON = do
-      x <- readJSONProp "x"
-      y <- readJSONProp "y"
-      z <- readJSONProp "z"
-      return $ ListItem { x: x, y: y, z: z }
-  
-  instance JSON.ReadJSON Object where
-    readJSON = do
-      foo <- readJSONProp "foo"
-      bar <- readJSONProp "bar"
-      baz <- readJSONProp "baz"
-      list <- readJSONProp "list"
-      return $ Object { foo: foo, bar: bar, baz: baz, list: list }
       
-  main = do
-  
-    let objPass = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}" 
-    Trace.print $ case objPass of
-      Left err ->  "Error parsing JSON string: " ++ err
-      Right obj -> case runParser readJSON obj of
-        Left err -> "Error parsing JSON object: " ++ err
-        Right (Object result) -> showUnsafe result
-    
-    Trace.trace ""
-    
-    let objFail = fromString "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":false}]}" 
-    Trace.print $ case objFail of
-      Left err ->  "Error parsing JSON string: " ++ err
-      Right obj -> case runParser readJSON obj of
-        Left err -> "Error parsing JSON object: " ++ err
-        Right (Object result) -> showUnsafe result
+  parseJSON :: forall a. (ReadJSON a) => String -> Either String a
+  parseJSON json = do
+    obj <- fromString json
+    runParser readJSON obj
