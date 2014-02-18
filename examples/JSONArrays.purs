@@ -4,7 +4,7 @@ module JSONArrays where
   import Either
   import Arrays
   import Eff
-  import JSON
+  import Data.JSON
   
   main = do
   

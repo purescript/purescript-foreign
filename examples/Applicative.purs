@@ -4,11 +4,11 @@ module Applicative where
   import Either
   import Arrays
   import Eff
-  import JSON
+  import Data.JSON
   
   data Point = Point Number Number Number
   
-  instance JSON.ReadJSON Point where
+  instance Data.JSON.ReadJSON Point where
     readJSON = Point <$> readJSONProp "x" 
                      <*> readJSONProp "y"
                      <*> readJSONProp "z"

@@ -1,7 +1,7 @@
 module Complex where
 
   import Prelude
-  import JSON
+  import Data.JSON
   import Either
   import Monad
   import Maybe
@@ -20,14 +20,14 @@ module Complex where
                            , y :: Number
                            , z :: Maybe Number }
                            
-  instance JSON.ReadJSON ListItem where
+  instance Data.JSON.ReadJSON ListItem where
     readJSON = do
       x <- readJSONProp "x"
       y <- readJSONProp "y"
       z <- readJSONProp "z"
       return $ ListItem { x: x, y: y, z: z }
   
-  instance JSON.ReadJSON Object where
+  instance Data.JSON.ReadJSON Object where
     readJSON = do
       foo <- readJSONProp "foo"
       bar <- readJSONProp "bar"

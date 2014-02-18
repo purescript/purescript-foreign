@@ -4,7 +4,7 @@ module MaybeNullable where
   import Either
   import Maybe
   import Eff
-  import JSON
+  import Data.JSON
   
   -- Parsing values that are allowed to null or undefined is possible by 
   -- using Maybe types.

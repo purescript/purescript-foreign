@@ -4,7 +4,7 @@ module Objects where
   import Either
   import Arrays
   import Eff
-  import JSON
+  import Data.JSON
   
   -- | Convenience function to allow us to turn any type into a string.
   foreign import showUnsafe "function showUnsafe (obj) { \
@@ -18,7 +18,7 @@ module Objects where
   -- | The ReadJSON implementations for these types are basically boilerplate, 
   --   type inference takes care of most of the work so we don't have to 
   --   explicitly define the type each of the properties we're parsing.
-  instance JSON.ReadJSON Point where
+  instance Data.JSON.ReadJSON Point where
     readJSON = do
       x <- readJSONProp "x"
       y <- readJSONProp "y"

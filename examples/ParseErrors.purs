@@ -4,13 +4,13 @@ module ParseErrors where
   import Either
   import Arrays
   import Eff
-  import JSON
+  import Data.JSON
   
   -- | See the `Objects` example for an explanation of how to parse objects 
   --   like this.
   data Point = Point { x :: Number, y :: Number }
   
-  instance JSON.ReadJSON Point where
+  instance Data.JSON.ReadJSON Point where
     readJSON = do
       x <- readJSONProp "x"
       y <- readJSONProp "y"

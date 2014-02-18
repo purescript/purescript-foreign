@@ -3,7 +3,7 @@ module JSONSimpleTypes where
   import Prelude
   import Either
   import Eff
-  import JSON
+  import Data.JSON
   
   -- Parsing of the simple JSON String, Number and Boolean types is provided
   -- out of the box.
