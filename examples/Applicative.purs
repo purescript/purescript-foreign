@@ -8,7 +8,7 @@ import Control.Monad.Eff
 
 data Point = Point Number Number Number
 
-instance Data.JSON.ReadJSON Point where
+instance readJSONPoint :: Data.JSON.ReadJSON Point where
   readJSON = Point <$> readJSONProp "x"
                    <*> readJSONProp "y"
                    <*> readJSONProp "z"

@@ -36,46 +36,46 @@ foreign import readProp "function readProp (k) { \
                         \  }; \
                         \}" :: forall a. String -> JSON -> Either String JSON
 
-foreign import showJSON "function showJSON (obj) { \
-                        \  return JSON.stringify(obj); \
-                        \}" :: JSON -> String
+foreign import showJSONImpl "function showJSONImpl (obj) { \
+                            \  return JSON.stringify(obj); \
+                            \}" :: JSON -> String
                     
-instance Prelude.Show JSON where
-  show = showJSON
+instance showJSON :: Prelude.Show JSON where
+  show = showJSONImpl
 
 data JSONParser a = JSONParser (JSON -> Either String a)
 
 runParser :: forall a. JSONParser a -> JSON -> Either String a
 runParser (JSONParser p) x = p x
 
-instance Prelude.Monad JSONParser where
+instance monadJSONParser :: Prelude.Monad JSONParser where
   return x = JSONParser \_ -> Right x
   (>>=) (JSONParser p) f = JSONParser \x -> case p x of
       Left err -> Left err
       Right x' -> runParser (f x') x
 
-instance Prelude.Applicative JSONParser where
+instance applicativeJSONParser :: Prelude.Applicative JSONParser where
   pure x = JSONParser \_ -> Right x
   (<*>) (JSONParser f) (JSONParser p) = JSONParser \x -> case f x of
       Left err -> Left err
       Right f' -> f' <$> p x
     
-instance Prelude.Functor JSONParser where
+instance functorJSONParser :: Prelude.Functor JSONParser where
   (<$>) f (JSONParser p) = JSONParser \x -> f <$> p x
   
 class ReadJSON a where
   readJSON :: JSONParser a
   
-instance ReadJSON String where
+instance readJSONString :: ReadJSON String where
   readJSON = JSONParser $ readPrimType "String"
   
-instance ReadJSON Number where
+instance readJSONNumber :: ReadJSON Number where
   readJSON = JSONParser $ readPrimType "Number"
   
-instance ReadJSON Boolean where
+instance readJSONBoolean :: ReadJSON Boolean where
   readJSON = JSONParser $ readPrimType "Boolean"
   
-instance (ReadJSON a) => ReadJSON [a] where
+instance readJSONArray :: (ReadJSON a) => ReadJSON [a] where
   readJSON = (JSONParser $ readPrimType "Array") >>= \xs -> JSONParser \_ -> 
     readJSONArrayItem `mapM` (zip (range 0 (length xs)) xs)
   
@@ -84,7 +84,7 @@ readJSONArrayItem (Tuple i x) = case runParser readJSON x of
     Right result -> Right result
     Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
   
-instance (ReadJSON a) => ReadJSON (Maybe a) where
+instance readJSONMaybe :: (ReadJSON a) => ReadJSON (Maybe a) where
   readJSON = (JSONParser $ Right <<< readMaybe) >>= \x -> JSONParser \_ -> 
     case x of
       Just x' -> runParser readJSON x' >>= return <<< Just

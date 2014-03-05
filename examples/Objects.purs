@@ -17,7 +17,7 @@ data Point = Point { x :: Number, y :: Number }
 -- | The ReadJSON implementations for these types are basically boilerplate, 
 --   type inference takes care of most of the work so we don't have to 
 --   explicitly define the type each of the properties we're parsing.
-instance Data.JSON.ReadJSON Point where
+instance readJSONPoint :: Data.JSON.ReadJSON Point where
   readJSON = do
     x <- readJSONProp "x"
     y <- readJSONProp "y"

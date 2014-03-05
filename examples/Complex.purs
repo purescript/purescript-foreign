@@ -20,14 +20,14 @@ data ListItem = ListItem { x :: Number
                          , y :: Number
                          , z :: Maybe Number }
                          
-instance Data.JSON.ReadJSON ListItem where
+instance readJSONListItem :: Data.JSON.ReadJSON ListItem where
   readJSON = do
     x <- readJSONProp "x"
     y <- readJSONProp "y"
     z <- readJSONProp "z"
     return $ ListItem { x: x, y: y, z: z }
 
-instance Data.JSON.ReadJSON Object where
+instance readJSONObject :: Data.JSON.ReadJSON Object where
   readJSON = do
     foo <- readJSONProp "foo"
     bar <- readJSONProp "bar"
