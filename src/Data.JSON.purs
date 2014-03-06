@@ -1,4 +1,13 @@
-module Data.JSON where
+module Data.JSON
+  ( JSON(..)
+  , JSONParser(JSONParser)
+  , ReadJSON
+  , runParser
+  , readJSON
+  , readJSONArrayItem
+  , readJSONProp
+  , parseJSON
+  ) where
 
 import Prelude
 import Data.Array
@@ -9,36 +18,41 @@ import Control.Monad
 
 foreign import data JSON :: *
 
-foreign import fromString "function fromString (str) { \
-                          \  try { \
-                          \    return _ps.Data_Either.Right(JSON.parse(str)); \
-                          \  } catch (e) { \
-                          \    return _ps.Data_Either.Left(e.toString()); \
-                          \  } \
-                          \}" :: String -> Either String JSON
+foreign import fromString 
+  "function fromString (str) { \
+  \  try { \
+  \    return _ps.Data_Either.Right(JSON.parse(str)); \
+  \  } catch (e) { \
+  \    return _ps.Data_Either.Left(e.toString()); \
+  \  } \
+  \}" :: String -> Either String JSON
 
-foreign import readPrimType "function readPrimType (typeName) { \
-                            \  return function (value) { \
-                            \    if (toString.call(value) == '[object ' + typeName + ']') { \
-                            \      return _ps.Data_Either.Right(value);\
-                            \    } \
-                            \    return _ps.Data_Either.Left('Value is not a ' + typeName + ''); \
-                            \  }; \
-                            \}" :: forall a. String -> JSON -> Either String a
+foreign import readPrimType 
+  "function readPrimType (typeName) { \
+  \  return function (value) { \
+  \    if (toString.call(value) == '[object ' + typeName + ']') { \
+  \      return _ps.Data_Either.Right(value);\
+  \    } \
+  \    return _ps.Data_Either.Left('Value is not a ' + typeName + ''); \
+  \  }; \
+  \}" :: forall a. String -> JSON -> Either String a
                             
-foreign import readMaybe "function readMaybe (value) { \
-                         \  return value === undefined || value === null ? _ps.Data_Maybe.Nothing : _ps.Data_Maybe.Just(value); \
-                         \}" :: forall a. JSON -> Maybe JSON
+foreign import readMaybe 
+  "function readMaybe (value) { \
+  \  return value === undefined || value === null ? _ps.Data_Maybe.Nothing : _ps.Data_Maybe.Just(value); \
+  \}" :: forall a. JSON -> Maybe JSON
                             
-foreign import readProp "function readProp (k) { \
-                        \  return function (obj) { \
-                        \    return _ps.Data_Either.Right(obj[k]);\
-                        \  }; \
-                        \}" :: forall a. String -> JSON -> Either String JSON
+foreign import readProp 
+  "function readProp (k) { \
+  \  return function (obj) { \
+  \    return _ps.Data_Either.Right(obj[k]);\
+  \  }; \
+  \}" :: forall a. String -> JSON -> Either String JSON
 
-foreign import showJSONImpl "function showJSONImpl (obj) { \
-                            \  return JSON.stringify(obj); \
-                            \}" :: JSON -> String
+foreign import showJSONImpl 
+  "function showJSONImpl (obj) { \
+  \  return JSON.stringify(obj); \
+  \}" :: JSON -> String
                     
 instance showJSON :: Prelude.Show JSON where
   show = showJSONImpl
@@ -97,6 +111,4 @@ readJSONProp p = (JSONParser \x -> readProp p x) >>= \x -> JSONParser \_ ->
     Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
     
 parseJSON :: forall a. (ReadJSON a) => String -> Either String a
-parseJSON json = do
-  obj <- fromString json
-  runParser readJSON obj
+parseJSON json = fromString json >>= runParser readJSON
