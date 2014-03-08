@@ -60,6 +60,6 @@ test:
 	  --tco --magic-do
 	node js/test/ParseErrors.js
 
-docs:
+docs: src/Data/JSON.purs
+	mkdir -p docs
 	docgen src/Data/JSON.purs > docs/README.md
-
