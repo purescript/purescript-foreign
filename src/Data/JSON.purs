@@ -4,7 +4,6 @@ module Data.JSON
   , ReadJSON
   , runParser
   , readJSON
-  , readJSONArrayItem
   , readJSONProp
   , parseJSON
   ) where
