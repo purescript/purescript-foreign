@@ -3,9 +3,9 @@ all: lib test docs
 lib:
 	mkdir -p js/Data
 	psc src/Data/Foreign.purs \
-	  -o js/Data/JSON.js \
-	  -e js/Data/JSON.e.purs \
-	  --module Data.JSON \
+	  -o js/Data/Foreign.js \
+	  -e js/Data/Foreign.e.purs \
+	  --module Data.Foreign \
 	  --tco --magic-do
 
 test:
