@@ -3,13 +3,12 @@ module Complex where
 import Prelude
 import Data.Array
 import Data.Either
-import Data.JSON
+import Data.Foreign
 import Data.Maybe
 import Control.Monad.Eff
 
-foreign import showUnsafe "function showUnsafe (obj) { \
-                          \  return JSON.stringify(obj); \
-                          \}" :: forall a. a -> String
+foreign import showUnsafe
+  "var showUnsafe = JSON.stringify;" :: forall a. a -> String
 
 data Object = Object { foo :: String
                      , bar :: Boolean
@@ -20,19 +19,19 @@ data ListItem = ListItem { x :: Number
                          , y :: Number
                          , z :: Maybe Number }
                          
-instance readJSONListItem :: Data.JSON.ReadJSON ListItem where
-  readJSON = do
-    x <- readJSONProp "x"
-    y <- readJSONProp "y"
-    z <- readJSONProp "z"
+instance readListItem :: ReadForeign ListItem where
+  read = do
+    x <- prop "x"
+    y <- prop "y"
+    z <- prop "z"
     return $ ListItem { x: x, y: y, z: z }
 
-instance readJSONObject :: Data.JSON.ReadJSON Object where
-  readJSON = do
-    foo <- readJSONProp "foo"
-    bar <- readJSONProp "bar"
-    baz <- readJSONProp "baz"
-    list <- readJSONProp "list"
+instance readObject :: ReadForeign Object where
+  read = do
+    foo <- prop "foo"
+    bar <- prop "bar"
+    baz <- prop "baz"
+    list <- prop "list"
     return $ Object { foo: foo, bar: bar, baz: baz, list: list }
     
 main = do

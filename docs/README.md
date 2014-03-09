@@ -1,48 +1,48 @@
 # Module Documentation
-## Module Data.JSON
+## Module Data.Foreign
 
 ### Types
 
-    data JSON :: *
+    data Foreign :: *
 
-    data JSONParser a where
-      JSONParser :: JSON -> Either Prim.String a -> JSONParser a
+    data ForeignParser a where
+      ForeignParser :: Foreign -> Either Prim.String a -> ForeignParser a
 
 
 ### Type Classes
 
-    class ReadJSON a where
-      readJSON :: JSONParser a
+    class ReadForeign a where
+      read :: ForeignParser a
 
 
 ### Type Class Instances
 
-    instance applicativeJSONParser :: Prelude.Applicative JSONParser
+    instance applicativeForeignParser :: Prelude.Applicative ForeignParser
 
-    instance functorJSONParser :: Prelude.Functor JSONParser
+    instance functorForeignParser :: Prelude.Functor ForeignParser
 
-    instance monadJSONParser :: Prelude.Monad JSONParser
+    instance monadForeignParser :: Prelude.Monad ForeignParser
 
-    instance readJSONArray :: (ReadJSON a) => ReadJSON [a]
+    instance readArray :: (ReadForeign a) => ReadForeign [a]
 
-    instance readJSONBoolean :: ReadJSON Prim.Boolean
+    instance readBoolean :: ReadForeign Prim.Boolean
 
-    instance readJSONMaybe :: (ReadJSON a) => ReadJSON (Maybe a)
+    instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a)
 
-    instance readJSONNumber :: ReadJSON Prim.Number
+    instance readNumber :: ReadForeign Prim.Number
 
-    instance readJSONString :: ReadJSON Prim.String
+    instance readString :: ReadForeign Prim.String
 
-    instance showJSON :: Prelude.Show JSON
+    instance showForeign :: Prelude.Show Foreign
 
 
 ### Values
 
-    parseJSON :: forall a. (ReadJSON a) => Prim.String -> Either Prim.String a
+    parseForeign :: forall a. ForeignParser a -> Foreign -> Either Prim.String a
 
-    readJSONProp :: forall a. (ReadJSON a) => Prim.String -> JSONParser a
+    parseJSON :: forall a. (ReadForeign a) => Prim.String -> Either Prim.String a
 
-    runParser :: forall a. JSONParser a -> JSON -> Either Prim.String a
+    prop :: forall a. (ReadForeign a) => Prim.String -> ForeignParser a
 
 
 

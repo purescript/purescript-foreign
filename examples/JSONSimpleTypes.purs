@@ -2,7 +2,7 @@ module JSONSimpleTypes where
 
 import Prelude
 import Data.Either
-import Data.JSON
+import Data.Foreign
 import Control.Monad.Eff
 
 -- Parsing of the simple JSON String, Number and Boolean types is provided

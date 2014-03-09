@@ -2,7 +2,7 @@ module MaybeNullable where
 
 import Prelude
 import Data.Either
-import Data.JSON
+import Data.Foreign
 import Data.Maybe
 import Control.Monad.Eff
 

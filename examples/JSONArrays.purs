@@ -3,7 +3,7 @@ module JSONArrays where
 import Prelude
 import Data.Array
 import Data.Either
-import Data.JSON
+import Data.Foreign
 import Control.Monad.Eff
 
 main = do

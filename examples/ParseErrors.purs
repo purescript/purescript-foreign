@@ -3,17 +3,17 @@ module ParseErrors where
 import Prelude
 import Data.Array
 import Data.Either
-import Data.JSON
+import Data.Foreign
 import Control.Monad.Eff
 
 -- | See the `Objects` example for an explanation of how to parse objects 
 --   like this.
 data Point = Point { x :: Number, y :: Number }
 
-instance readJSONPoint :: Data.JSON.ReadJSON Point where
-  readJSON = do
-    x <- readJSONProp "x"
-    y <- readJSONProp "y"
+instance readPoint :: ReadForeign Point where
+  read = do
+    x <- prop "x"
+    y <- prop "y"
     return $ Point { x: x, y: y }
     
 main = do
