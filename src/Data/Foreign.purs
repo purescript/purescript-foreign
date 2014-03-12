@@ -13,7 +13,7 @@ import Data.Array
 import Data.Either
 import Data.Maybe
 import Data.Tuple
-import Control.Monad
+import Data.Traversable
 
 foreign import data Foreign :: *
 
@@ -96,7 +96,7 @@ instance readArray :: (ReadForeign a) => ReadForeign [a] where
       Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
     in
     (ForeignParser $ readPrimType "Array") >>= \xs -> 
-      ForeignParser \_ -> arrayItem `mapM` (zip (range 0 (length xs)) xs)
+      ForeignParser \_ -> arrayItem `traverse` (zip (range 0 (length xs)) xs)
 
 instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a) where
   read = (ForeignParser $ Right <<< readMaybeImpl) >>= \x -> 
