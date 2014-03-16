@@ -1,0 +1,21 @@
+{
+  "name": "purescript-foreign",
+  "version": "0.0.0",
+  "homepage": "https://github.com/purescript/purescript-foreign",
+  "authors": [
+    "Gary Burgess <gary.burgess@gmail.com>"
+  ],
+  "description": "PureScript library for dealing with foreign data (JSON and JavaScript objects)",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "examples",
+    "externs",
+    "js"
+  ]
+}
