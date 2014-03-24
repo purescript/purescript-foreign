@@ -90,8 +90,8 @@ instance readBoolean :: ReadForeign Boolean where
   read = ForeignParser $ readPrimType "Boolean"
 
 instance readArray :: (ReadForeign a) => ReadForeign [a] where
-  read =
-    let arrayItem (Tuple i x) = case parseForeign read x of
+  read = let
+    arrayItem (Tuple i x) = case parseForeign read x of
       Right result -> Right result
       Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
     in
