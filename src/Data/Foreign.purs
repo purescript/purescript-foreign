@@ -62,20 +62,23 @@ parseForeign (ForeignParser p) x = p x
 parseJSON :: forall a. (ReadForeign a) => String -> Either String a
 parseJSON json = fromString json >>= parseForeign read
 
-instance monadForeignParser :: Prelude.Monad ForeignParser where
-  return x = ForeignParser \_ -> Right x
+instance functorForeignParser :: Prelude.Functor ForeignParser where
+  (<$>) f (ForeignParser p) = ForeignParser \x -> f <$> p x
+
+instance bindForeignParser :: Prelude.Bind ForeignParser where
   (>>=) (ForeignParser p) f = ForeignParser \x -> case p x of
       Left err -> Left err
       Right x' -> parseForeign (f x') x
 
-instance applicativeForeignParser :: Prelude.Applicative ForeignParser where
-  pure x = ForeignParser \_ -> Right x
+instance applyForeignParser :: Prelude.Apply ForeignParser where
   (<*>) (ForeignParser f) (ForeignParser p) = ForeignParser \x -> case f x of
       Left err -> Left err
       Right f' -> f' <$> p x
 
-instance functorForeignParser :: Prelude.Functor ForeignParser where
-  (<$>) f (ForeignParser p) = ForeignParser \x -> f <$> p x
+instance applicativeForeignParser :: Prelude.Applicative ForeignParser where
+  pure x = ForeignParser \_ -> Right x
+
+instance monadForeignParser :: Prelude.Monad ForeignParser
 
 class ReadForeign a where
   read :: ForeignParser a
