@@ -20,9 +20,9 @@ foreign import data Foreign :: *
 foreign import fromString
   "function fromString (str) { \
   \  try { \
-  \    return _ps.Data_Either.Right(JSON.parse(str)); \
+  \    return Data_Either.Right(JSON.parse(str)); \
   \  } catch (e) { \
-  \    return _ps.Data_Either.Left(e.toString()); \
+  \    return Data_Either.Left(e.toString()); \
   \  } \
   \}" :: String -> Either String Foreign
 
@@ -30,21 +30,21 @@ foreign import readPrimType
   "function readPrimType (typeName) { \
   \  return function (value) { \
   \    if (toString.call(value) == '[object ' + typeName + ']') { \
-  \      return _ps.Data_Either.Right(value);\
+  \      return Data_Either.Right(value);\
   \    } \
-  \    return _ps.Data_Either.Left('Value is not a ' + typeName + ''); \
+  \    return Data_Either.Left('Value is not a ' + typeName + ''); \
   \  }; \
   \}" :: forall a. String -> Foreign -> Either String a
 
 foreign import readMaybeImpl
   "function readMaybeImpl (value) { \
-  \  return value === undefined || value === null ? _ps.Data_Maybe.Nothing : _ps.Data_Maybe.Just(value); \
+  \  return value === undefined || value === null ? Data_Maybe.Nothing : Data_Maybe.Just(value); \
   \}" :: forall a. Foreign -> Maybe Foreign
 
 foreign import readPropImpl
   "function readPropImpl (k) { \
   \  return function (obj) { \
-  \    return _ps.Data_Either.Right(obj[k]);\
+  \    return Data_Either.Right(obj[k]);\
   \  }; \
   \}" :: forall a. String -> Foreign -> Either String Foreign
 
