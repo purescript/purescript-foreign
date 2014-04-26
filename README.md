@@ -47,6 +47,3 @@
     parseJSON :: forall a. (ReadForeign a) => Prim.String -> Either Prim.String a
 
     prop :: forall a. (ReadForeign a) => Prim.String -> ForeignParser a
-
-
-
