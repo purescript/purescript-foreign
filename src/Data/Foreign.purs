@@ -8,7 +8,6 @@ module Data.Foreign
   , prop
   ) where
 
-import Prelude
 import Data.Array
 import Data.Either
 import Data.Maybe
