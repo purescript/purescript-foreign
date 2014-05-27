@@ -31,6 +31,8 @@
 
     instance readBoolean :: ReadForeign Prim.Boolean
 
+    instance readError :: ReadForeign Error
+
     instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a)
 
     instance readNumber :: ReadForeign Prim.Number
