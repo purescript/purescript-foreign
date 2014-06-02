@@ -13,6 +13,7 @@ import Data.Either
 import Data.Maybe
 import Data.Tuple
 import Data.Traversable
+import Global (Error(..))
 
 foreign import data Foreign :: *
 
@@ -90,6 +91,9 @@ instance readNumber :: ReadForeign Number where
 
 instance readBoolean :: ReadForeign Boolean where
   read = ForeignParser $ readPrimType "Boolean"
+
+instance readError :: ReadForeign Error where
+  read = ForeignParser $ readPrimType "Error"
 
 instance readArray :: (ReadForeign a) => ReadForeign [a] where
   read = let

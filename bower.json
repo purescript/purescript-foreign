@@ -26,6 +26,7 @@
     "purescript-either": "*",
     "purescript-maybe": "*",
     "purescript-tuples": "*",
-    "purescript-foldable-traversable": "*"
+    "purescript-foldable-traversable": "*",
+    "purescript-globals": ">=0.1.3"
   }
 }
