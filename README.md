@@ -7,6 +7,7 @@
     data Foreign :: *
 
     data ForeignParser a where
+      ForeignParser :: Foreign -> Either String a -> ForeignParser a
 
 
 ### Type Classes
@@ -44,8 +45,8 @@
 
 ### Values
 
-    parseForeign :: forall a. ForeignParser a -> Foreign -> Either Prim.String a
+    parseForeign :: forall a. ForeignParser a -> Foreign -> Either String a
 
-    parseJSON :: forall a. (ReadForeign a) => Prim.String -> Either Prim.String a
+    parseJSON :: forall a. (ReadForeign a) => String -> Either String a
 
-    prop :: forall a. (ReadForeign a) => Prim.String -> ForeignParser a
+    prop :: forall a. (ReadForeign a) => String -> ForeignParser a
