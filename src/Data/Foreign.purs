@@ -9,6 +9,7 @@ module Data.Foreign
   ) where
 
 import Data.Array
+import Data.Function
 import Data.Either
 import Data.Maybe
 import Data.Tuple
@@ -17,36 +18,44 @@ import Global (Error(..))
 
 foreign import data Foreign :: *
 
-foreign import fromString
-  "function fromString (str) { \
+foreign import fromStringImpl
+  "function fromStringImpl(left, right, str) { \
   \  try { \
-  \    return Data_Either.Right(JSON.parse(str)); \
+  \    return right(JSON.parse(str)); \
   \  } catch (e) { \
-  \    return Data_Either.Left(e.toString()); \
+  \    return left(e.toString()); \
   \  } \
-  \}" :: String -> Either String Foreign
+  \}" :: Fn3 (String -> Either String Foreign) (Foreign -> Either String Foreign) String (Either String Foreign)
+      
+fromString :: String -> Either String Foreign
+fromString = runFn3 fromStringImpl Left Right
 
-foreign import readPrimType
-  "function readPrimType (typeName) { \
-  \  return function (value) { \
-  \    if (toString.call(value) == '[object ' + typeName + ']') { \
-  \      return Data_Either.Right(value);\
-  \    } \
-  \    return Data_Either.Left('Value is not a ' + typeName + ''); \
-  \  }; \
-  \}" :: forall a. String -> Foreign -> Either String a
+foreign import readPrimTypeImpl
+  "function readPrimTypeImpl(left, right, typeName, value) { \
+  \  if (toString.call(value) == '[object ' + typeName + ']') { \
+  \    return right(value);\
+  \  } \
+  \  return left('Value is not a ' + typeName + ''); \
+  \}" :: forall a. Fn4 (String -> Either String a) (a -> Either String a) String Foreign (Either String a)
+  
+readPrimType :: forall a. String -> Foreign -> Either String a
+readPrimType = runFn4 readPrimTypeImpl Left Right
 
 foreign import readMaybeImpl
-  "function readMaybeImpl (value) { \
-  \  return value === undefined || value === null ? Data_Maybe.Nothing : Data_Maybe.Just(value); \
-  \}" :: forall a. Foreign -> Maybe Foreign
-
+  "function readMaybeImpl(nothing, just, value) { \
+  \  return value === undefined || value === null ? nothing : just(value); \
+  \}" :: forall a. Fn3 (Maybe Foreign) (Foreign -> Maybe Foreign) Foreign (Maybe Foreign)
+  
+readMaybeImpl' :: Foreign -> Maybe Foreign
+readMaybeImpl' = runFn3 readMaybeImpl Nothing Just
+  
 foreign import readPropImpl
-  "function readPropImpl (k) { \
-  \  return function (obj) { \
-  \    return Data_Either.Right(obj[k]);\
-  \  }; \
-  \}" :: forall a. String -> Foreign -> Either String Foreign
+  "function readPropImpl(k, obj) { \
+  \    return obj === undefined ? undefined : obj[k];\
+  \}" :: forall a. Fn2 String Foreign Foreign
+  
+readPropImpl' :: String -> Foreign -> Foreign
+readPropImpl' = runFn2 readPropImpl
 
 foreign import showForeignImpl
   "var showForeignImpl = JSON.stringify;" :: Foreign -> String
@@ -105,13 +114,13 @@ instance readArray :: (ReadForeign a) => ReadForeign [a] where
       ForeignParser \_ -> arrayItem `traverse` (zip (range 0 (length xs)) xs)
 
 instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a) where
-  read = (ForeignParser $ Right <<< readMaybeImpl) >>= \x -> 
+  read = (ForeignParser $ Right <<< readMaybeImpl') >>= \x -> 
     ForeignParser \_ -> case x of
       Just x' -> parseForeign read x' >>= return <<< Just
       Nothing -> return Nothing
 
 prop :: forall a. (ReadForeign a) => String -> ForeignParser a
-prop p = (ForeignParser \x -> readPropImpl p x) >>= \x -> 
+prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x -> 
   ForeignParser \_ -> case parseForeign read x of
     Right result -> Right result
     Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
