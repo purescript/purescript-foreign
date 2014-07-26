@@ -50,9 +50,10 @@ foreign import readMaybeImpl
 readMaybeImpl' :: Foreign -> Maybe Foreign
 readMaybeImpl' = runFn3 readMaybeImpl Nothing Just
   
+-- We use == to check for both null and undefined
 foreign import readPropImpl
   "function readPropImpl(k, obj) { \
-  \    return obj === undefined ? undefined : obj[k];\
+  \    return obj == undefined ? undefined : obj[k];\
   \}" :: forall a. Fn2 String Foreign Foreign
   
 readPropImpl' :: String -> Foreign -> Foreign
