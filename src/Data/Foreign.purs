@@ -6,6 +6,7 @@ module Data.Foreign
   , ReadForeign
   , read
   , prop
+  , keys
   ) where
 
 import Data.Array
@@ -49,13 +50,33 @@ foreign import readMaybeImpl
 readMaybeImpl' :: Foreign -> Maybe Foreign
 readMaybeImpl' = runFn3 readMaybeImpl Nothing Just
   
+-- We use == to check for both null and undefined
 foreign import readPropImpl
   "function readPropImpl(k, obj) { \
-  \    return obj === undefined ? undefined : obj[k];\
+  \    return obj == undefined ? undefined : obj[k];\
   \}" :: forall a. Fn2 String Foreign Foreign
   
 readPropImpl' :: String -> Foreign -> Foreign
 readPropImpl' = runFn2 readPropImpl
+
+-- We use == to check for both null and undefined
+foreign import readKeysImpl
+  "function readKeysImpl(left, right, k, obj) { \
+  \  if (obj == undefined) { \
+  \    return left('cannot get a key from an undefined or null value'); \
+  \  } else if (obj[k] == undefined) { \
+  \    return left('value is undefined or null'); \
+  \  } else if (Array.isArray(obj[k])) { \
+  \    return left('value is an array'); \
+  \  } else if (typeof obj[k] !== 'object') { \
+  \    return left('value is not an object'); \
+  \  } \
+  \  return right(Object.keys(obj[k])); \
+  \}"
+  :: forall a. Fn4 (String -> Either String a) (a -> Either String a) String Foreign (Either String [String])
+
+readKeysImpl' :: String -> Foreign -> Either String [String]
+readKeysImpl' = runFn4 readKeysImpl Left Right
 
 foreign import showForeignImpl
   "var showForeignImpl = JSON.stringify;" :: Foreign -> String
@@ -124,3 +145,8 @@ prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x ->
   ForeignParser \_ -> case parseForeign read x of
     Right result -> Right result
     Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
+
+keys :: String -> ForeignParser [String]
+keys p = ForeignParser \x -> case readKeysImpl' p x of
+  Right result -> Right result
+  Left err -> Left $ "Error reading object keys of '" ++ p ++ "':\n" ++ err
