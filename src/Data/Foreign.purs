@@ -58,10 +58,13 @@ foreign import readPropImpl
 readPropImpl' :: String -> Foreign -> Foreign
 readPropImpl' = runFn2 readPropImpl
 
+-- We use == to check for both null and undefined
 foreign import readKeysImpl
   "function readKeysImpl(left, right, k, obj) { \
-  \  if (obj[k] === undefined) { \
-  \    return left('value is undefined'); \
+  \  if (obj == undefined) { \
+  \    return left('cannot get a key from an undefined or null value'); \
+  \  } else if (obj[k] == undefined) { \
+  \    return left('value is undefined or null'); \
   \  } else if (Array.isArray(obj[k])) { \
   \    return left('value is an array'); \
   \  } else if (typeof obj[k] !== 'object') { \
