@@ -50,3 +50,5 @@
     parseJSON :: forall a. (ReadForeign a) => String -> Either String a
 
     prop :: forall a. (ReadForeign a) => String -> ForeignParser a
+
+    keys :: String -> ForeignParser [String]
