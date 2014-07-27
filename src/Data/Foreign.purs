@@ -6,6 +6,7 @@ module Data.Foreign
   , ReadForeign
   , read
   , prop
+  , index
   , keys
   ) where
 
@@ -54,10 +55,13 @@ readMaybeImpl' = runFn3 readMaybeImpl Nothing Just
 foreign import readPropImpl
   "function readPropImpl(k, obj) { \
   \    return obj == undefined ? undefined : obj[k];\
-  \}" :: forall a. Fn2 String Foreign Foreign
+  \}" :: forall a. Fn2 a Foreign Foreign
   
 readPropImpl' :: String -> Foreign -> Foreign
 readPropImpl' = runFn2 readPropImpl
+
+readIndexImpl' :: Number -> Foreign -> Foreign
+readIndexImpl' = runFn2 readPropImpl
 
 -- We use == to check for both null and undefined
 foreign import readKeysImpl
@@ -140,11 +144,25 @@ instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a) where
       Just x' -> parseForeign read x' >>= return <<< Just
       Nothing -> return Nothing
 
+instance readTuple :: (ReadForeign a, ReadForeign b) => ReadForeign (Tuple a b) where
+  read = (ForeignParser $ Right <<< readIndexImpl' 0) >>= \a ->
+         (ForeignParser $ Right <<< readIndexImpl' 1) >>= \b ->
+         ForeignParser \_ -> do
+             a' <- parseForeign read a
+             b' <- parseForeign read b
+             return (Tuple a' b')
+
 prop :: forall a. (ReadForeign a) => String -> ForeignParser a
 prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x -> 
   ForeignParser \_ -> case parseForeign read x of
     Right result -> Right result
     Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
+
+index :: forall a. (ReadForeign a) => Number -> ForeignParser a
+index i = (ForeignParser \x -> Right $ readIndexImpl' i x) >>= \x -> 
+  ForeignParser \_ -> case parseForeign read x of
+    Right result -> Right result
+    Left err -> Left $ "Error reading index '" ++ show i ++ "':\n" ++ err
 
 keys :: String -> ForeignParser [String]
 keys p = ForeignParser \x -> case readKeysImpl' p x of

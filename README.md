@@ -40,15 +40,19 @@
 
     instance readString :: ReadForeign Prim.String
 
+    instance readTuple :: (ReadForeign a, ReadForeign b) => ReadForeign (Tuple a b)
+
     instance showForeign :: Prelude.Show Foreign
 
 
 ### Values
+
+    index :: forall a. (ReadForeign a) => Number -> ForeignParser a
+
+    keys :: String -> ForeignParser [String]
 
     parseForeign :: forall a. ForeignParser a -> Foreign -> Either String a
 
     parseJSON :: forall a. (ReadForeign a) => String -> Either String a
 
     prop :: forall a. (ReadForeign a) => String -> ForeignParser a
-
-    keys :: String -> ForeignParser [String]
