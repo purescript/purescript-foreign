@@ -28,9 +28,9 @@ foreign import fromStringImpl
   \    return left(e.toString()); \
   \  } \
   \}" :: Fn3 (String -> Either String Foreign) (Foreign -> Either String Foreign) String (Either String Foreign)
-      
+
 fromString :: String -> Either String Foreign
-fromString = runFn3 fromStringImpl Left Right
+fromString s = runFn3 fromStringImpl Left Right s
 
 foreign import readPrimTypeImpl
   "function readPrimTypeImpl(left, right, typeName, value) { \
@@ -39,29 +39,29 @@ foreign import readPrimTypeImpl
   \  } \
   \  return left('Value is not a ' + typeName + ''); \
   \}" :: forall a. Fn4 (String -> Either String a) (a -> Either String a) String Foreign (Either String a)
-  
+
 readPrimType :: forall a. String -> Foreign -> Either String a
-readPrimType = runFn4 readPrimTypeImpl Left Right
+readPrimType ty x = runFn4 readPrimTypeImpl Left Right ty x
 
 foreign import readMaybeImpl
   "function readMaybeImpl(nothing, just, value) { \
   \  return value === undefined || value === null ? nothing : just(value); \
   \}" :: forall a. Fn3 (Maybe Foreign) (Foreign -> Maybe Foreign) Foreign (Maybe Foreign)
-  
+
 readMaybeImpl' :: Foreign -> Maybe Foreign
-readMaybeImpl' = runFn3 readMaybeImpl Nothing Just
-  
+readMaybeImpl' x = runFn3 readMaybeImpl Nothing Just x
+
 -- We use == to check for both null and undefined
 foreign import readPropImpl
   "function readPropImpl(k, obj) { \
   \    return obj == undefined ? undefined : obj[k];\
   \}" :: forall a. Fn2 a Foreign Foreign
-  
+
 readPropImpl' :: String -> Foreign -> Foreign
-readPropImpl' = runFn2 readPropImpl
+readPropImpl' prop x = runFn2 readPropImpl prop x
 
 readIndexImpl' :: Number -> Foreign -> Foreign
-readIndexImpl' = runFn2 readPropImpl
+readIndexImpl' index x = runFn2 readPropImpl index x
 
 -- We use == to check for both null and undefined
 foreign import readKeysImpl
@@ -80,7 +80,7 @@ foreign import readKeysImpl
   :: forall a. Fn4 (String -> Either String a) (a -> Either String a) String Foreign (Either String [String])
 
 readKeysImpl' :: String -> Foreign -> Either String [String]
-readKeysImpl' = runFn4 readKeysImpl Left Right
+readKeysImpl' prop x = runFn4 readKeysImpl Left Right prop x
 
 foreign import showForeignImpl
   "var showForeignImpl = JSON.stringify;" :: Foreign -> String
@@ -135,23 +135,23 @@ instance readArray :: (ReadForeign a) => ReadForeign [a] where
       Right result -> Right result
       Left err -> Left $ "Error reading item at index " ++ (show i) ++ ":\n" ++ err
     in
-    (ForeignParser $ readPrimType "Array") >>= \xs -> 
+    (ForeignParser $ readPrimType "Array") >>= \xs ->
       ForeignParser \_ -> arrayItem `traverse` (zip (range 0 (length xs)) xs)
 
 instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a) where
-  read = (ForeignParser $ Right <<< readMaybeImpl') >>= \x -> 
+  read = (ForeignParser $ Right <<< readMaybeImpl') >>= \x ->
     ForeignParser \_ -> case x of
       Just x' -> parseForeign read x' >>= return <<< Just
       Nothing -> return Nothing
 
 prop :: forall a. (ReadForeign a) => String -> ForeignParser a
-prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x -> 
+prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x ->
   ForeignParser \_ -> case parseForeign read x of
     Right result -> Right result
     Left err -> Left $ "Error reading property '" ++ p ++ "':\n" ++ err
 
 index :: forall a. (ReadForeign a) => Number -> ForeignParser a
-index i = (ForeignParser \x -> Right $ readIndexImpl' i x) >>= \x -> 
+index i = (ForeignParser \x -> Right $ readIndexImpl' i x) >>= \x ->
   ForeignParser \_ -> case parseForeign read x of
     Right result -> Right result
     Left err -> Left $ "Error reading index '" ++ show i ++ "':\n" ++ err

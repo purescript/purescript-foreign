@@ -30,15 +30,15 @@
 
     instance readArray :: (ReadForeign a) => ReadForeign [a]
 
-    instance readBoolean :: ReadForeign Prim.Boolean
+    instance readBoolean :: ReadForeign Boolean
 
     instance readError :: ReadForeign Error
 
     instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a)
 
-    instance readNumber :: ReadForeign Prim.Number
+    instance readNumber :: ReadForeign Number
 
-    instance readString :: ReadForeign Prim.String
+    instance readString :: ReadForeign String
 
     instance showForeign :: Prelude.Show Foreign
 
