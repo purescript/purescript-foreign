@@ -144,14 +144,6 @@ instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a) where
       Just x' -> parseForeign read x' >>= return <<< Just
       Nothing -> return Nothing
 
-instance readTuple :: (ReadForeign a, ReadForeign b) => ReadForeign (Tuple a b) where
-  read = (ForeignParser $ Right <<< readIndexImpl' 0) >>= \a ->
-         (ForeignParser $ Right <<< readIndexImpl' 1) >>= \b ->
-         ForeignParser \_ -> do
-             a' <- parseForeign read a
-             b' <- parseForeign read b
-             return (Tuple a' b')
-
 prop :: forall a. (ReadForeign a) => String -> ForeignParser a
 prop p = (ForeignParser \x -> Right $ readPropImpl' p x) >>= \x -> 
   ForeignParser \_ -> case parseForeign read x of

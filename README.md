@@ -40,8 +40,6 @@
 
     instance readString :: ReadForeign Prim.String
 
-    instance readTuple :: (ReadForeign a, ReadForeign b) => ReadForeign (Tuple a b)
-
     instance showForeign :: Prelude.Show Foreign
 
 
