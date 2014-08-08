@@ -17,6 +17,8 @@ import Data.Maybe
 import Data.Tuple
 import Data.Traversable
 
+import Control.Monad.Eff.Exception (Error())
+
 foreign import data Foreign :: *
 
 foreign import fromStringImpl
@@ -124,6 +126,9 @@ instance readNumber :: ReadForeign Number where
 
 instance readBoolean :: ReadForeign Boolean where
   read = ForeignParser $ readPrimType "Boolean"
+
+instance readError :: ReadForeign Error where
+  read = ForeignParser $ readPrimType "Error"
 
 instance readArray :: (ReadForeign a) => ReadForeign [a] where
   read = let

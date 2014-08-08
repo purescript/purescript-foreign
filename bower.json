@@ -24,6 +24,7 @@
   "dependencies": {
     "purescript-arrays": "*",
     "purescript-either": "*",
+    "purescript-exceptions": ">=0.2.0",
     "purescript-maybe": "*",
     "purescript-tuples": "*",
     "purescript-foldable-traversable": "*",
