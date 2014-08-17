@@ -12,6 +12,8 @@
       TypeMismatch :: String -> String -> ForeignError
       PropertyDoesNotExist :: String -> ForeignError
       IndexOutOfBounds :: Number -> ForeignError
+      ErrorAtIndex :: Number -> ForeignError -> ForeignError
+      ErrorAtProperty :: String -> ForeignError -> ForeignError
       JSONError :: String -> ForeignError
 
 
@@ -76,15 +78,20 @@
 
     readJSON :: forall a. (IsForeign a) => String -> F a
 
+    readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
+
+    readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+
 
 ## Module Data.Foreign.Index
 
 ### Type Classes
 
-    class Index i where
+    class (Show i) <= Index i where
       (!) :: Foreign -> i -> F Foreign
       hasProperty :: i -> Foreign -> Boolean
       hasOwnProperty :: i -> Foreign -> Boolean
+      errorAt :: i -> ForeignError -> ForeignError
 
 
 ### Type Class Instances

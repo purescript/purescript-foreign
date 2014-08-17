@@ -3,16 +3,17 @@ module Data.Foreign.Class
   
   , read
   , readJSON
-  
+  , readWith
   , readProp
   ) where
       
+import Data.Array (range, zipWith, length)
 import Data.Foreign
 import Data.Foreign.Index
 import Data.Foreign.Null
 import Data.Foreign.Undefined
 import Data.Foreign.NullOrUndefined
-import Data.Traversable (traverse)
+import Data.Traversable (sequence)
 import Data.Either
 
 class IsForeign a where
@@ -28,7 +29,13 @@ instance numberIsForeign :: IsForeign Number where
   read = readNumber
   
 instance arrayIsForeign :: (IsForeign a) => IsForeign [a] where
-  read value = readArray value >>= traverse read
+  read value = readArray value >>= readElements
+    where
+    readElements :: forall a. (IsForeign a) => [Foreign] -> F [a]
+    readElements arr = sequence (zipWith readElement (range 0 (length arr)) arr)
+
+    readElement :: forall a. (IsForeign a) => Number -> Foreign -> F [a]
+    readElement i value = readWith (ErrorAtIndex i) value
   
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
   read = readNull read
@@ -42,5 +49,8 @@ instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined
 readJSON :: forall a. (IsForeign a) => String -> F a
 readJSON json = parseJSON json >>= read
 
+readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+readWith f value = either (Left <<< f) Right (read value)
+
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
-readProp prop value = value ! prop >>= read
+readProp prop value = value ! prop >>= readWith (errorAt prop)

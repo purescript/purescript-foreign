@@ -4,6 +4,7 @@ module Data.Foreign.Index
   , (!)
   , hasProperty
   , hasOwnProperty
+  , errorAt
   ) where
 
 import Data.Either
@@ -12,10 +13,11 @@ import Data.Function
      
 infixl 9 !     
       
-class Index i where
+class (Show i) <= Index i where
   (!) :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
+  errorAt :: i -> ForeignError -> ForeignError
       
 foreign import unsafeReadProp
   "function unsafeReadProp(f, s, key, value) { \
@@ -52,8 +54,10 @@ instance indexString :: Index String where
   (!) value prop = runFn4 unsafeReadProp (Left (PropertyDoesNotExist prop)) pure prop value
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
+  errorAt = ErrorAtProperty
 
 instance indexNumber :: Index Number where
   (!) value i = runFn4 unsafeReadProp (Left (IndexOutOfBounds i)) pure i value
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
+  errorAt = ErrorAtIndex
