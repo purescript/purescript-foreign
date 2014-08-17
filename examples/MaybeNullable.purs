@@ -1,19 +1,15 @@
 module MaybeNullable where
 
-import Prelude
+import Data.Maybe
 import Data.Either
 import Data.Foreign
-import Data.Maybe
+import Data.Foreign.Null
+import Data.Foreign.Class
 import Control.Monad.Eff
+import Debug.Trace
 
 -- Parsing values that are allowed to null or undefined is possible by 
 -- using Maybe types.
 main = do
-
-  Debug.Trace.trace $ case parseJSON "null" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right result -> show $ result :: Maybe Boolean
-    
-  Debug.Trace.trace $ case parseJSON "true" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right result -> show $ result :: Maybe Boolean
+  print $ runNull <$> readJSON "null" :: F (Null Boolean)
+  print $ runNull <$> readJSON "true" :: F (Null Boolean)
