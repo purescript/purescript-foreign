@@ -87,7 +87,7 @@
 
 ### Type Classes
 
-    class (Show i) <= Index i where
+    class Index i where
       (!) :: Foreign -> i -> F Foreign
       hasProperty :: i -> Foreign -> Boolean
       hasOwnProperty :: i -> Foreign -> Boolean
