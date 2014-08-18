@@ -103,6 +103,10 @@
 
 ### Values
 
+    index :: Number -> Foreign -> F Foreign
+
+    prop :: String -> Foreign -> F Foreign
+
 
 ## Module Data.Foreign.Keys
 

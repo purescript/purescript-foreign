@@ -1,6 +1,9 @@
 module Data.Foreign.Index 
   ( Index
   
+  , prop
+  , index
+  
   , (!)
   , hasProperty
   , hasOwnProperty
@@ -50,14 +53,20 @@ hasPropertyImpl _    value | isUndefined value = false
 hasPropertyImpl prop value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty prop value
 hasPropertyImpl _    value = false
 
+prop :: String -> Foreign -> F Foreign
+prop s value = runFn4 unsafeReadProp (Left (PropertyDoesNotExist s)) pure s value
+
 instance indexString :: Index String where
-  (!) value prop = runFn4 unsafeReadProp (Left (PropertyDoesNotExist prop)) pure prop value
+  (!) = flip prop
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
+index :: Number -> Foreign -> F Foreign
+index i value = runFn4 unsafeReadProp (Left (IndexOutOfBounds i)) pure i value
+
 instance indexNumber :: Index Number where
-  (!) value i = runFn4 unsafeReadProp (Left (IndexOutOfBounds i)) pure i value
+  (!) = flip index
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtIndex

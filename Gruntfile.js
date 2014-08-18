@@ -21,6 +21,11 @@ module.exports = function(grunt) {
     },
     
     psc: {
+      exampleNested: {
+        options: { main: "Nested" },
+        src: ["examples/Nested.purs", "<%=libFiles%>"],
+        dest: "tmp/Nested.js"
+      },
       exampleApplicative: {
         options: { main: "Applicative" },
         src: ["examples/Applicative.purs", "<%=libFiles%>"],
@@ -59,6 +64,9 @@ module.exports = function(grunt) {
     },
 
     execute: {
+      exampleNested: {
+        src: "tmp/Nested.js"
+      },
       exampleApplicative: {
         src: "tmp/Applicative.js"
       },
