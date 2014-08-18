@@ -23,7 +23,7 @@ class Index i where
   errorAt :: i -> ForeignError -> ForeignError
       
 foreign import unsafeReadPropImpl
-  "function unsafeReadProp(f, s, key, value) { \
+  "function unsafeReadPropImpl(f, s, key, value) { \
   \  if (value && typeof value === 'object') {\
   \    return s(value[key]);\
   \  } else {\
