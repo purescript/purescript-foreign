@@ -10,8 +10,6 @@
 
     data ForeignError where
       TypeMismatch :: String -> String -> ForeignError
-      PropertyDoesNotExist :: String -> ForeignError
-      IndexOutOfBounds :: Number -> ForeignError
       ErrorAtIndex :: Number -> ForeignError -> ForeignError
       ErrorAtProperty :: String -> ForeignError -> ForeignError
       JSONError :: String -> ForeignError

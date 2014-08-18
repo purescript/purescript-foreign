@@ -30,16 +30,12 @@ foreign import data Foreign :: *
 
 data ForeignError 
   = TypeMismatch String String
-  | PropertyDoesNotExist String
-  | IndexOutOfBounds Number
   | ErrorAtIndex Number ForeignError
   | ErrorAtProperty String ForeignError
   | JSONError String
   
 instance showForeignError :: Show ForeignError where
   show (TypeMismatch exp act) = "Type mismatch: expected " ++ exp ++ ", found " ++ act 
-  show (PropertyDoesNotExist prop) = "Property " ++ show prop ++ " does not exist on object"
-  show (IndexOutOfBounds i) = "Index " ++ show i ++ " is out of bounds"
   show (ErrorAtIndex i e) = "Error at array index " ++ show i ++ ": " ++ show e
   show (ErrorAtProperty prop e) = "Error at property " ++ show prop ++ ": " ++ show e
   show (JSONError s) = "JSON error: " ++ s

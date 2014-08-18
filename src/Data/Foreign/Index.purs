@@ -22,7 +22,7 @@ class Index i where
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
       
-foreign import unsafeReadProp
+foreign import unsafeReadPropImpl
   "function unsafeReadProp(f, s, key, value) { \
   \  if (value && typeof value === 'object') {\
   \    return s(value[key]);\
@@ -30,6 +30,15 @@ foreign import unsafeReadProp
   \    return f;\
   \  }\
   \}" :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
+
+unsafeReadProp :: forall k. k -> Foreign -> F Foreign
+unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
+
+prop :: String -> Foreign -> F Foreign
+prop = unsafeReadProp 
+
+index :: Number -> Foreign -> F Foreign
+index = unsafeReadProp
 
 foreign import unsafeHasOwnProperty
   "function unsafeHasOwnProperty(prop, value) {\
@@ -53,17 +62,11 @@ hasPropertyImpl _    value | isUndefined value = false
 hasPropertyImpl prop value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty prop value
 hasPropertyImpl _    value = false
 
-prop :: String -> Foreign -> F Foreign
-prop s value = runFn4 unsafeReadProp (Left (PropertyDoesNotExist s)) pure s value
-
 instance indexString :: Index String where
   (!) = flip prop
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
-
-index :: Number -> Foreign -> F Foreign
-index i value = runFn4 unsafeReadProp (Left (IndexOutOfBounds i)) pure i value
 
 instance indexNumber :: Index Number where
   (!) = flip index
