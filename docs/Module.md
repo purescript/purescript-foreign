@@ -4,51 +4,155 @@
 
 ### Types
 
+    type F  = Either ForeignError
+
     data Foreign :: *
 
-    data ForeignParser a where
-      ForeignParser :: Foreign -> Either String a -> ForeignParser a
-
-
-### Type Classes
-
-    class ReadForeign a where
-      read :: ForeignParser a
+    data ForeignError where
+      TypeMismatch :: String -> String -> ForeignError
+      ErrorAtIndex :: Number -> ForeignError -> ForeignError
+      ErrorAtProperty :: String -> ForeignError -> ForeignError
+      JSONError :: String -> ForeignError
 
 
 ### Type Class Instances
 
-    instance applicativeForeignParser :: Prelude.Applicative ForeignParser
-
-    instance applyForeignParser :: Prelude.Apply ForeignParser
-
-    instance bindForeignParser :: Prelude.Bind ForeignParser
-
-    instance functorForeignParser :: Prelude.Functor ForeignParser
-
-    instance monadForeignParser :: Prelude.Monad ForeignParser
-
-    instance readArray :: (ReadForeign a) => ReadForeign [a]
-
-    instance readBoolean :: ReadForeign Boolean
-
-    instance readMaybe :: (ReadForeign a) => ReadForeign (Maybe a)
-
-    instance readNumber :: ReadForeign Number
-
-    instance readString :: ReadForeign String
-
-    instance showForeign :: Prelude.Show Foreign
+    instance showForeignError :: Show ForeignError
 
 
 ### Values
 
-    index :: forall a. (ReadForeign a) => Number -> ForeignParser a
+    isArray :: Foreign -> Boolean
 
-    keys :: String -> ForeignParser [String]
+    isNull :: Foreign -> Boolean
 
-    parseForeign :: forall a. ForeignParser a -> Foreign -> Either String a
+    isUndefined :: Foreign -> Boolean
 
-    parseJSON :: forall a. (ReadForeign a) => String -> Either String a
+    parseJSON :: String -> F Foreign
 
-    prop :: forall a. (ReadForeign a) => String -> ForeignParser a
+    readArray :: Foreign -> F [Foreign]
+
+    readBoolean :: Foreign -> F Boolean
+
+    readNumber :: Foreign -> F Number
+
+    readString :: Foreign -> F String
+
+    tagOf :: Foreign -> String
+
+    toForeign :: forall a. a -> Foreign
+
+    typeOf :: Foreign -> String
+
+    unsafeFromForeign :: forall a. Foreign -> a
+
+
+## Module Data.Foreign.Class
+
+### Type Classes
+
+    class IsForeign a where
+      read :: Foreign -> F a
+
+
+### Type Class Instances
+
+    instance arrayIsForeign :: (IsForeign a) => IsForeign [a]
+
+    instance booleanIsForeign :: IsForeign Boolean
+
+    instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
+
+    instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a)
+
+    instance numberIsForeign :: IsForeign Number
+
+    instance stringIsForeign :: IsForeign String
+
+    instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
+
+
+### Values
+
+    readJSON :: forall a. (IsForeign a) => String -> F a
+
+    readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
+
+    readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+
+
+## Module Data.Foreign.Index
+
+### Type Classes
+
+    class Index i where
+      (!) :: Foreign -> i -> F Foreign
+      hasProperty :: i -> Foreign -> Boolean
+      hasOwnProperty :: i -> Foreign -> Boolean
+      errorAt :: i -> ForeignError -> ForeignError
+
+
+### Type Class Instances
+
+    instance indexNumber :: Index Number
+
+    instance indexString :: Index String
+
+
+### Values
+
+    index :: Number -> Foreign -> F Foreign
+
+    prop :: String -> Foreign -> F Foreign
+
+
+## Module Data.Foreign.Keys
+
+### Values
+
+    keys :: Foreign -> F [String]
+
+
+## Module Data.Foreign.Null
+
+### Types
+
+    newtype Null a where
+      Null :: Maybe a -> Null a
+
+
+### Values
+
+    readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
+
+    runNull :: forall a. Null a -> Maybe a
+
+
+## Module Data.Foreign.NullOrUndefined
+
+### Types
+
+    newtype NullOrUndefined a where
+      NullOrUndefined :: Maybe a -> NullOrUndefined a
+
+
+### Values
+
+    readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefined a)
+
+    runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
+
+
+## Module Data.Foreign.Undefined
+
+### Types
+
+    newtype Undefined a where
+      Undefined :: Maybe a -> Undefined a
+
+
+### Values
+
+    readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
+
+    runUndefined :: forall a. Undefined a -> Maybe a

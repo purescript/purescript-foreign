@@ -1,22 +1,14 @@
 module JSONSimpleTypes where
 
-import Prelude
 import Data.Either
 import Data.Foreign
+import Data.Foreign.Class
 import Control.Monad.Eff
+import Debug.Trace
 
 -- Parsing of the simple JSON String, Number and Boolean types is provided
 -- out of the box.
 main = do
-
-  Debug.Trace.trace $ case parseJSON "\"a JSON string\"" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right result -> result :: String
-    
-  Debug.Trace.trace $ case parseJSON "42" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right result -> show $ result :: Number
-    
-  Debug.Trace.trace $ case parseJSON "true" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right result -> show $ result :: Boolean
+  print $ readJSON "\"a JSON string\"" :: F String
+  print $ readJSON "42" :: F Number 
+  print $ readJSON "true" :: F Boolean

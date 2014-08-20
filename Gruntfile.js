@@ -21,6 +21,16 @@ module.exports = function(grunt) {
     },
     
     psc: {
+      exampleUnion: {
+        options: { main: "Union" },
+        src: ["examples/Union.purs", "<%=libFiles%>"],
+        dest: "tmp/Union.js"
+      },
+      exampleNested: {
+        options: { main: "Nested" },
+        src: ["examples/Nested.purs", "<%=libFiles%>"],
+        dest: "tmp/Nested.js"
+      },
       exampleApplicative: {
         options: { main: "Applicative" },
         src: ["examples/Applicative.purs", "<%=libFiles%>"],
@@ -59,6 +69,12 @@ module.exports = function(grunt) {
     },
 
     execute: {
+      exampleUnion: {
+        src: "tmp/Union.js"
+      },
+      exampleNested: {
+        src: "tmp/Nested.js"
+      },
       exampleApplicative: {
         src: "tmp/Applicative.js"
       },

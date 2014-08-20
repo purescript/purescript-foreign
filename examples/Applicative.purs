@@ -1,20 +1,21 @@
 module Applicative where
 
-import Prelude
 import Data.Array
 import Data.Either
 import Data.Foreign
+import Data.Foreign.Index
+import Data.Foreign.Class
 import Control.Monad.Eff
 
 data Point = Point Number Number Number
 
-instance readPoint :: ReadForeign Point where
-  read = Point <$> prop "x"
-               <*> prop "y"
-               <*> prop "z"
+instance showPoint :: Show Point where
+  show (Point x y z) = "Point " ++ show [x, y, z]
 
-main = do
+instance pointIsForeign :: IsForeign Point where
+  read value = Point <$> readProp "x" value
+                     <*> readProp "y" value
+                     <*> readProp "z" value
 
-  Debug.Trace.trace $ case parseJSON "{ \"x\": 1, \"y\": 2, \"z\": 3 }" of
-    Left err -> "Error parsing JSON:\n" ++ err
-    Right (Point x y z) -> show [x, y, z]
+main = Debug.Trace.print $ 
+  readJSON "{ \"x\": 1, \"y\": 2, \"z\": 3 }" :: F Point
