@@ -30,4 +30,4 @@ instance fooIsForeign :: IsForeign Foo where
     return $ Foo (Bar s) (Baz n)
 
 main = do
-  print $ readJSON "{ \"foo\": { \"bar\": \"bar\", \"baz\": 1 } }" :: F Foo 
+  print $ readJSON "{ \"foo\": { \"bar\": \"bar\", \"baz\": 1 } }" :: F Foo

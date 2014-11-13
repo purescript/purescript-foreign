@@ -2,15 +2,15 @@ module.exports = function(grunt) {
 
   "use strict";
 
-  grunt.initConfig({ 
-  
+  grunt.initConfig({
+
     libFiles: [
       "src/**/*.purs",
       "bower_components/purescript-*/src/**/*.purs",
     ],
-    
+
     clean: ["output"],
-  
+
     pscMake: ["<%=libFiles%>"],
     dotPsci: ["<%=libFiles%>"],
     docgen: {
@@ -19,7 +19,7 @@ module.exports = function(grunt) {
             dest: "docs/Module.md"
         }
     },
-    
+
     psc: {
       exampleUnion: {
         options: { main: "Union" },
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-execute");
   grunt.loadNpmTasks("grunt-purescript");
-  
+
   grunt.registerTask("examples", ["psc", "execute"]);
   grunt.registerTask("make", ["pscMake", "dotPsci", "docgen"]);
   grunt.registerTask("default", ["make"]);

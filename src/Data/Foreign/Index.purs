@@ -1,9 +1,9 @@
-module Data.Foreign.Index 
+module Data.Foreign.Index
   ( Index
-  
+
   , prop
   , index
-  
+
   , (!)
   , hasProperty
   , hasOwnProperty
@@ -11,17 +11,17 @@ module Data.Foreign.Index
   ) where
 
 import Data.Either
-import Data.Foreign 
-import Data.Function  
-     
-infixl 9 !     
-      
+import Data.Foreign
+import Data.Function
+
+infixl 9 !
+
 class Index i where
   (!) :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
-      
+
 foreign import unsafeReadPropImpl
   "function unsafeReadPropImpl(f, s, key, value) { \
   \  if (value && typeof value === 'object') {\
@@ -35,7 +35,7 @@ unsafeReadProp :: forall k. k -> Foreign -> F Foreign
 unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
 
 prop :: String -> Foreign -> F Foreign
-prop = unsafeReadProp 
+prop = unsafeReadProp
 
 index :: Number -> Foreign -> F Foreign
 index = unsafeReadProp
