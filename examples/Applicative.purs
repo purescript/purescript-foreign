@@ -17,5 +17,5 @@ instance pointIsForeign :: IsForeign Point where
                      <*> readProp "y" value
                      <*> readProp "z" value
 
-main = Debug.Trace.print $ 
+main = Debug.Trace.print $
   readJSON "{ \"x\": 1, \"y\": 2, \"z\": 3 }" :: F Point

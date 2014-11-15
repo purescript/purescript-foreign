@@ -1,4 +1,4 @@
-module Data.Foreign.Keys 
+module Data.Foreign.Keys
   ( keys
   ) where
 

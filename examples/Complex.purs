@@ -12,13 +12,13 @@ data SomeObject = SomeObject { foo :: String
                              , bar :: Boolean
                              , baz :: Number
                              , list :: [ListItem] }
-  
+
 instance showSomeObject :: Show SomeObject where
-  show (SomeObject o) = 
+  show (SomeObject o) =
     "SomeObject { foo: " ++ show o.foo ++
     ", bar: " ++ show o.bar ++
     ", baz: " ++ show o.baz ++
-    ", list: " ++ show o.list ++ 
+    ", list: " ++ show o.list ++
     " }"
 
 instance objectIsForeign :: IsForeign SomeObject where
@@ -28,13 +28,13 @@ instance objectIsForeign :: IsForeign SomeObject where
     baz  <- readProp "baz"  value
     list <- readProp "list" value
     return $ SomeObject { foo: foo, bar: bar, baz: baz, list: list }
-    
+
 data ListItem = ListItem { x :: Number
                          , y :: Number
                          , z :: Maybe Number }
-                         
+
 instance showListItem :: Show ListItem where
-  show (ListItem o) = 
+  show (ListItem o) =
     "ListItem { x: " ++ show o.x ++
     ", y: " ++ show o.y ++
     ", z: " ++ show o.z ++
@@ -48,5 +48,5 @@ instance listItemIsForeign :: IsForeign ListItem where
     return $ ListItem { x: x, y: y, z: z }
 
 main = do
-  let json = "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}" 
+  let json = "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}"
   Debug.Trace.print $ readJSON json :: F SomeObject

@@ -12,14 +12,14 @@ data StringList = Nil | Cons String StringList
 
 instance showStringList :: Show StringList where
   show Nil = "Nil"
-  show (Cons s l) = "Cons " ++ show s ++ " (" ++ show l ++ ")" 
+  show (Cons s l) = "Cons " ++ show s ++ " (" ++ show l ++ ")"
 
 instance stringListIsForeign :: IsForeign StringList where
   read value = do
     nil <- readProp "nil" value
     if nil
       then return Nil
-      else Cons <$> readProp "head" value 
+      else Cons <$> readProp "head" value
                 <*> readProp "tail" value
 
 main = do

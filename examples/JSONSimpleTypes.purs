@@ -10,5 +10,5 @@ import Debug.Trace
 -- out of the box.
 main = do
   print $ readJSON "\"a JSON string\"" :: F String
-  print $ readJSON "42" :: F Number 
+  print $ readJSON "42" :: F Number
   print $ readJSON "true" :: F Boolean
