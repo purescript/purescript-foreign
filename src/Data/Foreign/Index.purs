@@ -45,7 +45,7 @@ index = unsafeReadProp
 foreign import unsafeHasOwnProperty
   """
   function unsafeHasOwnProperty(prop, value) {
-    return value.hasOwnProperty(prop);
+    return Object.prototype.hasOwnProperty.call(value, prop);
   }
   """ :: forall k. Fn2 k Foreign Boolean
 
