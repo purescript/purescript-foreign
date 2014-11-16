@@ -25,11 +25,7 @@ class Index i where
 foreign import unsafeReadPropImpl
   """
   function unsafeReadPropImpl(f, s, key, value) {
-    if (value && typeof value === 'object') {
-      return s(value[key]);
-    } else {
-      return f;
-    }
+    return value == null ? f : s(value[key]);
   }
   """ :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 
