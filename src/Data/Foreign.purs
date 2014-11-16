@@ -43,55 +43,71 @@ instance showForeignError :: Show ForeignError where
 type F = Either ForeignError
 
 foreign import parseJSONImpl
-  "function parseJSONImpl(left, right, str) {\
-  \  try {\
-  \    return right(JSON.parse(str));\
-  \  } catch (e) {\
-  \    return left(e.toString());\
-  \  } \
-  \}" :: forall r. Fn3 (String -> r) (Foreign -> r) String r
+  """
+  function parseJSONImpl(left, right, str) {
+    try {
+      return right(JSON.parse(str));
+    } catch (e) {
+      return left(e.toString());
+    }
+  }
+  """ :: forall r. Fn3 (String -> r) (Foreign -> r) String r
 
 parseJSON :: String -> F Foreign
 parseJSON json = runFn3 parseJSONImpl (Left <<< JSONError) Right json
 
 foreign import toForeign
-  "function toForeign(value) {\
-  \  return value;\
-  \}" :: forall a. a -> Foreign
+  """
+  function toForeign(value) {
+    return value;
+  }
+  """ :: forall a. a -> Foreign
 
 foreign import unsafeFromForeign
-  "function unsafeFromForeign(value) {\
-  \  return value;\
-  \}" :: forall a. Foreign -> a
+  """
+  function unsafeFromForeign(value) {
+    return value;
+  }
+  """ :: forall a. Foreign -> a
 
 foreign import typeOf
-  "function typeOf(value) {\
-  \  return typeof value;\
-  \}" :: Foreign -> String
+  """
+  function typeOf(value) {
+    return typeof value;
+  }
+  """ :: Foreign -> String
 
 foreign import tagOf
-  "function tagOf(value) {\
-  \  return Object.prototype.toString.call(value).slice(8, -1);\
-  \}" :: Foreign -> String
+  """
+  function tagOf(value) {
+    return Object.prototype.toString.call(value).slice(8, -1);
+  }
+  """ :: Foreign -> String
 
 unsafeReadPrim :: forall a. String -> Foreign -> F a
 unsafeReadPrim tag value | tagOf value == tag = pure (unsafeFromForeign value)
 unsafeReadPrim tag value = Left (TypeMismatch tag (tagOf value))
 
 foreign import isNull
-  "function isNull(value) {\
-  \  return value === null;\
-  \}" :: Foreign -> Boolean
+  """
+  function isNull(value) {
+    return value === null;
+  }
+  """ :: Foreign -> Boolean
 
 foreign import isUndefined
-  "function isUndefined(value) {\
-  \  return value === undefined;\
-  \}" :: Foreign -> Boolean
+  """
+  function isUndefined(value) {
+    return value === undefined;
+  }
+  """ :: Foreign -> Boolean
 
 foreign import isArray
-  "function isArray(value) {\
-  \  return Array.isArray(value);\
-  \}" :: Foreign -> Boolean
+  """
+  function isArray(value) {
+    return Array.isArray(value);
+  }
+  """ :: Foreign -> Boolean
 
 readString :: Foreign -> F String
 readString = unsafeReadPrim "String"

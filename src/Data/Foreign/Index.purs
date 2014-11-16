@@ -23,13 +23,15 @@ class Index i where
   errorAt :: i -> ForeignError -> ForeignError
 
 foreign import unsafeReadPropImpl
-  "function unsafeReadPropImpl(f, s, key, value) { \
-  \  if (value && typeof value === 'object') {\
-  \    return s(value[key]);\
-  \  } else {\
-  \    return f;\
-  \  }\
-  \}" :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
+  """
+  function unsafeReadPropImpl(f, s, key, value) {
+    if (value && typeof value === 'object') {
+      return s(value[key]);
+    } else {
+      return f;
+    }
+  }
+  """ :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
 unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
@@ -41,9 +43,11 @@ index :: Number -> Foreign -> F Foreign
 index = unsafeReadProp
 
 foreign import unsafeHasOwnProperty
-  "function unsafeHasOwnProperty(prop, value) {\
-  \  return value.hasOwnProperty(prop);\
-  \}" :: forall k. Fn2 k Foreign Boolean
+  """
+  function unsafeHasOwnProperty(prop, value) {
+    return value.hasOwnProperty(prop);
+  }
+  """ :: forall k. Fn2 k Foreign Boolean
 
 hasOwnPropertyImpl :: forall k. k -> Foreign -> Boolean
 hasOwnPropertyImpl _    value | isNull value = false
@@ -52,9 +56,11 @@ hasOwnPropertyImpl prop value | typeOf value == "object" || typeOf value == "fun
 hasOwnPropertyImpl _    value = false
 
 foreign import unsafeHasProperty
-  "function unsafeHasProperty(prop, value) {\
-  \  return prop in value;\
-  \}" :: forall k. Fn2 k Foreign Boolean
+  """
+  function unsafeHasProperty(prop, value) {
+    return prop in value;
+  }
+  """ :: forall k. Fn2 k Foreign Boolean
 
 hasPropertyImpl :: forall k. k -> Foreign -> Boolean
 hasPropertyImpl _    value | isNull value = false
