@@ -7,9 +7,11 @@ import Data.Foreign
 import Data.Function
 
 foreign import unsafeKeys
-  "function unsafeKeys(value) { \
-  \  return Object.keys(value);\
-  \}" :: Foreign -> [String]
+  """
+  function unsafeKeys(value) {
+    return Object.keys(value);
+  }
+  """ :: Foreign -> [String]
 
 keys :: Foreign -> F [String]
 keys value | isNull value = Left $ TypeMismatch "object" "null"
