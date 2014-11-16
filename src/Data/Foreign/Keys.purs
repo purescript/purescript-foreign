@@ -8,9 +8,15 @@ import Data.Function
 
 foreign import unsafeKeys
   """
-  function unsafeKeys(value) {
-    return Object.keys(value);
-  }
+  var unsafeKeys = Object.keys || function(value) {
+    var keys = [];
+    for (var prop in value) {
+      if (Object.prototype.hasOwnProperty.call(value, prop)) {
+        keys.push(prop);
+      }
+    }
+    return keys;
+  };
   """ :: Foreign -> [String]
 
 keys :: Foreign -> F [String]
