@@ -19,6 +19,9 @@ import Data.Either
 class IsForeign a where
   read :: Foreign -> F a
 
+instance foreignIsForeign :: IsForeign Foreign where
+  read f = return f
+
 instance stringIsForeign :: IsForeign String where
   read = readString
 
