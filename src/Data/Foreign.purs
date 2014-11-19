@@ -40,6 +40,14 @@ instance showForeignError :: Show ForeignError where
   show (ErrorAtProperty prop e) = "Error at property " ++ show prop ++ ": " ++ show e
   show (JSONError s) = "JSON error: " ++ s
 
+instance eqForeignError :: Eq ForeignError where
+  (==) (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
+  (==) (ErrorAtIndex i e) (ErrorAtIndex i' e') = i == i' && e == e'
+  (==) (ErrorAtProperty p e) (ErrorAtProperty p' e') = p == p' && e == e'
+  (==) (JSONError s) (JSONError s') = s == s'
+  (==) _ _ = false
+  (/=) a b = not (a == b)
+
 type F = Either ForeignError
 
 foreign import parseJSONImpl
