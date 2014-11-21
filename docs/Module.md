@@ -4,7 +4,7 @@
 
 ### Types
 
-    type F  = Either ForeignError
+    type F = Either ForeignError
 
     data Foreign :: *
 
@@ -16,6 +16,8 @@
 
 
 ### Type Class Instances
+
+    instance eqForeignError :: Eq ForeignError
 
     instance showForeignError :: Show ForeignError
 
@@ -60,6 +62,8 @@
     instance arrayIsForeign :: (IsForeign a) => IsForeign [a]
 
     instance booleanIsForeign :: IsForeign Boolean
+
+    instance foreignIsForeign :: IsForeign Foreign
 
     instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
 
