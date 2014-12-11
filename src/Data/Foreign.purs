@@ -112,9 +112,9 @@ foreign import isUndefined
 
 foreign import isArray
   """
-  function isArray(value) {
-    return Array.isArray(value);
-  }
+  var isArray = Array.isArray || function(value) {
+    return Object.prototype.toString.call(value) === '[object Array]';
+  };
   """ :: Foreign -> Boolean
 
 readString :: Foreign -> F String
