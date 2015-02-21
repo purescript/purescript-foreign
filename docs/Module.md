@@ -2,161 +2,339 @@
 
 ## Module Data.Foreign
 
-### Types
+#### `Foreign`
 
-    type F = Either ForeignError
-
-    data Foreign :: *
-
-    data ForeignError where
-      TypeMismatch :: String -> String -> ForeignError
-      ErrorAtIndex :: Number -> ForeignError -> ForeignError
-      ErrorAtProperty :: String -> ForeignError -> ForeignError
-      JSONError :: String -> ForeignError
+``` purescript
+data Foreign :: *
+```
 
 
-### Type Class Instances
+#### `ForeignError`
 
-    instance eqForeignError :: Eq ForeignError
+``` purescript
+data ForeignError
+  = TypeMismatch String String
+  | ErrorAtIndex Number ForeignError
+  | ErrorAtProperty String ForeignError
+  | JSONError String
+```
 
-    instance showForeignError :: Show ForeignError
+
+#### `showForeignError`
+
+``` purescript
+instance showForeignError :: Show ForeignError
+```
 
 
-### Values
+#### `eqForeignError`
 
-    isArray :: Foreign -> Boolean
+``` purescript
+instance eqForeignError :: Eq ForeignError
+```
 
-    isNull :: Foreign -> Boolean
 
-    isUndefined :: Foreign -> Boolean
+#### `F`
 
-    parseJSON :: String -> F Foreign
+``` purescript
+type F = Either ForeignError
+```
 
-    readArray :: Foreign -> F [Foreign]
 
-    readBoolean :: Foreign -> F Boolean
+#### `parseJSON`
 
-    readNumber :: Foreign -> F Number
+``` purescript
+parseJSON :: String -> F Foreign
+```
 
-    readString :: Foreign -> F String
 
-    tagOf :: Foreign -> String
+#### `toForeign`
 
-    toForeign :: forall a. a -> Foreign
+``` purescript
+toForeign :: forall a. a -> Foreign
+```
 
-    typeOf :: Foreign -> String
 
-    unsafeFromForeign :: forall a. Foreign -> a
+#### `unsafeFromForeign`
+
+``` purescript
+unsafeFromForeign :: forall a. Foreign -> a
+```
+
+
+#### `typeOf`
+
+``` purescript
+typeOf :: Foreign -> String
+```
+
+
+#### `tagOf`
+
+``` purescript
+tagOf :: Foreign -> String
+```
+
+
+#### `isNull`
+
+``` purescript
+isNull :: Foreign -> Boolean
+```
+
+
+#### `isUndefined`
+
+``` purescript
+isUndefined :: Foreign -> Boolean
+```
+
+
+#### `isArray`
+
+``` purescript
+isArray :: Foreign -> Boolean
+```
+
+
+#### `readString`
+
+``` purescript
+readString :: Foreign -> F String
+```
+
+
+#### `readBoolean`
+
+``` purescript
+readBoolean :: Foreign -> F Boolean
+```
+
+
+#### `readNumber`
+
+``` purescript
+readNumber :: Foreign -> F Number
+```
+
+
+#### `readArray`
+
+``` purescript
+readArray :: Foreign -> F [Foreign]
+```
+
 
 
 ## Module Data.Foreign.Class
 
-### Type Classes
+#### `IsForeign`
 
-    class IsForeign a where
-      read :: Foreign -> F a
-
-
-### Type Class Instances
-
-    instance arrayIsForeign :: (IsForeign a) => IsForeign [a]
-
-    instance booleanIsForeign :: IsForeign Boolean
-
-    instance foreignIsForeign :: IsForeign Foreign
-
-    instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
-
-    instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a)
-
-    instance numberIsForeign :: IsForeign Number
-
-    instance stringIsForeign :: IsForeign String
-
-    instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
+``` purescript
+class IsForeign a where
+  read :: Foreign -> F a
+```
 
 
-### Values
+#### `foreignIsForeign`
 
-    readJSON :: forall a. (IsForeign a) => String -> F a
+``` purescript
+instance foreignIsForeign :: IsForeign Foreign
+```
 
-    readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 
-    readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+#### `stringIsForeign`
+
+``` purescript
+instance stringIsForeign :: IsForeign String
+```
+
+
+#### `booleanIsForeign`
+
+``` purescript
+instance booleanIsForeign :: IsForeign Boolean
+```
+
+
+#### `numberIsForeign`
+
+``` purescript
+instance numberIsForeign :: IsForeign Number
+```
+
+
+#### `arrayIsForeign`
+
+``` purescript
+instance arrayIsForeign :: (IsForeign a) => IsForeign [a]
+```
+
+
+#### `nullIsForeign`
+
+``` purescript
+instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
+```
+
+
+#### `undefinedIsForeign`
+
+``` purescript
+instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
+```
+
+
+#### `nullOrUndefinedIsForeign`
+
+``` purescript
+instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a)
+```
+
+
+#### `readJSON`
+
+``` purescript
+readJSON :: forall a. (IsForeign a) => String -> F a
+```
+
+
+#### `readWith`
+
+``` purescript
+readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+```
+
+
+#### `readProp`
+
+``` purescript
+readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
+```
+
 
 
 ## Module Data.Foreign.Index
 
-### Type Classes
+#### `Index`
 
-    class Index i where
-      (!) :: Foreign -> i -> F Foreign
-      hasProperty :: i -> Foreign -> Boolean
-      hasOwnProperty :: i -> Foreign -> Boolean
-      errorAt :: i -> ForeignError -> ForeignError
-
-
-### Type Class Instances
-
-    instance indexNumber :: Index Number
-
-    instance indexString :: Index String
+``` purescript
+class Index i where
+  (!) :: Foreign -> i -> F Foreign
+  hasProperty :: i -> Foreign -> Boolean
+  hasOwnProperty :: i -> Foreign -> Boolean
+  errorAt :: i -> ForeignError -> ForeignError
+```
 
 
-### Values
+#### `prop`
 
-    index :: Number -> Foreign -> F Foreign
+``` purescript
+prop :: String -> Foreign -> F Foreign
+```
 
-    prop :: String -> Foreign -> F Foreign
+
+#### `index`
+
+``` purescript
+index :: Number -> Foreign -> F Foreign
+```
+
+
+#### `indexString`
+
+``` purescript
+instance indexString :: Index String
+```
+
+
+#### `indexNumber`
+
+``` purescript
+instance indexNumber :: Index Number
+```
+
 
 
 ## Module Data.Foreign.Keys
 
-### Values
+#### `keys`
 
-    keys :: Foreign -> F [String]
+``` purescript
+keys :: Foreign -> F [String]
+```
+
 
 
 ## Module Data.Foreign.Null
 
-### Types
+#### `Null`
 
-    newtype Null a where
-      Null :: Maybe a -> Null a
+``` purescript
+newtype Null a
+  = Null (Maybe a)
+```
 
 
-### Values
+#### `runNull`
 
-    readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
+``` purescript
+runNull :: forall a. Null a -> Maybe a
+```
 
-    runNull :: forall a. Null a -> Maybe a
+
+#### `readNull`
+
+``` purescript
+readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
+```
+
 
 
 ## Module Data.Foreign.NullOrUndefined
 
-### Types
+#### `NullOrUndefined`
 
-    newtype NullOrUndefined a where
-      NullOrUndefined :: Maybe a -> NullOrUndefined a
+``` purescript
+newtype NullOrUndefined a
+  = NullOrUndefined (Maybe a)
+```
 
 
-### Values
+#### `runNullOrUndefined`
 
-    readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefined a)
+``` purescript
+runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
+```
 
-    runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
+
+#### `readNullOrUndefined`
+
+``` purescript
+readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefined a)
+```
+
 
 
 ## Module Data.Foreign.Undefined
 
-### Types
+#### `Undefined`
 
-    newtype Undefined a where
-      Undefined :: Maybe a -> Undefined a
+``` purescript
+newtype Undefined a
+  = Undefined (Maybe a)
+```
 
 
-### Values
+#### `runUndefined`
 
-    readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
+``` purescript
+runUndefined :: forall a. Undefined a -> Maybe a
+```
 
-    runUndefined :: forall a. Undefined a -> Maybe a
+
+#### `readUndefined`
+
+``` purescript
+readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
+```

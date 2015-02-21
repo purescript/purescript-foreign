@@ -2,7 +2,8 @@
   "name": "purescript-foreign",
   "homepage": "https://github.com/purescript/purescript-foreign",
   "authors": [
-    "Gary Burgess <gary.burgess@gmail.com>"
+    "Gary Burgess <gary.burgess@gmail.com>",
+    "Phil Freeman <paf31@cantab.net>"
   ],
   "description": "PureScript library for dealing with foreign data (JSON and JavaScript objects)",
   "keywords": [
@@ -25,7 +26,7 @@
     "purescript-arrays": "~0.3.0",
     "purescript-either": "~0.1.4",
     "purescript-maybe": "~0.2.1",
-    "purescript-tuples": "~0.2.3",
-    "purescript-foldable-traversable": "~0.2.1"
+    "purescript-tuples": "~0.3.0",
+    "purescript-foldable-traversable": "~0.3.0"
   }
 }
