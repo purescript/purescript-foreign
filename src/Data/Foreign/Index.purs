@@ -1,3 +1,6 @@
+-- | This module defines a type class for types which act like 
+-- | _property indices_.
+
 module Data.Foreign.Index
   ( Index
 
@@ -16,6 +19,9 @@ import Data.Function
 
 infixl 9 !
 
+-- | This type class identifies types wich act like _property indices_.
+-- |
+-- | The canonical instances are for `String`s and `Number`s.
 class Index i where
   (!) :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
@@ -32,9 +38,11 @@ foreign import unsafeReadPropImpl
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
 unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
 
+-- | Attempt to read a value from a foreign value property
 prop :: String -> Foreign -> F Foreign
 prop = unsafeReadProp
 
+-- | Attempt to read a value from a foreign value at the specified numeric index
 index :: Number -> Foreign -> F Foreign
 index = unsafeReadProp
 

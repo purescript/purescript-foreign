@@ -1,3 +1,6 @@
+-- | This module defines types and functions for working with _foreign_
+-- | data.
+
 module Data.Foreign
   ( Foreign()
   , ForeignError(..)
@@ -26,8 +29,19 @@ import Data.Array
 import Data.Either
 import Data.Function
 
+-- | A type for _foreign data_.
+-- |
+-- | Foreign data is data from any external _unknown_ or _unreliable_
+-- | source, for which it cannot be guaranteed that the runtime representation
+-- | conforms to that of any particular type.
+-- |
+-- | Suitable applications of `Foreign` are
+-- |
+-- | - To represent responses from web services
+-- | - To integrate with external JavaScript libraries.
 foreign import data Foreign :: *
 
+-- | A type for runtime type errors
 data ForeignError
   = TypeMismatch String String
   | ErrorAtIndex Number ForeignError
@@ -48,6 +62,8 @@ instance eqForeignError :: Eq ForeignError where
   (==) _ _ = false
   (/=) a b = not (a == b)
 
+-- | An error monad, used in this library to encode possible failure when
+-- | dealing with foreign data.
 type F = Either ForeignError
 
 foreign import parseJSONImpl
@@ -61,9 +77,11 @@ foreign import parseJSONImpl
   }
   """ :: forall r. Fn3 (String -> r) (Foreign -> r) String r
 
+-- | Attempt to parse a JSON string, returning the result as foreign data.
 parseJSON :: String -> F Foreign
 parseJSON json = runFn3 parseJSONImpl (Left <<< JSONError) Right json
 
+-- | Coerce any value to the a `Foreign` value.
 foreign import toForeign
   """
   function toForeign(value) {
@@ -71,6 +89,7 @@ foreign import toForeign
   }
   """ :: forall a. a -> Foreign
 
+-- | Unsafely coerce a `Foreign` value.
 foreign import unsafeFromForeign
   """
   function unsafeFromForeign(value) {
@@ -78,6 +97,7 @@ foreign import unsafeFromForeign
   }
   """ :: forall a. Foreign -> a
 
+-- | Read the Javascript _type_ of a value
 foreign import typeOf
   """
   function typeOf(value) {
@@ -85,6 +105,9 @@ foreign import typeOf
   }
   """ :: Foreign -> String
 
+-- | Read the Javascript _tag_ of a value.
+-- |
+-- | This function wraps the `Object.toString` method.
 foreign import tagOf
   """
   function tagOf(value) {
@@ -96,6 +119,7 @@ unsafeReadPrim :: forall a. String -> Foreign -> F a
 unsafeReadPrim tag value | tagOf value == tag = pure (unsafeFromForeign value)
 unsafeReadPrim tag value = Left (TypeMismatch tag (tagOf value))
 
+-- | Test whether a foreign value is null
 foreign import isNull
   """
   function isNull(value) {
@@ -103,6 +127,7 @@ foreign import isNull
   }
   """ :: Foreign -> Boolean
 
+-- | Test whether a foreign value is undefined
 foreign import isUndefined
   """
   function isUndefined(value) {
@@ -110,6 +135,7 @@ foreign import isUndefined
   }
   """ :: Foreign -> Boolean
 
+-- | Test whether a foreign value is an array
 foreign import isArray
   """
   var isArray = Array.isArray || function(value) {
@@ -117,15 +143,19 @@ foreign import isArray
   };
   """ :: Foreign -> Boolean
 
+-- | Attempt to coerce a foreign value to a `String`.
 readString :: Foreign -> F String
 readString = unsafeReadPrim "String"
 
+-- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
 readBoolean = unsafeReadPrim "Boolean"
 
+-- | Attempt to coerce a foreign value to a `Number`.
 readNumber :: Foreign -> F Number
 readNumber = unsafeReadPrim "Number"
 
+-- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F [Foreign]
 readArray value | isArray value = pure $ unsafeFromForeign value
 readArray value = Left (TypeMismatch "array" (tagOf value))

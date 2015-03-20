@@ -2,12 +2,26 @@
 
 ## Module Data.Foreign
 
+
+This module defines types and functions for working with _foreign_
+data.
+
 #### `Foreign`
 
 ``` purescript
 data Foreign :: *
 ```
 
+A type for _foreign data_.
+
+Foreign data is data from any external _unknown_ or _unreliable_
+source, for which it cannot be guaranteed that the runtime representation
+conforms to that of any particular type.
+
+Suitable applications of `Foreign` are
+
+- To represent responses from web services
+- To integrate with external JavaScript libraries.
 
 #### `ForeignError`
 
@@ -19,6 +33,7 @@ data ForeignError
   | JSONError String
 ```
 
+A type for runtime type errors
 
 #### `showForeignError`
 
@@ -40,6 +55,8 @@ instance eqForeignError :: Eq ForeignError
 type F = Either ForeignError
 ```
 
+An error monad, used in this library to encode possible failure when
+dealing with foreign data.
 
 #### `parseJSON`
 
@@ -47,6 +64,7 @@ type F = Either ForeignError
 parseJSON :: String -> F Foreign
 ```
 
+Attempt to parse a JSON string, returning the result as foreign data.
 
 #### `toForeign`
 
@@ -54,6 +72,7 @@ parseJSON :: String -> F Foreign
 toForeign :: forall a. a -> Foreign
 ```
 
+Coerce any value to the a `Foreign` value.
 
 #### `unsafeFromForeign`
 
@@ -61,6 +80,7 @@ toForeign :: forall a. a -> Foreign
 unsafeFromForeign :: forall a. Foreign -> a
 ```
 
+Unsafely coerce a `Foreign` value.
 
 #### `typeOf`
 
@@ -68,6 +88,7 @@ unsafeFromForeign :: forall a. Foreign -> a
 typeOf :: Foreign -> String
 ```
 
+Read the Javascript _type_ of a value
 
 #### `tagOf`
 
@@ -75,6 +96,9 @@ typeOf :: Foreign -> String
 tagOf :: Foreign -> String
 ```
 
+Read the Javascript _tag_ of a value.
+
+This function wraps the `Object.toString` method.
 
 #### `isNull`
 
@@ -82,6 +106,7 @@ tagOf :: Foreign -> String
 isNull :: Foreign -> Boolean
 ```
 
+Test whether a foreign value is null
 
 #### `isUndefined`
 
@@ -89,6 +114,7 @@ isNull :: Foreign -> Boolean
 isUndefined :: Foreign -> Boolean
 ```
 
+Test whether a foreign value is undefined
 
 #### `isArray`
 
@@ -96,6 +122,7 @@ isUndefined :: Foreign -> Boolean
 isArray :: Foreign -> Boolean
 ```
 
+Test whether a foreign value is an array
 
 #### `readString`
 
@@ -103,6 +130,7 @@ isArray :: Foreign -> Boolean
 readString :: Foreign -> F String
 ```
 
+Attempt to coerce a foreign value to a `String`.
 
 #### `readBoolean`
 
@@ -110,6 +138,7 @@ readString :: Foreign -> F String
 readBoolean :: Foreign -> F Boolean
 ```
 
+Attempt to coerce a foreign value to a `Boolean`.
 
 #### `readNumber`
 
@@ -117,6 +146,7 @@ readBoolean :: Foreign -> F Boolean
 readNumber :: Foreign -> F Number
 ```
 
+Attempt to coerce a foreign value to a `Number`.
 
 #### `readArray`
 
@@ -124,9 +154,13 @@ readNumber :: Foreign -> F Number
 readArray :: Foreign -> F [Foreign]
 ```
 
+Attempt to coerce a foreign value to an array.
 
 
 ## Module Data.Foreign.Class
+
+
+This module defines a type class for reading foreign values.
 
 #### `IsForeign`
 
@@ -135,6 +169,12 @@ class IsForeign a where
   read :: Foreign -> F a
 ```
 
+A type class instance for this class can be written for a type if it
+is possible to attempt to _safely_ coerce a `Foreign` value to that
+type.
+
+Instances are provided for standard data structures, and the `F` monad
+can be used to construct instances for new data structures.
 
 #### `foreignIsForeign`
 
@@ -198,6 +238,7 @@ instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined
 readJSON :: forall a. (IsForeign a) => String -> F a
 ```
 
+Attempt to read a data structure from a JSON string
 
 #### `readWith`
 
@@ -205,6 +246,7 @@ readJSON :: forall a. (IsForeign a) => String -> F a
 readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
 ```
 
+Attempt to read a foreign value, handling errors using the specified function
 
 #### `readProp`
 
@@ -212,9 +254,14 @@ readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Eithe
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 ```
 
+Attempt to read a property of a foreign value at the specified index
 
 
 ## Module Data.Foreign.Index
+
+
+This module defines a type class for types which act like 
+_property indices_.
 
 #### `Index`
 
@@ -226,6 +273,9 @@ class Index i where
   errorAt :: i -> ForeignError -> ForeignError
 ```
 
+This type class identifies types wich act like _property indices_.
+
+The canonical instances are for `String`s and `Number`s.
 
 #### `prop`
 
@@ -233,6 +283,7 @@ class Index i where
 prop :: String -> Foreign -> F Foreign
 ```
 
+Attempt to read a value from a foreign value property
 
 #### `index`
 
@@ -240,6 +291,7 @@ prop :: String -> Foreign -> F Foreign
 index :: Number -> Foreign -> F Foreign
 ```
 
+Attempt to read a value from a foreign value at the specified numeric index
 
 #### `indexString`
 
@@ -258,12 +310,17 @@ instance indexNumber :: Index Number
 
 ## Module Data.Foreign.Keys
 
+
+This module provides functions for working with object properties
+of Javascript objects.
+
 #### `keys`
 
 ``` purescript
 keys :: Foreign -> F [String]
 ```
 
+Get an array of the properties defined on a foreign value
 
 
 ## Module Data.Foreign.Null
@@ -275,6 +332,11 @@ newtype Null a
   = Null (Maybe a)
 ```
 
+A `newtype` wrapper whose `IsForeign` instance correctly handles
+null values.
+
+Conceptually, this type represents values which may be `null`, 
+but not `undefined`.
 
 #### `runNull`
 
@@ -282,6 +344,7 @@ newtype Null a
 runNull :: forall a. Null a -> Maybe a
 ```
 
+Unwrap a `Null` value 
 
 #### `readNull`
 
@@ -289,6 +352,7 @@ runNull :: forall a. Null a -> Maybe a
 readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
 ```
 
+Read a `Null` value
 
 
 ## Module Data.Foreign.NullOrUndefined
@@ -300,6 +364,11 @@ newtype NullOrUndefined a
   = NullOrUndefined (Maybe a)
 ```
 
+A `newtype` wrapper whose `IsForeign` instance correctly handles
+null and undefined values.
+
+Conceptually, this type represents values which may be `null`
+or `undefined`.
 
 #### `runNullOrUndefined`
 
@@ -307,6 +376,7 @@ newtype NullOrUndefined a
 runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
 ```
 
+Unwrap a `NullOrUndefined` value
 
 #### `readNullOrUndefined`
 
@@ -314,6 +384,7 @@ runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
 readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefined a)
 ```
 
+Read a `NullOrUndefined` value
 
 
 ## Module Data.Foreign.Undefined
@@ -325,6 +396,11 @@ newtype Undefined a
   = Undefined (Maybe a)
 ```
 
+A `newtype` wrapper whose `IsForeign` instance correctly handles
+undefined values.
+
+Conceptually, this type represents values which may be `undefined`, 
+but not `null`.
 
 #### `runUndefined`
 
@@ -332,9 +408,12 @@ newtype Undefined a
 runUndefined :: forall a. Undefined a -> Maybe a
 ```
 
+Unwrap an `Undefined` value
 
 #### `readUndefined`
 
 ``` purescript
 readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
 ```
+
+Read an `Undefined` value

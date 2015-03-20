@@ -1,3 +1,6 @@
+-- | This module provides functions for working with object properties
+-- | of Javascript objects.
+
 module Data.Foreign.Keys
   ( keys
   ) where
@@ -19,6 +22,7 @@ foreign import unsafeKeys
   };
   """ :: Foreign -> [String]
 
+-- | Get an array of the properties defined on a foreign value
 keys :: Foreign -> F [String]
 keys value | isNull value = Left $ TypeMismatch "object" "null"
 keys value | isUndefined value = Left $ TypeMismatch "object" "undefined"
