@@ -204,6 +204,13 @@ instance numberIsForeign :: IsForeign Number
 ```
 
 
+#### `unitIsForeign`
+
+``` purescript
+instance unitIsForeign :: IsForeign Unit
+```
+
+
 #### `arrayIsForeign`
 
 ``` purescript
