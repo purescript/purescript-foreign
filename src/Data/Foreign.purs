@@ -11,6 +11,7 @@ module Data.Foreign
 
   , toForeign
   , unsafeFromForeign
+  , unsafeReadTagged
 
   , typeOf
   , tagOf
