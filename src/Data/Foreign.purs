@@ -11,6 +11,7 @@ module Data.Foreign
 
   , toForeign
   , unsafeFromForeign
+  , unsafeReadTagged
 
   , typeOf
   , tagOf
@@ -115,9 +116,11 @@ foreign import tagOf
   }
   """ :: Foreign -> String
 
-unsafeReadPrim :: forall a. String -> Foreign -> F a
-unsafeReadPrim tag value | tagOf value == tag = pure (unsafeFromForeign value)
-unsafeReadPrim tag value = Left (TypeMismatch tag (tagOf value))
+-- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
+-- | value.
+unsafeReadTagged :: forall a. String -> Foreign -> F a
+unsafeReadTagged tag value | tagOf value == tag = pure (unsafeFromForeign value)
+unsafeReadTagged tag value = Left (TypeMismatch tag (tagOf value))
 
 -- | Test whether a foreign value is null
 foreign import isNull
@@ -145,15 +148,15 @@ foreign import isArray
 
 -- | Attempt to coerce a foreign value to a `String`.
 readString :: Foreign -> F String
-readString = unsafeReadPrim "String"
+readString = unsafeReadTagged "String"
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
-readBoolean = unsafeReadPrim "Boolean"
+readBoolean = unsafeReadTagged "Boolean"
 
 -- | Attempt to coerce a foreign value to a `Number`.
 readNumber :: Foreign -> F Number
-readNumber = unsafeReadPrim "Number"
+readNumber = unsafeReadTagged "Number"
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F [Foreign]
