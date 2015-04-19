@@ -1,18 +1,16 @@
 module Data.Foreign.Undefined
   ( Undefined(..)
   , runUndefined
-
   , readUndefined
   ) where
 
-import Data.Maybe
-import Data.Either
+import Data.Maybe (Maybe(..))
 import Data.Foreign
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | undefined values.
 -- |
--- | Conceptually, this type represents values which may be `undefined`, 
+-- | Conceptually, this type represents values which may be `undefined`,
 -- | but not `null`.
 newtype Undefined a = Undefined (Maybe a)
 

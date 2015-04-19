@@ -1,4 +1,4 @@
-module Objects where
+module Example.Objects where
 
 import Data.Either
 import Data.Foreign
@@ -23,4 +23,4 @@ instance pointIsForeign :: IsForeign Point where
     return $ Point { x: x, y: y }
 
 main = do
-  print $ readJSON "{ \"x\": 1, \"y\": 2 }" :: F Point
+  Console.print $ readJSON """{ "x": 1, "y": 2 }""" :: F Point

@@ -1,21 +1,20 @@
--- | This module defines a type class for types which act like 
+-- | This module defines a type class for types which act like
 -- | _property indices_.
 
 module Data.Foreign.Index
   ( Index
-
   , prop
   , index
-
   , (!)
   , hasProperty
   , hasOwnProperty
   , errorAt
   ) where
 
-import Data.Either
+import Data.Either (Either(..))
 import Data.Foreign
-import Data.Function
+import Data.Function (Fn2(), runFn2, Fn4(), runFn4)
+import Data.Int (Int())
 
 infixl 9 !
 
@@ -43,7 +42,7 @@ prop :: String -> Foreign -> F Foreign
 prop = unsafeReadProp
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
-index :: Number -> Foreign -> F Foreign
+index :: Int -> Foreign -> F Foreign
 index = unsafeReadProp
 
 foreign import unsafeHasOwnProperty
@@ -78,7 +77,7 @@ instance indexString :: Index String where
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
-instance indexNumber :: Index Number where
+instance indexNumber :: Index Int where
   (!) = flip index
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl

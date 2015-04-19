@@ -5,9 +5,8 @@ module Data.Foreign.Keys
   ( keys
   ) where
 
-import Data.Either
+import Data.Either (Either(..))
 import Data.Foreign
-import Data.Function
 
 foreign import unsafeKeys
   """

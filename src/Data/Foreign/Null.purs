@@ -1,22 +1,20 @@
 module Data.Foreign.Null
   ( Null(..)
   , runNull
-
   , readNull
   ) where
 
-import Data.Maybe
-import Data.Either
+import Data.Maybe (Maybe(..))
 import Data.Foreign
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null values.
 -- |
--- | Conceptually, this type represents values which may be `null`, 
+-- | Conceptually, this type represents values which may be `null`,
 -- | but not `undefined`.
 newtype Null a = Null (Maybe a)
 
--- | Unwrap a `Null` value 
+-- | Unwrap a `Null` value
 runNull :: forall a. Null a -> Maybe a
 runNull (Null m) = m
 

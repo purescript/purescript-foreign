@@ -1,12 +1,10 @@
 module Data.Foreign.NullOrUndefined
   ( NullOrUndefined(..)
   , runNullOrUndefined
-
   , readNullOrUndefined
   ) where
 
-import Data.Maybe
-import Data.Either
+import Data.Maybe (Maybe(..))
 import Data.Foreign
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles

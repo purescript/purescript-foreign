@@ -1,12 +1,9 @@
-module Complex where
+module Example.Complex where
 
-import Data.Array
-import Data.Either
 import Data.Foreign
-import Data.Foreign.NullOrUndefined
 import Data.Foreign.Class
-import Data.Maybe
-import Control.Monad.Eff
+import Data.Foreign.NullOrUndefined
+import Data.Maybe (Maybe())
 
 data SomeObject = SomeObject { foo :: String
                              , bar :: Boolean
@@ -48,5 +45,5 @@ instance listItemIsForeign :: IsForeign ListItem where
     return $ ListItem { x: x, y: y, z: z }
 
 main = do
-  let json = "{\"foo\":\"hello\",\"bar\":true,\"baz\":1,\"list\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4,\"z\":999}]}"
-  Debug.Trace.print $ readJSON json :: F SomeObject
+  let json = """{"foo":"hello","bar":true,"baz":1,"list":[{"x":1,"y":2},{"x":3,"y":4,"z":999}]}"""
+  Console.print $ readJSON json :: F SomeObject

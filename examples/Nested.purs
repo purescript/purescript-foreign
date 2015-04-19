@@ -1,12 +1,9 @@
-module Nested where
+module Example.Nested where
 
-import Data.Either
+import Control.Bind ((>=>))
 import Data.Foreign
-import Data.Foreign.Index
 import Data.Foreign.Class
-import Control.Monad.Eff
-import Control.Bind
-import Debug.Trace
+import Data.Foreign.Index
 
 data Foo = Foo Bar Baz
 
@@ -30,4 +27,4 @@ instance fooIsForeign :: IsForeign Foo where
     return $ Foo (Bar s) (Baz n)
 
 main = do
-  print $ readJSON "{ \"foo\": { \"bar\": \"bar\", \"baz\": 1 } }" :: F Foo
+  Console.print $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo

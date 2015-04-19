@@ -1,12 +1,8 @@
-module Union where
+module Example.Union where
 
-import Data.Either
 import Data.Foreign
 import Data.Foreign.Index
 import Data.Foreign.Class
-import Control.Monad.Eff
-import Control.Bind
-import Debug.Trace
 
 data StringList = Nil | Cons String StringList
 
@@ -23,21 +19,27 @@ instance stringListIsForeign :: IsForeign StringList where
                 <*> readProp "tail" value
 
 main = do
-  print $ readJSON "{ \"nil\": false \
-                   \, \"head\": \"Hello\"\
-                   \, \"tail\": \
-                   \  { \"nil\": false\
-                   \  , \"head\": \"World\"\
-                   \  , \"tail\": \
-                   \    { \"nil\": true } \
-                   \  } \
-                   \}" :: F StringList
-  print $ readJSON "{ \"nil\": false \
-                   \, \"head\": \"Hello\"\
-                   \, \"tail\": \
-                   \  { \"nil\": false\
-                   \  , \"head\": 0\
-                   \  , \"tail\": \
-                   \    { \"nil\": true } \
-                   \  } \
-                   \}" :: F StringList
+
+  Console.print $ readJSON """
+    { "nil": false
+    , "head": "Hello"
+    , "tail":
+      { "nil": false
+      , "head": "World"
+      , "tail":
+        { "nil": true }
+      }
+    }
+    """ :: F StringList
+
+  Console.print $ readJSON """
+    { "nil": false
+    , "head": "Hello"
+    , "tail":
+      { "nil": false
+      , "head": 0
+      , "tail":
+        { "nil": true }
+      }
+    }
+    """ :: F StringList

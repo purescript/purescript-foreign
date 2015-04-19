@@ -4,31 +4,25 @@
 module Data.Foreign
   ( Foreign()
   , ForeignError(..)
-
   , F()
-
   , parseJSON
-
   , toForeign
   , unsafeFromForeign
   , unsafeReadTagged
-
   , typeOf
   , tagOf
-
   , isNull
   , isUndefined
   , isArray
-
   , readString
   , readBoolean
   , readNumber
   , readArray
   ) where
 
-import Data.Array
-import Data.Either
-import Data.Function
+import Data.Either (Either(..))
+import Data.Function (Fn3(), runFn3)
+import Data.Int (Int())
 
 -- | A type for _foreign data_.
 -- |
@@ -45,7 +39,7 @@ foreign import data Foreign :: *
 -- | A type for runtime type errors
 data ForeignError
   = TypeMismatch String String
-  | ErrorAtIndex Number ForeignError
+  | ErrorAtIndex Int ForeignError
   | ErrorAtProperty String ForeignError
   | JSONError String
 
