@@ -12,15 +12,15 @@ bower install purescript-foreign
 
 ## Examples
 
-- [Simple JSON types](examples/JSONSimpleTypes.md)
-- [Arrays](examples/JSONArrays.md)
-- [Objects](examples/Objects.md)
-- [Complex objects](examples/Complex.md)
-- [Applicative style parser](examples/Applicative.md)
-- [Maybe for nulls](examples/MaybeNullable.md)
-- [Nested objects](examples/Nested.md)
-- [Unions](examples/Union.md)
-- [Parser errors](examples/ParseErrors.md)
+- [Simple JSON types](examples/JSONSimpleTypes.purs)
+- [Arrays](examples/JSONArrays.purs)
+- [Objects](examples/Objects.purs)
+- [Complex objects](examples/Complex.purs)
+- [Applicative style parser](examples/Applicative.purs)
+- [Maybe for nulls](examples/MaybeNullable.purs)
+- [Nested objects](examples/Nested.purs)
+- [Unions](examples/Union.purs)
+- [Parser errors](examples/ParseErrors.purs)
 
 ## Module documentation
 
