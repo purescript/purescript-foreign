@@ -5,24 +5,15 @@ module Data.Foreign.Keys
   ( keys
   ) where
 
+import Prelude
+
 import Data.Either (Either(..))
 import Data.Foreign
 
-foreign import unsafeKeys
-  """
-  var unsafeKeys = Object.keys || function(value) {
-    var keys = [];
-    for (var prop in value) {
-      if (Object.prototype.hasOwnProperty.call(value, prop)) {
-        keys.push(prop);
-      }
-    }
-    return keys;
-  };
-  """ :: Foreign -> [String]
+foreign import unsafeKeys :: Foreign -> Array String
 
 -- | Get an array of the properties defined on a foreign value
-keys :: Foreign -> F [String]
+keys :: Foreign -> F (Array String)
 keys value | isNull value = Left $ TypeMismatch "object" "null"
 keys value | isUndefined value = Left $ TypeMismatch "object" "undefined"
 keys value | typeOf value == "object" = Right $ unsafeKeys value

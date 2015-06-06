@@ -1,5 +1,7 @@
 module Example.Objects where
 
+import Prelude
+
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class

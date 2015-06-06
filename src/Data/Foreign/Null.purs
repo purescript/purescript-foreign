@@ -4,6 +4,8 @@ module Data.Foreign.Null
   , readNull
   ) where
 
+import Prelude
+
 import Data.Maybe (Maybe(..))
 import Data.Foreign
 

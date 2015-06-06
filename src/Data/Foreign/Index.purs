@@ -11,10 +11,12 @@ module Data.Foreign.Index
   , errorAt
   ) where
 
+import Prelude
+
 import Data.Either (Either(..))
 import Data.Foreign
 import Data.Function (Fn2(), runFn2, Fn4(), runFn4)
-import Data.Int (Int())
+import Data.Int ()
 
 infixl 9 !
 
@@ -27,12 +29,7 @@ class Index i where
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
 
-foreign import unsafeReadPropImpl
-  """
-  function unsafeReadPropImpl(f, s, key, value) {
-    return value == null ? f : s(value[key]);
-  }
-  """ :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
+foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
 unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
@@ -45,31 +42,21 @@ prop = unsafeReadProp
 index :: Int -> Foreign -> F Foreign
 index = unsafeReadProp
 
-foreign import unsafeHasOwnProperty
-  """
-  function unsafeHasOwnProperty(prop, value) {
-    return Object.prototype.hasOwnProperty.call(value, prop);
-  }
-  """ :: forall k. Fn2 k Foreign Boolean
+foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
 hasOwnPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasOwnPropertyImpl _    value | isNull value = false
-hasOwnPropertyImpl _    value | isUndefined value = false
-hasOwnPropertyImpl prop value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasOwnProperty prop value
-hasOwnPropertyImpl _    value = false
+hasOwnPropertyImpl _ value | isNull value = false
+hasOwnPropertyImpl _ value | isUndefined value = false
+hasOwnPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasOwnProperty p value
+hasOwnPropertyImpl _ value = false
 
-foreign import unsafeHasProperty
-  """
-  function unsafeHasProperty(prop, value) {
-    return prop in value;
-  }
-  """ :: forall k. Fn2 k Foreign Boolean
+foreign import unsafeHasProperty :: forall k. Fn2 k Foreign Boolean
 
 hasPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasPropertyImpl _    value | isNull value = false
-hasPropertyImpl _    value | isUndefined value = false
-hasPropertyImpl prop value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty prop value
-hasPropertyImpl _    value = false
+hasPropertyImpl _ value | isNull value = false
+hasPropertyImpl _ value | isUndefined value = false
+hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty p value
+hasPropertyImpl _ value = false
 
 instance indexString :: Index String where
   (!) = flip prop

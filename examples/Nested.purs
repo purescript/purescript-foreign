@@ -1,5 +1,7 @@
 module Example.Nested where
 
+import Prelude
+
 import Control.Bind ((>=>))
 import Data.Foreign
 import Data.Foreign.Class

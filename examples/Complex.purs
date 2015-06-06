@@ -1,5 +1,7 @@
 module Example.Complex where
 
+import Prelude
+
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Foreign.NullOrUndefined

@@ -1,5 +1,7 @@
 module Example.MaybeNullable where
 
+import Prelude
+
 import Data.Foreign
 import Data.Foreign.Null
 import Data.Foreign.Class

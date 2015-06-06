@@ -4,6 +4,8 @@ module Data.Foreign.Undefined
   , readUndefined
   ) where
 
+import Prelude
+
 import Data.Maybe (Maybe(..))
 import Data.Foreign
 

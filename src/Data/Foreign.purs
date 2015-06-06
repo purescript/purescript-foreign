@@ -20,9 +20,11 @@ module Data.Foreign
   , readArray
   ) where
 
+import Prelude
+
 import Data.Either (Either(..))
 import Data.Function (Fn3(), runFn3)
-import Data.Int (Int())
+import Data.Int ()
 
 -- | A type for _foreign data_.
 -- |
@@ -50,65 +52,35 @@ instance showForeignError :: Show ForeignError where
   show (JSONError s) = "JSON error: " ++ s
 
 instance eqForeignError :: Eq ForeignError where
-  (==) (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
-  (==) (ErrorAtIndex i e) (ErrorAtIndex i' e') = i == i' && e == e'
-  (==) (ErrorAtProperty p e) (ErrorAtProperty p' e') = p == p' && e == e'
-  (==) (JSONError s) (JSONError s') = s == s'
-  (==) _ _ = false
-  (/=) a b = not (a == b)
+  eq (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
+  eq (ErrorAtIndex i e) (ErrorAtIndex i' e') = i == i' && e == e'
+  eq (ErrorAtProperty p e) (ErrorAtProperty p' e') = p == p' && e == e'
+  eq (JSONError s) (JSONError s') = s == s'
+  eq _ _ = false
 
 -- | An error monad, used in this library to encode possible failure when
 -- | dealing with foreign data.
 type F = Either ForeignError
 
-foreign import parseJSONImpl
-  """
-  function parseJSONImpl(left, right, str) {
-    try {
-      return right(JSON.parse(str));
-    } catch (e) {
-      return left(e.toString());
-    }
-  }
-  """ :: forall r. Fn3 (String -> r) (Foreign -> r) String r
+foreign import parseJSONImpl :: forall r. Fn3 (String -> r) (Foreign -> r) String r
 
 -- | Attempt to parse a JSON string, returning the result as foreign data.
 parseJSON :: String -> F Foreign
 parseJSON json = runFn3 parseJSONImpl (Left <<< JSONError) Right json
 
 -- | Coerce any value to the a `Foreign` value.
-foreign import toForeign
-  """
-  function toForeign(value) {
-    return value;
-  }
-  """ :: forall a. a -> Foreign
+foreign import toForeign :: forall a. a -> Foreign
 
 -- | Unsafely coerce a `Foreign` value.
-foreign import unsafeFromForeign
-  """
-  function unsafeFromForeign(value) {
-    return value;
-  }
-  """ :: forall a. Foreign -> a
+foreign import unsafeFromForeign :: forall a. Foreign -> a
 
 -- | Read the Javascript _type_ of a value
-foreign import typeOf
-  """
-  function typeOf(value) {
-    return typeof value;
-  }
-  """ :: Foreign -> String
+foreign import typeOf :: Foreign -> String
 
 -- | Read the Javascript _tag_ of a value.
 -- |
 -- | This function wraps the `Object.toString` method.
-foreign import tagOf
-  """
-  function tagOf(value) {
-    return Object.prototype.toString.call(value).slice(8, -1);
-  }
-  """ :: Foreign -> String
+foreign import tagOf :: Foreign -> String
 
 -- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
 -- | value.
@@ -117,28 +89,13 @@ unsafeReadTagged tag value | tagOf value == tag = pure (unsafeFromForeign value)
 unsafeReadTagged tag value = Left (TypeMismatch tag (tagOf value))
 
 -- | Test whether a foreign value is null
-foreign import isNull
-  """
-  function isNull(value) {
-    return value === null;
-  }
-  """ :: Foreign -> Boolean
+foreign import isNull :: Foreign -> Boolean
 
 -- | Test whether a foreign value is undefined
-foreign import isUndefined
-  """
-  function isUndefined(value) {
-    return value === undefined;
-  }
-  """ :: Foreign -> Boolean
+foreign import isUndefined :: Foreign -> Boolean
 
 -- | Test whether a foreign value is an array
-foreign import isArray
-  """
-  var isArray = Array.isArray || function(value) {
-    return Object.prototype.toString.call(value) === '[object Array]';
-  };
-  """ :: Foreign -> Boolean
+foreign import isArray :: Foreign -> Boolean
 
 -- | Attempt to coerce a foreign value to a `String`.
 readString :: Foreign -> F String
@@ -153,6 +110,6 @@ readNumber :: Foreign -> F Number
 readNumber = unsafeReadTagged "Number"
 
 -- | Attempt to coerce a foreign value to an array.
-readArray :: Foreign -> F [Foreign]
+readArray :: Foreign -> F (Array Foreign)
 readArray value | isArray value = pure $ unsafeFromForeign value
 readArray value = Left (TypeMismatch "array" (tagOf value))

@@ -8,6 +8,8 @@ module Data.Foreign.Class
   , readProp
   ) where
 
+import Prelude
+
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
 import Data.Foreign
@@ -15,7 +17,7 @@ import Data.Foreign.Index
 import Data.Foreign.Null
 import Data.Foreign.NullOrUndefined
 import Data.Foreign.Undefined
-import Data.Int (Int())
+import Data.Int ()
 import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
@@ -39,13 +41,13 @@ instance booleanIsForeign :: IsForeign Boolean where
 instance numberIsForeign :: IsForeign Number where
   read = readNumber
 
-instance arrayIsForeign :: (IsForeign a) => IsForeign [a] where
+instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
   read value = readArray value >>= readElements
     where
-    readElements :: forall a. (IsForeign a) => [Foreign] -> F [a]
+    readElements :: forall a. (IsForeign a) => Array Foreign -> F (Array a)
     readElements arr = sequence (zipWith readElement (range zero (length arr)) arr)
 
-    readElement :: forall a. (IsForeign a) => Int -> Foreign -> F [a]
+    readElement :: forall a. (IsForeign a) => Int -> Foreign -> F (Array a)
     readElement i value = readWith (ErrorAtIndex i) value
 
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where

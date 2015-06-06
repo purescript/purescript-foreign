@@ -1,5 +1,7 @@
 module Example.JSONSimpleTypes where
 
+import Prelude
+
 import Data.Foreign
 import Data.Foreign.Class
 

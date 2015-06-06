@@ -1,5 +1,7 @@
 module Example.ParseErrors where
 
+import Prelude
+
 import Data.Foreign
 import Data.Foreign.Class
 
@@ -27,7 +29,7 @@ main = do
 
   -- When parsing fails in an array, we're told at which index the value that
   -- failed to parse was, along with the reason the value didn't parse.
-  Console.print $ readJSON "[1, true, 3]" :: F [Boolean]
+  Console.print $ readJSON "[1, true, 3]" :: F (Array Boolean)
 
   -- When parsing fails in an object, we're the name of the property which
   -- failed to parse was, along with the reason the value didn't parse.

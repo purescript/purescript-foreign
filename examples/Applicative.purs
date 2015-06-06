@@ -1,5 +1,7 @@
 module Example.Applicative where
 
+import Prelude
+
 import Data.Foreign
 import Data.Foreign.Index
 import Data.Foreign.Class
