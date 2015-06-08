@@ -27,11 +27,11 @@ exports.tagOf = function(value) {
   return Object.prototype.toString.call(value).slice(8, -1);
 };
 
-exports isNull = function(value) {
+exports.isNull = function(value) {
   return value === null;
 };
 
-exports isUndefined = function(value) {
+exports.isUndefined = function(value) {
   return value === undefined;
 };
 
