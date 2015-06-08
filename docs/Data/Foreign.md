@@ -1,7 +1,4 @@
-# Module Documentation
-
 ## Module Data.Foreign
-
 
 This module defines types and functions for working with _foreign_
 data.
@@ -35,19 +32,11 @@ data ForeignError
 
 A type for runtime type errors
 
-#### `showForeignError`
-
+##### Instances
 ``` purescript
 instance showForeignError :: Show ForeignError
-```
-
-
-#### `eqForeignError`
-
-``` purescript
 instance eqForeignError :: Eq ForeignError
 ```
-
 
 #### `F`
 
@@ -160,10 +149,9 @@ Attempt to coerce a foreign value to a `Number`.
 #### `readArray`
 
 ``` purescript
-readArray :: Foreign -> F [Foreign]
+readArray :: Foreign -> F (Array Foreign)
 ```
 
 Attempt to coerce a foreign value to an array.
-
 
 

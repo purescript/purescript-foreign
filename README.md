@@ -24,16 +24,16 @@ bower install purescript-foreign
 
 ## Module documentation
 
-- [Data.Foreign](docs/Data.Foreign.md)
-- [Data.Foreign.Class](docs/Data.Foreign.Class.md)
+- [Data.Foreign](docs/Data/Foreign.md)
+- [Data.Foreign.Class](docs/Data/Foreign/Class.md)
 
 ### Object & array handling
  
-- [Data.Foreign.Index](docs/Data.Foreign.Index.md)
-- [Data.Foreign.Keys](docs/Data.Foreign.Keys.md)
+- [Data.Foreign.Index](docs/Data/Foreign/Index.md)
+- [Data.Foreign.Keys](docs/Data/Foreign/Keys.md)
 
 ### Null & undefined handling
 
-- [Data.Foreign.Null](docs/Data.Foreign.Null.md)
-- [Data.Foreign.Undefined](docs/Data.Foreign.Undefined.md)
-- [Data.Foreign.NullOrUndefined](docs/Data.Foreign.NullOrUndefined.md)
+- [Data.Foreign.Null](docs/Data/Foreign/Null.md)
+- [Data.Foreign.Undefined](docs/Data/Foreign/Undefined.md)
+- [Data.Foreign.NullOrUndefined](docs/Data/Foreign/NullOrUndefined.md)

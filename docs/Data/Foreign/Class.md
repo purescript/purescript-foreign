@@ -1,7 +1,4 @@
-# Module Documentation
-
 ## Module Data.Foreign.Class
-
 
 This module defines a type class for reading foreign values.
 
@@ -19,61 +16,17 @@ type.
 Instances are provided for standard data structures, and the `F` monad
 can be used to construct instances for new data structures.
 
-#### `foreignIsForeign`
-
+##### Instances
 ``` purescript
 instance foreignIsForeign :: IsForeign Foreign
-```
-
-
-#### `stringIsForeign`
-
-``` purescript
 instance stringIsForeign :: IsForeign String
-```
-
-
-#### `booleanIsForeign`
-
-``` purescript
 instance booleanIsForeign :: IsForeign Boolean
-```
-
-
-#### `numberIsForeign`
-
-``` purescript
 instance numberIsForeign :: IsForeign Number
-```
-
-
-#### `arrayIsForeign`
-
-``` purescript
-instance arrayIsForeign :: (IsForeign a) => IsForeign [a]
-```
-
-
-#### `nullIsForeign`
-
-``` purescript
+instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a)
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
-```
-
-
-#### `undefinedIsForeign`
-
-``` purescript
 instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
-```
-
-
-#### `nullOrUndefinedIsForeign`
-
-``` purescript
 instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a)
 ```
-
 
 #### `readJSON`
 
@@ -98,6 +51,5 @@ readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 ```
 
 Attempt to read a property of a foreign value at the specified index
-
 
 

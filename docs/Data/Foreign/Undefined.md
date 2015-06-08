@@ -1,5 +1,3 @@
-# Module Documentation
-
 ## Module Data.Foreign.Undefined
 
 #### `Undefined`
@@ -30,6 +28,5 @@ readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
 ```
 
 Read an `Undefined` value
-
 
 

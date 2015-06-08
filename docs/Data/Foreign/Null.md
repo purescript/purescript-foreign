@@ -1,5 +1,3 @@
-# Module Documentation
-
 ## Module Data.Foreign.Null
 
 #### `Null`
@@ -30,6 +28,5 @@ readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
 ```
 
 Read a `Null` value
-
 
 

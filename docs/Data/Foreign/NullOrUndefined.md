@@ -1,5 +1,3 @@
-# Module Documentation
-
 ## Module Data.Foreign.NullOrUndefined
 
 #### `NullOrUndefined`
@@ -30,6 +28,5 @@ readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefin
 ```
 
 Read a `NullOrUndefined` value
-
 
 
