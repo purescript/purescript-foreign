@@ -9,6 +9,10 @@
   "keywords": [
     "purescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-foreign.git"
+  },
   "license": "MIT",
   "ignore": [
     "**/.*",
