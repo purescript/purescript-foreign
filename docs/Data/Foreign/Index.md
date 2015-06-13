@@ -7,7 +7,7 @@ _property indices_.
 
 ``` purescript
 class Index i where
-  (!) :: Foreign -> i -> F Foreign
+  ix :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
@@ -20,8 +20,18 @@ The canonical instances are for `String`s and `Number`s.
 ##### Instances
 ``` purescript
 instance indexString :: Index String
-instance indexNumber :: Index Int
+instance indexInt :: Index Int
 ```
+
+#### `(!)`
+
+``` purescript
+(!) :: forall i. (Index i) => Foreign -> i -> F Foreign
+```
+
+_left-associative / precedence 9_
+
+An infix alias for `ix`.
 
 #### `prop`
 
