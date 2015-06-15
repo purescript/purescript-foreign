@@ -5,7 +5,7 @@ module Data.Foreign.Index
   ( Index
   , prop
   , index
-  , (!)
+  , ix, (!)
   , hasProperty
   , hasOwnProperty
   , errorAt
@@ -18,16 +18,20 @@ import Data.Foreign
 import Data.Function (Fn2(), runFn2, Fn4(), runFn4)
 import Data.Int ()
 
-infixl 9 !
-
 -- | This type class identifies types wich act like _property indices_.
 -- |
 -- | The canonical instances are for `String`s and `Number`s.
 class Index i where
-  (!) :: Foreign -> i -> F Foreign
+  ix :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
+
+infixl 9 !
+
+-- | An infix alias for `ix`.
+(!) :: forall i. (Index i) => Foreign -> i -> F Foreign
+(!) = ix
 
 foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 
@@ -59,13 +63,13 @@ hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function"
 hasPropertyImpl _ value = false
 
 instance indexString :: Index String where
-  (!) = flip prop
+  ix = flip prop
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
-instance indexNumber :: Index Int where
-  (!) = flip index
+instance indexInt :: Index Int where
+  ix = flip index
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtIndex
