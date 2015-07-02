@@ -3,7 +3,8 @@
 
 // module Data.Foreign
 
-exports.parseJSONImpl = function(left, right, str) {
+// jshint maxparams: 3
+exports.parseJSONImpl = function (left, right, str) {
   try {
     return right(JSON.parse(str));
   } catch (e) {
@@ -11,30 +12,31 @@ exports.parseJSONImpl = function(left, right, str) {
   }
 };
 
-exports.toForeign = function(value) {
+// jshint maxparams: 1
+exports.toForeign = function (value) {
   return value;
 };
 
-exports.unsafeFromForeign = function(value) {
+exports.unsafeFromForeign = function (value) {
   return value;
 };
 
-exports.typeOf = function(value) {
+exports.typeOf = function (value) {
   return typeof value;
 };
 
-exports.tagOf = function(value) {
+exports.tagOf = function (value) {
   return Object.prototype.toString.call(value).slice(8, -1);
 };
 
-exports.isNull = function(value) {
+exports.isNull = function (value) {
   return value === null;
 };
 
-exports.isUndefined = function(value) {
+exports.isUndefined = function (value) {
   return value === undefined;
 };
 
-exports.isArray = Array.isArray || function(value) {
-  return Object.prototype.toString.call(value) === '[object Array]';
+exports.isArray = Array.isArray || function (value) {
+  return Object.prototype.toString.call(value) === "[object Array]";
 };
