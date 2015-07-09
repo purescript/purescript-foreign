@@ -5,8 +5,7 @@ import Prelude
 import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
-import Control.Monad.Eff
-import Debug.Trace
+import Control.Monad.Eff.Console
 
 -- | To parse objects of a particular type, we need to define some helper
 --   data types as making class instances for records is not possible.
@@ -25,4 +24,4 @@ instance pointIsForeign :: IsForeign Point where
     return $ Point { x: x, y: y }
 
 main = do
-  Console.print $ readJSON """{ "x": 1, "y": 2 }""" :: F Point
+  print $ readJSON """{ "x": 1, "y": 2 }""" :: F Point

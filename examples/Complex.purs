@@ -6,11 +6,12 @@ import Data.Foreign
 import Data.Foreign.Class
 import Data.Foreign.NullOrUndefined
 import Data.Maybe (Maybe())
+import Control.Monad.Eff.Console
 
 data SomeObject = SomeObject { foo :: String
                              , bar :: Boolean
                              , baz :: Number
-                             , list :: [ListItem] }
+                             , list :: Array ListItem }
 
 instance showSomeObject :: Show SomeObject where
   show (SomeObject o) =
@@ -48,4 +49,4 @@ instance listItemIsForeign :: IsForeign ListItem where
 
 main = do
   let json = """{"foo":"hello","bar":true,"baz":1,"list":[{"x":1,"y":2},{"x":3,"y":4,"z":999}]}"""
-  Console.print $ readJSON json :: F SomeObject
+  print $ readJSON json :: F SomeObject
