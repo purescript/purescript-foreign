@@ -4,7 +4,8 @@ import Prelude
 
 import Data.Foreign
 import Data.Foreign.Class
+import Control.Monad.Eff.Console
 
 main = do
-  Console.print $ readJSON """["hello", "world"]""" :: F (Array String)
-  Console.print $ readJSON """[1, 2, 3, 4]""" :: F (Array Number)
+  print $ readJSON """["hello", "world"]""" :: F (Array String)
+  print $ readJSON """[1, 2, 3, 4]""" :: F (Array Number)

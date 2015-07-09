@@ -5,6 +5,7 @@ import Prelude
 import Data.Foreign
 import Data.Foreign.Index
 import Data.Foreign.Class
+import Control.Monad.Eff.Console
 
 data Point = Point Number Number Number
 
@@ -16,5 +17,5 @@ instance pointIsForeign :: IsForeign Point where
                      <*> readProp "y" value
                      <*> readProp "z" value
 
-main = Console.print $
+main = print $
   readJSON """{ "x": 1, "y": 2, "z": 3 }""" :: F Point

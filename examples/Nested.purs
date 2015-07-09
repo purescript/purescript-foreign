@@ -6,6 +6,7 @@ import Control.Bind ((>=>))
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Foreign.Index
+import Control.Monad.Eff.Console
 
 data Foo = Foo Bar Baz
 
@@ -24,9 +25,9 @@ instance showBaz :: Show Baz where
 
 instance fooIsForeign :: IsForeign Foo where
   read value = do
-    s <- value # prop "foo" >=> readProp "bar"
-    n <- value # prop "foo" >=> readProp "baz"
+    s <- value # (prop "foo" >=> readProp "bar")
+    n <- value # (prop "foo" >=> readProp "baz")
     return $ Foo (Bar s) (Baz n)
 
 main = do
-  Console.print $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo
+  print $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo

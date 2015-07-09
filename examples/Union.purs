@@ -5,6 +5,7 @@ import Prelude
 import Data.Foreign
 import Data.Foreign.Index
 import Data.Foreign.Class
+import Control.Monad.Eff.Console
 
 data StringList = Nil | Cons String StringList
 
@@ -22,7 +23,7 @@ instance stringListIsForeign :: IsForeign StringList where
 
 main = do
 
-  Console.print $ readJSON """
+  print $ readJSON """
     { "nil": false
     , "head": "Hello"
     , "tail":
@@ -34,7 +35,7 @@ main = do
     }
     """ :: F StringList
 
-  Console.print $ readJSON """
+  print $ readJSON """
     { "nil": false
     , "head": "Hello"
     , "tail":
