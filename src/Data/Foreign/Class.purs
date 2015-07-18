@@ -35,6 +35,9 @@ instance foreignIsForeign :: IsForeign Foreign where
 instance stringIsForeign :: IsForeign String where
   read = readString
 
+instance charIsForeign :: IsForeign Char where
+  read = readChar
+
 instance booleanIsForeign :: IsForeign Boolean where
   read = readBoolean
 

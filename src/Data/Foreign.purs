@@ -15,6 +15,7 @@ module Data.Foreign
   , isUndefined
   , isArray
   , readString
+  , readChar
   , readBoolean
   , readNumber
   , readInt
@@ -28,6 +29,7 @@ import Data.Maybe (maybe)
 import Data.Function (Fn3(), runFn3)
 import Data.Int ()
 import qualified Data.Int as Int
+import Data.String (toChar)
 
 -- | A type for _foreign data_.
 -- |
@@ -103,6 +105,16 @@ foreign import isArray :: Foreign -> Boolean
 -- | Attempt to coerce a foreign value to a `String`.
 readString :: Foreign -> F String
 readString = unsafeReadTagged "String"
+
+-- | Attempt to coerce a foreign value to a `Char`.
+readChar :: Foreign -> F Char
+readChar value = either (const error) fromString (readString value)
+  where
+  fromString :: String -> F Char
+  fromString = maybe error pure <<< toChar
+
+  error :: F Char
+  error = Left $ TypeMismatch "Char" (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
