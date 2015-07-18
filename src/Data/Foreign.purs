@@ -17,14 +17,17 @@ module Data.Foreign
   , readString
   , readBoolean
   , readNumber
+  , readInt
   , readArray
   ) where
 
 import Prelude
 
-import Data.Either (Either(..))
+import Data.Either (Either(..), either)
+import Data.Maybe (maybe)
 import Data.Function (Fn3(), runFn3)
 import Data.Int ()
+import qualified Data.Int as Int
 
 -- | A type for _foreign data_.
 -- |
@@ -108,6 +111,16 @@ readBoolean = unsafeReadTagged "Boolean"
 -- | Attempt to coerce a foreign value to a `Number`.
 readNumber :: Foreign -> F Number
 readNumber = unsafeReadTagged "Number"
+
+-- | Attempt to coerce a foreign value to an `Int`.
+readInt :: Foreign -> F Int
+readInt value = either (const error) fromNumber (readNumber value)
+  where
+  fromNumber :: Number -> F Int
+  fromNumber = maybe error pure <<< Int.fromNumber
+
+  error :: F Int
+  error = Left $ TypeMismatch "Int" (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)

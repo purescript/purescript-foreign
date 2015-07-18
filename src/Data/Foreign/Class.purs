@@ -41,6 +41,9 @@ instance booleanIsForeign :: IsForeign Boolean where
 instance numberIsForeign :: IsForeign Number where
   read = readNumber
 
+instance intIsForeign :: IsForeign Int where
+  read = readInt
+
 instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
   read value = readArray value >>= readElements
     where
