@@ -15,16 +15,21 @@ module Data.Foreign
   , isUndefined
   , isArray
   , readString
+  , readChar
   , readBoolean
   , readNumber
+  , readInt
   , readArray
   ) where
 
 import Prelude
 
-import Data.Either (Either(..))
+import Data.Either (Either(..), either)
+import Data.Maybe (maybe)
 import Data.Function (Fn3(), runFn3)
 import Data.Int ()
+import qualified Data.Int as Int
+import Data.String (toChar)
 
 -- | A type for _foreign data_.
 -- |
@@ -101,6 +106,16 @@ foreign import isArray :: Foreign -> Boolean
 readString :: Foreign -> F String
 readString = unsafeReadTagged "String"
 
+-- | Attempt to coerce a foreign value to a `Char`.
+readChar :: Foreign -> F Char
+readChar value = either (const error) fromString (readString value)
+  where
+  fromString :: String -> F Char
+  fromString = maybe error pure <<< toChar
+
+  error :: F Char
+  error = Left $ TypeMismatch "Char" (tagOf value)
+
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
 readBoolean = unsafeReadTagged "Boolean"
@@ -108,6 +123,16 @@ readBoolean = unsafeReadTagged "Boolean"
 -- | Attempt to coerce a foreign value to a `Number`.
 readNumber :: Foreign -> F Number
 readNumber = unsafeReadTagged "Number"
+
+-- | Attempt to coerce a foreign value to an `Int`.
+readInt :: Foreign -> F Int
+readInt value = either (const error) fromNumber (readNumber value)
+  where
+  fromNumber :: Number -> F Int
+  fromNumber = maybe error pure <<< Int.fromNumber
+
+  error :: F Int
+  error = Left $ TypeMismatch "Int" (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)
