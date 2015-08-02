@@ -130,6 +130,14 @@ readString :: Foreign -> F String
 
 Attempt to coerce a foreign value to a `String`.
 
+#### `readChar`
+
+``` purescript
+readChar :: Foreign -> F Char
+```
+
+Attempt to coerce a foreign value to a `Char`.
+
 #### `readBoolean`
 
 ``` purescript
@@ -145,6 +153,14 @@ readNumber :: Foreign -> F Number
 ```
 
 Attempt to coerce a foreign value to a `Number`.
+
+#### `readInt`
+
+``` purescript
+readInt :: Foreign -> F Int
+```
+
+Attempt to coerce a foreign value to an `Int`.
 
 #### `readArray`
 

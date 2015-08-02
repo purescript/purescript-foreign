@@ -20,8 +20,10 @@ can be used to construct instances for new data structures.
 ``` purescript
 instance foreignIsForeign :: IsForeign Foreign
 instance stringIsForeign :: IsForeign String
+instance charIsForeign :: IsForeign Char
 instance booleanIsForeign :: IsForeign Boolean
 instance numberIsForeign :: IsForeign Number
+instance intIsForeign :: IsForeign Int
 instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a)
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
 instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
