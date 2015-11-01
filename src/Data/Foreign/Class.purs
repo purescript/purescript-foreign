@@ -9,10 +9,13 @@ module Data.Foreign.Class
   , class AsForeign
   , write
   , writeProp, (.=)
+  , readEitherR
+  , readEitherL
   ) where
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
 import Data.Foreign (F, Foreign, ForeignError(..), Prop(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString, toForeign)
@@ -120,3 +123,13 @@ infixl 8 writeProp as .=
 
 writeProp :: forall a. AsForeign a => String -> a -> Prop
 writeProp k v = Prop { key: k, value: write v }
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is right biased.
+readEitherR :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherR value = Right <$> read value <|> Left <$> read value
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is left biased.
+readEitherL :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherL value = Left <$> read value <|> Right <$> read value
