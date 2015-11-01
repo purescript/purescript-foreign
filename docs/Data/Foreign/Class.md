@@ -25,6 +25,7 @@ instance booleanIsForeign :: IsForeign Boolean
 instance numberIsForeign :: IsForeign Number
 instance intIsForeign :: IsForeign Int
 instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a)
+instance eitherIsForeign :: (IsForeign l, IsForeign r) => IsForeign (Either l r)
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a)
 instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a)
 instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a)

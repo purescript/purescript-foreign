@@ -56,6 +56,15 @@ instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
     readElement :: forall a. (IsForeign a) => Int -> Foreign -> F (Array a)
     readElement i value = readWith (ErrorAtIndex i) value
 
+instance eitherIsForeign :: (IsForeign l, IsForeign r) => IsForeign (Either l r) where
+  read value =
+    case (read value) :: F r of
+         Right rval -> pure (Right rval)
+         Left e ->
+           case (read value) :: F l of
+                Right lval -> pure (Left lval)
+                Left e' -> Left e'
+
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
   read = readNull read
 
