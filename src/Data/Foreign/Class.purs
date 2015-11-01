@@ -10,6 +10,7 @@ module Data.Foreign.Class
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
 import Data.Foreign
@@ -57,13 +58,8 @@ instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
     readElement i value = readWith (ErrorAtIndex i) value
 
 instance eitherIsForeign :: (IsForeign l, IsForeign r) => IsForeign (Either l r) where
-  read value =
-    case (read value) :: F r of
-         Right rval -> pure (Right rval)
-         Left e ->
-           case (read value) :: F l of
-                Right lval -> pure (Left lval)
-                Left e' -> Left e'
+  read value = Right <$> read value <|> Left <$> read value
+
 
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
   read = readNull read
