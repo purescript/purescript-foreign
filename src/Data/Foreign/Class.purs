@@ -53,7 +53,7 @@ instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
     readElements :: forall a. (IsForeign a) => Array Foreign -> F (Array a)
     readElements arr = sequence (zipWith readElement (range zero (length arr)) arr)
 
-    readElement :: forall a. (IsForeign a) => Int -> Foreign -> F (Array a)
+    readElement :: forall a. (IsForeign a) => Int -> Foreign -> F a
     readElement i value = readWith (ErrorAtIndex i) value
 
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
