@@ -6,7 +6,7 @@
   },
   "devDependencies": {
     "jscs": "^1.13.1",
-    "jshint": "^2.8.0",
+    "jshint": "^2.9.1-rc.1",
     "pulp": "^4.0.2",
     "rimraf": "^2.4.1"
   }
