@@ -22,13 +22,12 @@ module Data.Foreign
   , readArray
   ) where
 
-import Prelude
+import Prelude (class Eq, class Show, pure, ($), const, (<<<), (==), (&&), (++), show)
 
 import Data.Either (Either(..), either)
 import Data.Maybe (maybe)
 import Data.Function (Fn3(), runFn3)
-import Data.Int ()
-import qualified Data.Int as Int
+import Data.Int as Int
 import Data.String (toChar)
 
 -- | A type for _foreign data_.
