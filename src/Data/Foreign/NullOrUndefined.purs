@@ -4,10 +4,10 @@ module Data.Foreign.NullOrUndefined
   , readNullOrUndefined
   ) where
 
-import Prelude
+import Prelude ((<$>), (<<<), pure, (||))
 
 import Data.Maybe (Maybe(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, isUndefined, isNull)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null and undefined values.

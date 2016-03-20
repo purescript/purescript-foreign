@@ -4,10 +4,10 @@ module Data.Foreign.Null
   , readNull
   ) where
 
-import Prelude
+import Prelude ((<$>), (<<<), pure)
 
 import Data.Maybe (Maybe(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, isNull)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null values.
