@@ -15,7 +15,7 @@ import Prelude (flip, (==), (||), pure)
 
 import Data.Either (Either(..))
 import Data.Foreign (Foreign, F, ForeignError(ErrorAtIndex, ErrorAtProperty, TypeMismatch), typeOf, isUndefined, isNull)
-import Data.Function (Fn2(), runFn2, Fn4(), runFn4)
+import Data.Function.Uncurried (Fn2(), runFn2, Fn4(), runFn4)
 
 -- | This type class identifies types wich act like _property indices_.
 -- |

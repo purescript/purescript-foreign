@@ -8,7 +8,7 @@ module Data.Foreign.Class
   , readProp
   ) where
 
-import Prelude ((>>=), (<<<), zero, return)
+import Prelude ((>>=), (<<<), zero, pure)
 
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
@@ -29,7 +29,7 @@ class IsForeign a where
   read :: Foreign -> F a
 
 instance foreignIsForeign :: IsForeign Foreign where
-  read f = return f
+  read f = pure f
 
 instance stringIsForeign :: IsForeign String where
   read = readString

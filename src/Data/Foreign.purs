@@ -22,11 +22,11 @@ module Data.Foreign
   , readArray
   ) where
 
-import Prelude (class Eq, class Show, pure, ($), const, (<<<), (==), (&&), (++), show)
+import Prelude (class Eq, class Show, pure, ($), const, (<<<), (==), (&&), append, show)
 
 import Data.Either (Either(..), either)
 import Data.Maybe (maybe)
-import Data.Function (Fn3(), runFn3)
+import Data.Function.Uncurried (Fn3(), runFn3)
 import Data.Int as Int
 import Data.String (toChar)
 
@@ -50,10 +50,10 @@ data ForeignError
   | JSONError String
 
 instance showForeignError :: Show ForeignError where
-  show (TypeMismatch exp act) = "Type mismatch: expected " ++ exp ++ ", found " ++ act
-  show (ErrorAtIndex i e) = "Error at array index " ++ show i ++ ": " ++ show e
-  show (ErrorAtProperty prop e) = "Error at property " ++ show prop ++ ": " ++ show e
-  show (JSONError s) = "JSON error: " ++ s
+  show (TypeMismatch exp act) = "Type mismatch: expected " `append` exp `append` ", found " `append` act
+  show (ErrorAtIndex i e) = "Error at array index " `append` show i `append` ": " `append` show e
+  show (ErrorAtProperty prop e) = "Error at property " `append` show prop `append` ": " `append` show e
+  show (JSONError s) = "JSON error: " `append` s
 
 instance eqForeignError :: Eq ForeignError where
   eq (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
