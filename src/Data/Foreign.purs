@@ -25,10 +25,9 @@ module Data.Foreign
 import Prelude
 
 import Data.Either (Either(..), either)
+import Data.Function.Uncurried (Fn3, runFn3)
+import Data.Int as Int
 import Data.Maybe (maybe)
-import Data.Function (Fn3(), runFn3)
-import Data.Int ()
-import qualified Data.Int as Int
 import Data.String (toChar)
 
 -- | A type for _foreign data_.
@@ -51,10 +50,10 @@ data ForeignError
   | JSONError String
 
 instance showForeignError :: Show ForeignError where
-  show (TypeMismatch exp act) = "Type mismatch: expected " ++ exp ++ ", found " ++ act
-  show (ErrorAtIndex i e) = "Error at array index " ++ show i ++ ": " ++ show e
-  show (ErrorAtProperty prop e) = "Error at property " ++ show prop ++ ": " ++ show e
-  show (JSONError s) = "JSON error: " ++ s
+  show (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
+  show (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
+  show (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
+  show (JSONError s) = "JSON error: " <> s
 
 instance eqForeignError :: Eq ForeignError where
   eq (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'

@@ -2,10 +2,13 @@ module Example.JSONArrays where
 
 import Prelude
 
-import Data.Foreign
-import Data.Foreign.Class
-import Control.Monad.Eff.Console
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE, logShow)
 
+import Data.Foreign (F)
+import Data.Foreign.Class (readJSON)
+
+main :: Eff (console :: CONSOLE) Unit
 main = do
-  print $ readJSON """["hello", "world"]""" :: F (Array String)
-  print $ readJSON """[1, 2, 3, 4]""" :: F (Array Number)
+  logShow $ readJSON """["hello", "world"]""" :: F (Array String)
+  logShow $ readJSON """[1, 2, 3, 4]""" :: F (Array Number)
