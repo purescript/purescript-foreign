@@ -1,7 +1,7 @@
 -- | This module defines a type class for reading foreign values.
 
 module Data.Foreign.Class
-  ( IsForeign
+  ( class IsForeign
   , read
   , readJSON
   , readWith
@@ -12,12 +12,11 @@ import Prelude
 
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
-import Data.Foreign
-import Data.Foreign.Index
-import Data.Foreign.Null
-import Data.Foreign.NullOrUndefined
-import Data.Foreign.Undefined
-import Data.Int ()
+import Data.Foreign (F, Foreign, ForeignError(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
+import Data.Foreign.Index (class Index, errorAt, (!))
+import Data.Foreign.Null (Null, readNull)
+import Data.Foreign.NullOrUndefined (NullOrUndefined, readNullOrUndefined)
+import Data.Foreign.Undefined (Undefined, readUndefined)
 import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
@@ -30,7 +29,7 @@ class IsForeign a where
   read :: Foreign -> F a
 
 instance foreignIsForeign :: IsForeign Foreign where
-  read f = return f
+  read = pure
 
 instance stringIsForeign :: IsForeign String where
   read = readString

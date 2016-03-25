@@ -1,13 +1,9 @@
-module Data.Foreign.Undefined
-  ( Undefined(..)
-  , runUndefined
-  , readUndefined
-  ) where
+module Data.Foreign.Undefined where
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, isUndefined)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | undefined values.
@@ -17,8 +13,8 @@ import Data.Foreign
 newtype Undefined a = Undefined (Maybe a)
 
 -- | Unwrap an `Undefined` value
-runUndefined :: forall a. Undefined a -> Maybe a
-runUndefined (Undefined m) = m
+unUndefined :: forall a. Undefined a -> Maybe a
+unUndefined (Undefined m) = m
 
 -- | Read an `Undefined` value
 readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)

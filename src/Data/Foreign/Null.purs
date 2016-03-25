@@ -1,13 +1,9 @@
-module Data.Foreign.Null
-  ( Null(..)
-  , runNull
-  , readNull
-  ) where
+module Data.Foreign.Null where
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, isNull)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null values.
@@ -17,8 +13,8 @@ import Data.Foreign
 newtype Null a = Null (Maybe a)
 
 -- | Unwrap a `Null` value
-runNull :: forall a. Null a -> Maybe a
-runNull (Null m) = m
+unNull :: forall a. Null a -> Maybe a
+unNull (Null m) = m
 
 -- | Read a `Null` value
 readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)

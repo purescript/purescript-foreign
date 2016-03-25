@@ -2,13 +2,16 @@ module Example.MaybeNullable where
 
 import Prelude
 
-import Data.Foreign
-import Data.Foreign.Null
-import Data.Foreign.Class
-import Control.Monad.Eff.Console
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE, logShow)
+
+import Data.Foreign (F)
+import Data.Foreign.Class (readJSON)
+import Data.Foreign.Null (Null, unNull)
 
 -- Parsing values that are allowed to null or undefined is possible by
 -- using Maybe types.
+main :: Eff (console :: CONSOLE) Unit
 main = do
-  print $ runNull <$> readJSON "null" :: F (Null Boolean)
-  print $ runNull <$> readJSON "true" :: F (Null Boolean)
+  logShow $ unNull <$> readJSON "null" :: F (Null Boolean)
+  logShow $ unNull <$> readJSON "true" :: F (Null Boolean)
