@@ -1,13 +1,9 @@
-module Data.Foreign.NullOrUndefined
-  ( NullOrUndefined(..)
-  , runNullOrUndefined
-  , readNullOrUndefined
-  ) where
+module Data.Foreign.NullOrUndefined where
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, isUndefined, isNull)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null and undefined values.
@@ -17,8 +13,8 @@ import Data.Foreign
 newtype NullOrUndefined a = NullOrUndefined (Maybe a)
 
 -- | Unwrap a `NullOrUndefined` value
-runNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
-runNullOrUndefined (NullOrUndefined m) = m
+unNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
+unNullOrUndefined (NullOrUndefined m) = m
 
 -- | Read a `NullOrUndefined` value
 readNullOrUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (NullOrUndefined a)

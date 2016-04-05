@@ -1,7 +1,7 @@
 -- | This module defines a type class for reading foreign values.
 
 module Data.Foreign.Class
-  ( IsForeign
+  ( class IsForeign
   , read
   , readJSON
   , readWith
@@ -13,12 +13,11 @@ import Prelude
 import Control.Alt ((<|>))
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
-import Data.Foreign
-import Data.Foreign.Index
-import Data.Foreign.Null
-import Data.Foreign.NullOrUndefined
-import Data.Foreign.Undefined
-import Data.Int ()
+import Data.Foreign (F, Foreign, ForeignError(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
+import Data.Foreign.Index (class Index, errorAt, (!))
+import Data.Foreign.Null (Null, readNull)
+import Data.Foreign.NullOrUndefined (NullOrUndefined, readNullOrUndefined)
+import Data.Foreign.Undefined (Undefined, readUndefined)
 import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
@@ -31,7 +30,7 @@ class IsForeign a where
   read :: Foreign -> F a
 
 instance foreignIsForeign :: IsForeign Foreign where
-  read f = return f
+  read = pure
 
 instance stringIsForeign :: IsForeign String where
   read = readString
@@ -51,10 +50,10 @@ instance intIsForeign :: IsForeign Int where
 instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
   read value = readArray value >>= readElements
     where
-    readElements :: forall a. (IsForeign a) => Array Foreign -> F (Array a)
+    readElements :: Array Foreign -> F (Array a)
     readElements arr = sequence (zipWith readElement (range zero (length arr)) arr)
 
-    readElement :: forall a. (IsForeign a) => Int -> Foreign -> F (Array a)
+    readElement :: Int -> Foreign -> F a
     readElement i value = readWith (ErrorAtIndex i) value
 
 instance eitherIsForeign :: (IsForeign l, IsForeign r) => IsForeign (Either l r) where

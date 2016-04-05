@@ -2,7 +2,7 @@
 -- | _property indices_.
 
 module Data.Foreign.Index
-  ( Index
+  ( class Index
   , prop
   , index
   , ix, (!)
@@ -14,9 +14,8 @@ module Data.Foreign.Index
 import Prelude
 
 import Data.Either (Either(..))
-import Data.Foreign
-import Data.Function (Fn2(), runFn2, Fn4(), runFn4)
-import Data.Int ()
+import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull)
+import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
 
 -- | This type class identifies types wich act like _property indices_.
 -- |
@@ -27,11 +26,7 @@ class Index i where
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
 
-infixl 9 !
-
--- | An infix alias for `ix`.
-(!) :: forall i. (Index i) => Foreign -> i -> F Foreign
-(!) = ix
+infixl 9 ix as !
 
 foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 

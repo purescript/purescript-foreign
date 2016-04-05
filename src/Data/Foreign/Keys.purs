@@ -8,7 +8,7 @@ module Data.Foreign.Keys
 import Prelude
 
 import Data.Either (Either(..))
-import Data.Foreign
+import Data.Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull)
 
 foreign import unsafeKeys :: Foreign -> Array String
 
