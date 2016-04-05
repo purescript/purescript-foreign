@@ -56,10 +56,6 @@ instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
     readElement :: Int -> Foreign -> F a
     readElement i value = readWith (ErrorAtIndex i) value
 
-instance eitherIsForeign :: (IsForeign l, IsForeign r) => IsForeign (Either l r) where
-  read value = Right <$> read value <|> Left <$> read value
-
-
 instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
   read = readNull read
 
@@ -80,3 +76,13 @@ readWith f value = either (Left <<< f) Right (read value)
 -- | Attempt to read a property of a foreign value at the specified index
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 readProp prop value = value ! prop >>= readWith (errorAt prop)
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is right biased.
+readEitherR :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherR value = Right <$> read value <|> Left <$> read value
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is left biased.
+readEitherL :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherL value = Left <$> read value <|> Right <$> read value
