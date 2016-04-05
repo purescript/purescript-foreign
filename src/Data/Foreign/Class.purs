@@ -6,6 +6,8 @@ module Data.Foreign.Class
   , readJSON
   , readWith
   , readProp
+  , readEitherR
+  , readEitherL
   ) where
 
 import Prelude
