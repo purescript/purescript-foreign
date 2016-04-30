@@ -10,13 +10,17 @@ module Data.Foreign.Class
 
 import Prelude
 
+
+import Control.Alt ((<|>))
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
 import Data.Foreign (F, Foreign, ForeignError(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
+import Data.Foreign (isNull)
 import Data.Foreign.Index (class Index, errorAt, (!))
 import Data.Foreign.Null (Null, readNull)
 import Data.Foreign.NullOrUndefined (NullOrUndefined, readNullOrUndefined)
 import Data.Foreign.Undefined (Undefined, readUndefined)
+import Data.Maybe (Maybe(..))
 import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
@@ -63,6 +67,11 @@ instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a) where
 
 instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a) where
   read = readNullOrUndefined read
+
+instance maybeIsForeign :: (IsForeign a) => IsForeign (Maybe a) where
+  read f
+    | isNull f  = pure Nothing
+    | otherwise = (Just <$> read f) <|> (pure Nothing)
 
 -- | Attempt to read a data structure from a JSON string
 readJSON :: forall a. (IsForeign a) => String -> F a
