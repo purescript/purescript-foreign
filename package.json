@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "jshint src && jscs src && pulp build --censor-lib --strict",
-    "test": "pulp build --include examples --censor-lib --strict"
+    "build": "jshint src && jscs src && psa \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" --censor-lib --strict",
+    "test": "psa \"src/**/*.purs\" \"bower_components/purescript-*/src/**/*.purs\" \"examples/**/*.purs\" --censor-lib --strict"
   },
   "devDependencies": {
     "jscs": "^2.8.0",
