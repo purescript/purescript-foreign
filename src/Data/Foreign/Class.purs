@@ -6,10 +6,13 @@ module Data.Foreign.Class
   , readJSON
   , readWith
   , readProp
+  , readEitherR
+  , readEitherL
   ) where
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
 import Data.Foreign (F, Foreign, ForeignError(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
@@ -75,3 +78,13 @@ readWith f value = either (Left <<< f) Right (read value)
 -- | Attempt to read a property of a foreign value at the specified index
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 readProp prop value = value ! prop >>= readWith (errorAt prop)
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is right biased.
+readEitherR :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherR value = Right <$> read value <|> Left <$> read value
+
+-- | Attempt to read a value that can be either one thing or another. This
+-- | implementation is left biased.
+readEitherL :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherL value = Left <$> read value <|> Right <$> read value
