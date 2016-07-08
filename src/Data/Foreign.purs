@@ -44,16 +44,20 @@ foreign import data Foreign :: *
 
 -- | A type for runtime type errors
 data ForeignError
-  = TypeMismatch String String
+  = TypeMismatch (Array String) String
   | ErrorAtIndex Int ForeignError
   | ErrorAtProperty String ForeignError
   | JSONError String
 
 instance showForeignError :: Show ForeignError where
-  show (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
   show (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
   show (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
   show (JSONError s) = "JSON error: " <> s
+  show (TypeMismatch exps act) = "Type mismatch: expected " <> to_s exps <> ", found " <> act
+    where
+      to_s [] = "???"
+      to_s [typ] = typ
+      to_s typs = "one of " <> show typs
 
 instance eqForeignError :: Eq ForeignError where
   eq (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
@@ -90,7 +94,7 @@ foreign import tagOf :: Foreign -> String
 -- | value.
 unsafeReadTagged :: forall a. String -> Foreign -> F a
 unsafeReadTagged tag value | tagOf value == tag = pure (unsafeFromForeign value)
-unsafeReadTagged tag value = Left (TypeMismatch tag (tagOf value))
+unsafeReadTagged tag value = Left (TypeMismatch [tag] (tagOf value))
 
 -- | Test whether a foreign value is null
 foreign import isNull :: Foreign -> Boolean
@@ -113,7 +117,7 @@ readChar value = either (const error) fromString (readString value)
   fromString = maybe error pure <<< toChar
 
   error :: F Char
-  error = Left $ TypeMismatch "Char" (tagOf value)
+  error = Left $ TypeMismatch ["Char"] (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
@@ -131,9 +135,9 @@ readInt value = either (const error) fromNumber (readNumber value)
   fromNumber = maybe error pure <<< Int.fromNumber
 
   error :: F Int
-  error = Left $ TypeMismatch "Int" (tagOf value)
+  error = Left $ TypeMismatch ["Int"] (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)
 readArray value | isArray value = pure $ unsafeFromForeign value
-readArray value = Left (TypeMismatch "array" (tagOf value))
+readArray value = Left (TypeMismatch ["array"] (tagOf value))
