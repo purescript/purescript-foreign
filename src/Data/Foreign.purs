@@ -52,17 +52,23 @@ data ForeignError
   | JSONError String
 
 instance showForeignError :: Show ForeignError where
-  show (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
-  show (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
-  show (JSONError s) = "JSON error: " <> s
-  show (TypeMismatch exps act) = "Type mismatch: expected " <> to_s exps <> ", found " <> act
+  show (ErrorAtIndex i e) = "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
+  show (ErrorAtProperty prop e) = "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
+  show (JSONError s) = "(JSONError " <> show s <> ")"
+  show (TypeMismatch exps act) = "(TypeMismatch " <> show exps <> " " <> show act <> ")"
+
+derive instance eqForeignError :: Eq ForeignError
+derive instance ordForeignError :: Ord ForeignError
+
+renderForeignError :: ForeignError -> String
+renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
+renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
+renderForeignError (JSONError s) = "JSON error: " <> s
+renderForeignError (TypeMismatch exps act) = "Type mismatch: expected " <> to_s exps <> ", found " <> act
     where
       to_s [] = "???"
       to_s [typ] = typ
       to_s typs = "one of " <> show typs
-
-derive instance eqForeignError :: Eq ForeignError
-derive instance ordForeignError :: Ord ForeignError
 
 -- | An error monad, used in this library to encode possible failure when
 -- | dealing with foreign data.
