@@ -43,7 +43,7 @@ exports.isArray = Array.isArray || function (value) {
 
 exports.writeObject = function (fields) {
   var record = {};
-  for (var i in fields) {
+  for (var i = 0; i < fields.length; i++) {
     record[fields[i].key] = fields[i].value;
   }
   return record;
