@@ -20,3 +20,5 @@ unNull (Null m) = m
 readNull :: forall a. (Foreign -> F a) -> Foreign -> F (Null a)
 readNull _ value | isNull value = pure (Null Nothing)
 readNull f value = Null <<< Just <$> f value
+
+foreign import writeNull :: Foreign

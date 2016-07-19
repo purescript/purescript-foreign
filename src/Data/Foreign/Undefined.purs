@@ -20,3 +20,5 @@ unUndefined (Undefined m) = m
 readUndefined :: forall a. (Foreign -> F a) -> Foreign -> F (Undefined a)
 readUndefined _ value | isUndefined value = pure (Undefined Nothing)
 readUndefined f value = Undefined <<< Just <$> f value
+
+foreign import writeUndefined :: Foreign

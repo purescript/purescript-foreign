@@ -40,3 +40,11 @@ exports.isUndefined = function (value) {
 exports.isArray = Array.isArray || function (value) {
   return Object.prototype.toString.call(value) === "[object Array]";
 };
+
+exports.writeObject = function (fields) {
+  var record = {};
+  for (var i in fields) {
+    record[fields[i].key] = fields[i].value;
+  }
+  return record;
+};
