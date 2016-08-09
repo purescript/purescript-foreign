@@ -2,14 +2,13 @@
 
 module Data.Foreign.Class
   ( class IsForeign
-  , class AsForeign
-  , (.=)
   , read
   , readJSON
   , readWith
   , readProp
+  , class AsForeign
   , write
-  , writeProp
+  , writeProp, (.=)
   ) where
 
 import Prelude
@@ -51,7 +50,7 @@ instance numberIsForeign :: IsForeign Number where
 instance intIsForeign :: IsForeign Int where
   read = readInt
 
-instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
+instance arrayIsForeign :: IsForeign a => IsForeign (Array a) where
   read value = readArray value >>= readElements
     where
     readElements :: Array Foreign -> F (Array a)
@@ -60,21 +59,21 @@ instance arrayIsForeign :: (IsForeign a) => IsForeign (Array a) where
     readElement :: Int -> Foreign -> F a
     readElement i value = readWith (ErrorAtIndex i) value
 
-instance nullIsForeign :: (IsForeign a) => IsForeign (Null a) where
+instance nullIsForeign :: IsForeign a => IsForeign (Null a) where
   read = readNull read
 
-instance undefinedIsForeign :: (IsForeign a) => IsForeign (Undefined a) where
+instance undefinedIsForeign :: IsForeign a => IsForeign (Undefined a) where
   read = readUndefined read
 
-instance nullOrUndefinedIsForeign :: (IsForeign a) => IsForeign (NullOrUndefined a) where
+instance nullOrUndefinedIsForeign :: IsForeign a => IsForeign (NullOrUndefined a) where
   read = readNullOrUndefined read
 
 -- | Attempt to read a data structure from a JSON string
-readJSON :: forall a. (IsForeign a) => String -> F a
+readJSON :: forall a. IsForeign a => String -> F a
 readJSON json = parseJSON json >>= read
 
 -- | Attempt to read a foreign value, handling errors using the specified function
-readWith :: forall a e. (IsForeign a) => (ForeignError -> e) -> Foreign -> Either e a
+readWith :: forall a e. IsForeign a => (ForeignError -> e) -> Foreign -> Either e a
 readWith f value = either (Left <<< f) Right (read value)
 
 -- | Attempt to read a property of a foreign value at the specified index
@@ -105,19 +104,19 @@ instance numberAsForeign :: AsForeign Number where
 instance intAsForeign :: AsForeign Int where
   write = toForeign
 
-instance arrayAsForeign :: (AsForeign a) => AsForeign (Array a) where
+instance arrayAsForeign :: AsForeign a => AsForeign (Array a) where
   write = toForeign <<< map write
 
-instance nullAsForeign :: (AsForeign a) => AsForeign (Null a) where
+instance nullAsForeign :: AsForeign a => AsForeign (Null a) where
   write (Null a) = maybe writeNull write a
 
-instance undefinedAsForeign :: (AsForeign a) => AsForeign (Undefined a) where
+instance undefinedAsForeign :: AsForeign a => AsForeign (Undefined a) where
   write (Undefined a) = maybe writeUndefined write a
 
-instance nullOrUndefinedAsForeign :: (AsForeign a) => AsForeign (NullOrUndefined a) where
+instance nullOrUndefinedAsForeign :: AsForeign a => AsForeign (NullOrUndefined a) where
   write (NullOrUndefined a) = write (Null a)
 
 infixl 8 writeProp as .=
 
-writeProp :: forall a. (AsForeign a) => String -> a -> Prop
+writeProp :: forall a. AsForeign a => String -> a -> Prop
 writeProp k v = Prop { key: k, value: write v }

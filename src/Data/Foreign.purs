@@ -2,10 +2,10 @@
 -- | data.
 
 module Data.Foreign
-  ( Foreign()
+  ( Foreign
   , ForeignError(..)
   , Prop(..)
-  , F()
+  , F
   , parseJSON
   , toForeign
   , unsafeFromForeign
@@ -57,12 +57,8 @@ instance showForeignError :: Show ForeignError where
   show (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
   show (JSONError s) = "JSON error: " <> s
 
-instance eqForeignError :: Eq ForeignError where
-  eq (TypeMismatch a b) (TypeMismatch a' b') = a == a' && b == b'
-  eq (ErrorAtIndex i e) (ErrorAtIndex i' e') = i == i' && e == e'
-  eq (ErrorAtProperty p e) (ErrorAtProperty p' e') = p == p' && e == e'
-  eq (JSONError s) (JSONError s') = s == s'
-  eq _ _ = false
+derive instance eqForeignError :: Eq ForeignError
+derive instance ordForeignError :: Ord ForeignError
 
 -- | An error monad, used in this library to encode possible failure when
 -- | dealing with foreign data.
@@ -140,6 +136,9 @@ readArray :: Foreign -> F (Array Foreign)
 readArray value | isArray value = pure $ unsafeFromForeign value
 readArray value = Left (TypeMismatch "array" (tagOf value))
 
+-- | A key/value pair for an object to be written as a `Foreign` value.
 newtype Prop = Prop { key :: String, value :: Foreign }
 
+-- | Constructs a JavaScript `Object` value (typed as `Foreign`) from an array
+-- | of `Prop`s.
 foreign import writeObject :: Array Prop -> Foreign

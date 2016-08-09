@@ -17,9 +17,9 @@ import Data.Either (Either(..))
 import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
 
--- | This type class identifies types wich act like _property indices_.
+-- | This type class identifies types that act like _property indices_.
 -- |
--- | The canonical instances are for `String`s and `Number`s.
+-- | The canonical instances are for `String`s and `Int`s.
 class Index i where
   ix :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean

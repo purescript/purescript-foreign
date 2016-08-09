@@ -1,8 +1,6 @@
 /* global exports */
 "use strict";
 
-// module Data.Foreign
-
 // jshint maxparams: 3
 exports.parseJSONImpl = function (left, right, str) {
   try {
@@ -11,8 +9,8 @@ exports.parseJSONImpl = function (left, right, str) {
     return left(e.toString());
   }
 };
-
 // jshint maxparams: 1
+
 exports.toForeign = function (value) {
   return value;
 };
