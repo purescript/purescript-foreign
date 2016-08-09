@@ -4,6 +4,7 @@
 module Data.Foreign
   ( Foreign()
   , ForeignError(..)
+  , Prop(..)
   , F()
   , parseJSON
   , toForeign
@@ -20,6 +21,7 @@ module Data.Foreign
   , readNumber
   , readInt
   , readArray
+  , writeObject
   ) where
 
 import Prelude
@@ -137,3 +139,7 @@ readInt value = either (const error) fromNumber (readNumber value)
 readArray :: Foreign -> F (Array Foreign)
 readArray value | isArray value = pure $ unsafeFromForeign value
 readArray value = Left (TypeMismatch "array" (tagOf value))
+
+newtype Prop = Prop { key :: String, value :: Foreign }
+
+foreign import writeObject :: Array Prop -> Foreign

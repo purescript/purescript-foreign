@@ -2,22 +2,27 @@
 
 module Data.Foreign.Class
   ( class IsForeign
+  , class AsForeign
+  , (.=)
   , read
   , readJSON
   , readWith
   , readProp
+  , write
+  , writeProp
   ) where
 
 import Prelude
 
 import Data.Array (range, zipWith, length)
 import Data.Either (Either(..), either)
-import Data.Foreign (F, Foreign, ForeignError(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
+import Data.Foreign (F, Foreign, ForeignError(..), Prop(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString, toForeign)
 import Data.Foreign.Index (class Index, errorAt, (!))
-import Data.Foreign.Null (Null, readNull)
-import Data.Foreign.NullOrUndefined (NullOrUndefined, readNullOrUndefined)
-import Data.Foreign.Undefined (Undefined, readUndefined)
+import Data.Foreign.Null (Null(..), readNull, writeNull)
+import Data.Foreign.NullOrUndefined (NullOrUndefined(..), readNullOrUndefined)
+import Data.Foreign.Undefined (Undefined(..), readUndefined, writeUndefined)
 import Data.Traversable (sequence)
+import Data.Maybe (maybe)
 
 -- | A type class instance for this class can be written for a type if it
 -- | is possible to attempt to _safely_ coerce a `Foreign` value to that
@@ -75,3 +80,44 @@ readWith f value = either (Left <<< f) Right (read value)
 -- | Attempt to read a property of a foreign value at the specified index
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
 readProp prop value = value ! prop >>= readWith (errorAt prop)
+
+-- | A type class to convert to a `Foreign` value.
+-- |
+-- | Instances are provided for standard data structures.
+class AsForeign a where
+  write :: a -> Foreign
+
+instance foreignAsForeign :: AsForeign Foreign where
+  write = id
+
+instance stringAsForeign :: AsForeign String where
+  write = toForeign
+
+instance charAsForeign :: AsForeign Char where
+  write = toForeign
+
+instance booleanAsForeign :: AsForeign Boolean where
+  write = toForeign
+
+instance numberAsForeign :: AsForeign Number where
+  write = toForeign
+
+instance intAsForeign :: AsForeign Int where
+  write = toForeign
+
+instance arrayAsForeign :: (AsForeign a) => AsForeign (Array a) where
+  write = toForeign <<< map write
+
+instance nullAsForeign :: (AsForeign a) => AsForeign (Null a) where
+  write (Null a) = maybe writeNull write a
+
+instance undefinedAsForeign :: (AsForeign a) => AsForeign (Undefined a) where
+  write (Undefined a) = maybe writeUndefined write a
+
+instance nullOrUndefinedAsForeign :: (AsForeign a) => AsForeign (NullOrUndefined a) where
+  write (NullOrUndefined a) = write (Null a)
+
+infixl 8 writeProp as .=
+
+writeProp :: forall a. (AsForeign a) => String -> a -> Prop
+writeProp k v = Prop { key: k, value: write v }
