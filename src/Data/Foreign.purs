@@ -30,7 +30,8 @@ import Data.Either (Either(..), either)
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Int as Int
 import Data.Maybe (maybe)
-import Data.String (toChar)
+import Data.NonEmpty as NE
+import Data.String (toChar, joinWith)
 
 -- | A type for _foreign data_.
 -- |
@@ -46,7 +47,7 @@ foreign import data Foreign :: *
 
 -- | A type for runtime type errors
 data ForeignError
-  = TypeMismatch (Array String) String
+  = TypeMismatch (NE.NonEmpty Array String) String
   | ErrorAtIndex Int ForeignError
   | ErrorAtProperty String ForeignError
   | JSONError String
@@ -65,10 +66,9 @@ renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": 
 renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
 renderForeignError (JSONError s) = "JSON error: " <> s
 renderForeignError (TypeMismatch exps act) = "Type mismatch: expected " <> to_s exps <> ", found " <> act
-    where
-      to_s [] = "???"
-      to_s [typ] = typ
-      to_s typs = "one of " <> show typs
+  where
+  to_s (NE.NonEmpty typ []) = typ
+  to_s typs = "one of " <> joinWith ", " (NE.oneOf typs)
 
 -- | An error monad, used in this library to encode possible failure when
 -- | dealing with foreign data.
@@ -98,7 +98,7 @@ foreign import tagOf :: Foreign -> String
 -- | value.
 unsafeReadTagged :: forall a. String -> Foreign -> F a
 unsafeReadTagged tag value | tagOf value == tag = pure (unsafeFromForeign value)
-unsafeReadTagged tag value = Left (TypeMismatch [tag] (tagOf value))
+unsafeReadTagged tag value = Left (TypeMismatch (NE.singleton tag) (tagOf value))
 
 -- | Test whether a foreign value is null
 foreign import isNull :: Foreign -> Boolean
@@ -121,7 +121,7 @@ readChar value = either (const error) fromString (readString value)
   fromString = maybe error pure <<< toChar
 
   error :: F Char
-  error = Left $ TypeMismatch ["Char"] (tagOf value)
+  error = Left $ TypeMismatch (NE.singleton "Char") (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
@@ -139,12 +139,12 @@ readInt value = either (const error) fromNumber (readNumber value)
   fromNumber = maybe error pure <<< Int.fromNumber
 
   error :: F Int
-  error = Left $ TypeMismatch ["Int"] (tagOf value)
+  error = Left $ TypeMismatch (NE.singleton "Int") (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)
 readArray value | isArray value = pure $ unsafeFromForeign value
-readArray value = Left (TypeMismatch ["array"] (tagOf value))
+readArray value = Left (TypeMismatch (NE.singleton "array") (tagOf value))
 
 -- | A key/value pair for an object to be written as a `Foreign` value.
 newtype Prop = Prop { key :: String, value :: Foreign }

@@ -16,6 +16,7 @@ import Prelude
 import Data.Either (Either(..))
 import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
+import Data.NonEmpty as NE
 
 -- | This type class identifies types that act like _property indices_.
 -- |
@@ -31,7 +32,7 @@ infixl 9 ix as !
 foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
 
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
-unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch ["object"] (typeOf value))) pure k value
+unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch (NE.singleton "object") (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property
 prop :: String -> Foreign -> F Foreign
