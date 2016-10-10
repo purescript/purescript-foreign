@@ -47,12 +47,14 @@ foreign import data Foreign :: *
 
 -- | A type for runtime type errors
 data ForeignError
-  = TypeMismatch (NE.NonEmpty Array String) String
+  = ForeignError String
+  | TypeMismatch (NE.NonEmpty Array String) String
   | ErrorAtIndex Int ForeignError
   | ErrorAtProperty String ForeignError
   | JSONError String
 
 instance showForeignError :: Show ForeignError where
+  show (ForeignError msg) = "(ForeignError " <> msg <> ")"
   show (ErrorAtIndex i e) = "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
   show (ErrorAtProperty prop e) = "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
   show (JSONError s) = "(JSONError " <> show s <> ")"
@@ -62,6 +64,7 @@ derive instance eqForeignError :: Eq ForeignError
 derive instance ordForeignError :: Ord ForeignError
 
 renderForeignError :: ForeignError -> String
+renderForeignError (ForeignError msg) = msg
 renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
 renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
 renderForeignError (JSONError s) = "JSON error: " <> s
