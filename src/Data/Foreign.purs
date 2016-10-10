@@ -68,10 +68,10 @@ renderForeignError (ForeignError msg) = msg
 renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
 renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
 renderForeignError (JSONError s) = "JSON error: " <> s
-renderForeignError (TypeMismatch exps act) = "Type mismatch: expected " <> to_s exps <> ", found " <> act
+renderForeignError (TypeMismatch exps act) = "Type mismatch: expected " <> listTypes exps <> ", found " <> act
   where
-  to_s (NE.NonEmpty typ []) = typ
-  to_s typs = "one of " <> joinWith ", " (NE.oneOf typs)
+  listTypes (NE.NonEmpty typ []) = typ
+  listTypes typs = "one of " <> joinWith ", " (NE.oneOf typs)
 
 -- | An error monad, used in this library to encode possible failure when
 -- | dealing with foreign data.
@@ -100,8 +100,9 @@ foreign import tagOf :: Foreign -> String
 -- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
 -- | value.
 unsafeReadTagged :: forall a. String -> Foreign -> F a
-unsafeReadTagged tag value | tagOf value == tag = pure (unsafeFromForeign value)
-unsafeReadTagged tag value = Left (TypeMismatch (NE.singleton tag) (tagOf value))
+unsafeReadTagged tag value
+  | tagOf value == tag = pure (unsafeFromForeign value)
+  | otherwise = Left (TypeMismatch (NE.singleton tag) (tagOf value))
 
 -- | Test whether a foreign value is null
 foreign import isNull :: Foreign -> Boolean
@@ -122,7 +123,6 @@ readChar value = either (const error) fromString (readString value)
   where
   fromString :: String -> F Char
   fromString = maybe error pure <<< toChar
-
   error :: F Char
   error = Left $ TypeMismatch (NE.singleton "Char") (tagOf value)
 
@@ -140,14 +140,14 @@ readInt value = either (const error) fromNumber (readNumber value)
   where
   fromNumber :: Number -> F Int
   fromNumber = maybe error pure <<< Int.fromNumber
-
   error :: F Int
   error = Left $ TypeMismatch (NE.singleton "Int") (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)
-readArray value | isArray value = pure $ unsafeFromForeign value
-readArray value = Left (TypeMismatch (NE.singleton "array") (tagOf value))
+readArray value
+  | isArray value = pure $ unsafeFromForeign value
+  | otherwise = Left (TypeMismatch (NE.singleton "array") (tagOf value))
 
 -- | A key/value pair for an object to be written as a `Foreign` value.
 newtype Prop = Prop { key :: String, value :: Foreign }
