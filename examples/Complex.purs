@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
+import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F)
 import Data.Foreign.Class (class IsForeign, readJSON, readProp)
@@ -52,4 +53,4 @@ instance listItemIsForeign :: IsForeign ListItem where
 main :: Eff (console :: CONSOLE) Unit
 main = do
   let json = """{"foo":"hello","bar":true,"baz":1,"list":[{"x":1,"y":2},{"x":3,"y":4,"z":999}]}"""
-  logShow $ readJSON json :: F SomeObject
+  logShow $ runExcept $ readJSON json :: F SomeObject

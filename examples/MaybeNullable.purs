@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
+import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F, unsafeFromForeign)
 import Data.Foreign.Class (readJSON, write)
@@ -14,7 +15,7 @@ import Data.Maybe (Maybe(..))
 -- using Maybe types.
 main :: Eff (console :: CONSOLE) Unit
 main = do
-  logShow $ unNull <$> readJSON "null" :: F (Null Boolean)
-  logShow $ unNull <$> readJSON "true" :: F (Null Boolean)
+  logShow $ unNull <$> runExcept (readJSON "null" :: F (Null Boolean))
+  logShow $ unNull <$> runExcept (readJSON "true" :: F (Null Boolean))
   log $ unsafeFromForeign $ write $ Null Nothing :: Null Boolean
   log $ unsafeFromForeign $ write $ Null $ Just true

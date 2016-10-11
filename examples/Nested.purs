@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
+import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F)
 import Data.Foreign.Class (class IsForeign, readJSON, readProp)
@@ -32,4 +33,4 @@ instance fooIsForeign :: IsForeign Foo where
 
 main :: Eff (console :: CONSOLE) Unit
 main = do
-  logShow $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo
+  logShow $ runExcept $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo

@@ -16,18 +16,17 @@ module Data.Foreign.Class
 import Prelude
 
 import Control.Alt ((<|>))
+import Control.Monad.Except (Except, mapExcept)
 
 import Data.Array (range, zipWith, length)
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
-import Data.Foreign (F, Foreign, ForeignError(..), Prop(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString, toForeign)
+import Data.Foreign (F, Foreign, MultipleErrors, ForeignError(..), Prop(..), toForeign, parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
 import Data.Foreign.Index (class Index, errorAt, (!))
 import Data.Foreign.Null (Null(..), readNull, writeNull)
 import Data.Foreign.NullOrUndefined (NullOrUndefined(..), readNullOrUndefined)
 import Data.Foreign.Undefined (Undefined(..), readUndefined, writeUndefined)
-import Data.List (List)
 import Data.Maybe (maybe)
-import Data.NonEmpty as NE
 import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
@@ -80,8 +79,8 @@ readJSON :: forall a. IsForeign a => String -> F a
 readJSON json = parseJSON json >>= read
 
 -- | Attempt to read a foreign value, handling errors using the specified function
-readWith :: forall a e. IsForeign a => (NE.NonEmpty List ForeignError -> e) -> Foreign -> Either e a
-readWith f = lmap f <<< read
+readWith :: forall a e. IsForeign a => (MultipleErrors ForeignError -> e) -> Foreign -> Except e a
+readWith f = mapExcept (lmap f) <<< read
 
 -- | Attempt to read a property of a foreign value at the specified index
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
