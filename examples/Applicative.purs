@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
+import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F)
 import Data.Foreign.Class (class IsForeign, readJSON, readProp)
@@ -19,5 +20,5 @@ instance pointIsForeign :: IsForeign Point where
                      <*> readProp "z" value
 
 main :: Eff (console :: CONSOLE) Unit
-main = logShow $
+main = logShow $ runExcept $
   readJSON """{ "x": 1, "y": 2, "z": 3 }""" :: F Point

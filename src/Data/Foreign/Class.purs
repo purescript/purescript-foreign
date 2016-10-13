@@ -16,15 +16,18 @@ module Data.Foreign.Class
 import Prelude
 
 import Control.Alt ((<|>))
+import Control.Monad.Except (Except, mapExcept)
+
 import Data.Array (range, zipWith, length)
-import Data.Either (Either(..), either)
-import Data.Foreign (F, Foreign, ForeignError(..), Prop(..), parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString, toForeign)
+import Data.Bifunctor (lmap)
+import Data.Either (Either(..))
+import Data.Foreign (F, Foreign, MultipleErrors, ForeignError(..), Prop(..), toForeign, parseJSON, readArray, readInt, readNumber, readBoolean, readChar, readString)
 import Data.Foreign.Index (class Index, errorAt, (!))
 import Data.Foreign.Null (Null(..), readNull, writeNull)
 import Data.Foreign.NullOrUndefined (NullOrUndefined(..), readNullOrUndefined)
 import Data.Foreign.Undefined (Undefined(..), readUndefined, writeUndefined)
-import Data.Traversable (sequence)
 import Data.Maybe (maybe)
+import Data.Traversable (sequence)
 
 -- | A type class instance for this class can be written for a type if it
 -- | is possible to attempt to _safely_ coerce a `Foreign` value to that
@@ -60,7 +63,7 @@ instance arrayIsForeign :: IsForeign a => IsForeign (Array a) where
     readElements arr = sequence (zipWith readElement (range zero (length arr)) arr)
 
     readElement :: Int -> Foreign -> F a
-    readElement i value = readWith (ErrorAtIndex i) value
+    readElement i value = readWith (map (ErrorAtIndex i)) value
 
 instance nullIsForeign :: IsForeign a => IsForeign (Null a) where
   read = readNull read
@@ -76,12 +79,12 @@ readJSON :: forall a. IsForeign a => String -> F a
 readJSON json = parseJSON json >>= read
 
 -- | Attempt to read a foreign value, handling errors using the specified function
-readWith :: forall a e. IsForeign a => (ForeignError -> e) -> Foreign -> Either e a
-readWith f value = either (Left <<< f) Right (read value)
+readWith :: forall a e. IsForeign a => (MultipleErrors -> e) -> Foreign -> Except e a
+readWith f = mapExcept (lmap f) <<< read
 
 -- | Attempt to read a property of a foreign value at the specified index
 readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
-readProp prop value = value ! prop >>= readWith (errorAt prop)
+readProp prop value = value ! prop >>= readWith (map (errorAt prop))
 
 -- | A type class to convert to a `Foreign` value.
 -- |

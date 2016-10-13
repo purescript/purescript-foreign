@@ -13,8 +13,7 @@ module Data.Foreign.Index
 
 import Prelude
 
-import Data.Either (Either(..))
-import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull)
+import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
 
 -- | This type class identifies types that act like _property indices_.
@@ -28,10 +27,11 @@ class Index i where
 
 infixl 9 ix as !
 
-foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign (F Foreign)
+foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign r
 
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
-unsafeReadProp k value = runFn4 unsafeReadPropImpl (Left (TypeMismatch "object" (typeOf value))) pure k value
+unsafeReadProp k value =
+  runFn4 unsafeReadPropImpl (fail (TypeMismatch "object" (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property
 prop :: String -> Foreign -> F Foreign

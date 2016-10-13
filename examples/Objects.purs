@@ -4,6 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
+import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F, writeObject, unsafeFromForeign)
 import Data.Foreign.Class (class AsForeign, class IsForeign, (.=), readJSON, readProp, write)
@@ -31,5 +32,5 @@ instance pointIsForeign :: IsForeign Point where
 
 main :: Eff (console :: CONSOLE) Unit
 main = do
-  logShow $ readJSON """{ "x": 1, "y": 2 }""" :: F Point
+  logShow $ runExcept $ readJSON """{ "x": 1, "y": 2 }""" :: F Point
   log $ unsafeFromForeign $ write $ Point { x: 1.0, y: 2.0 }

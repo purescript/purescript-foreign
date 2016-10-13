@@ -1,13 +1,14 @@
 module Examples.Either where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Data.Either (Either)
 
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (logShow, CONSOLE)
+import Control.Monad.Except (runExcept)
+
+import Data.Either (Either)
 import Data.Foreign (F, parseJSON)
 import Data.Foreign.Class (class IsForeign, readEitherR, readProp)
-
-import Control.Monad.Eff.Console (logShow, CONSOLE)
 
 data Point = Point Number Number Number
 
@@ -23,10 +24,10 @@ type Response = Either (Array String) Point
 
 main :: forall eff. Eff (console :: CONSOLE | eff) Unit
 main = do
-  logShow do
+  logShow $ runExcept do
     json <- parseJSON """{ "x":1, "y": 2, "z": 3}"""
     readEitherR json :: F Response
 
-  logShow do
+  logShow $ runExcept do
     json <- parseJSON """["Invalid parse", "Not a valid y point"]"""
     readEitherR json :: F Response

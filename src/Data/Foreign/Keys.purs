@@ -7,14 +7,14 @@ module Data.Foreign.Keys
 
 import Prelude
 
-import Data.Either (Either(..))
-import Data.Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull)
+import Data.Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
 
 foreign import unsafeKeys :: Foreign -> Array String
 
 -- | Get an array of the properties defined on a foreign value
 keys :: Foreign -> F (Array String)
-keys value | isNull value = Left $ TypeMismatch "object" "null"
-keys value | isUndefined value = Left $ TypeMismatch "object" "undefined"
-keys value | typeOf value == "object" = Right $ unsafeKeys value
-keys value = Left $ TypeMismatch "object" (typeOf value)
+keys value
+  | isNull value = fail $ TypeMismatch "object" "null"
+  | isUndefined value = fail $ TypeMismatch "object" "undefined"
+  | typeOf value == "object" = pure $ unsafeKeys value
+  | otherwise = fail $ TypeMismatch "object" (typeOf value)
