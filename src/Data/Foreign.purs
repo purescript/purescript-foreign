@@ -33,11 +33,9 @@ import Control.Monad.Except (Except, throwError, mapExcept)
 import Data.Either (Either(..), either)
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Int as Int
-import Data.List (List)
+import Data.List.NonEmpty (NonEmptyList)
+import Data.List.NonEmpty as NEL
 import Data.Maybe (maybe)
-import Data.Newtype (class Newtype)
-import Data.NonEmpty ((:|))
-import Data.NonEmpty as NE
 import Data.String (toChar)
 
 -- | A type for _foreign data_.
@@ -71,19 +69,7 @@ instance showForeignError :: Show ForeignError where
   show (TypeMismatch exps act) = "(TypeMismatch " <> show exps <> " " <> show act <> ")"
 
 -- | A type for accumulating multiple `ForeignError`s.
-newtype MultipleErrors a = MultipleErrors (NE.NonEmpty List a)
-
-derive instance newtypeMultipleErrors :: Newtype (MultipleErrors a) _
-derive newtype instance eqMultipleErrors :: Eq a => Eq (MultipleErrors a)
-derive newtype instance ordMultipleErrors :: Ord a => Ord (MultipleErrors a)
-derive newtype instance functorMultipleErrors :: Functor MultipleErrors
-
-instance showMultipleErrors :: Show a => Show (MultipleErrors a) where
-  show (MultipleErrors errs) = "(MultipleErrors " <> show errs <> ")"
-
-instance semigroupMultipleErrors :: Semigroup (MultipleErrors a) where
-  append (MultipleErrors (e :| es)) (MultipleErrors es') =
-    MultipleErrors (e :| es <> NE.oneOf es')
+type MultipleErrors = NonEmptyList ForeignError
 
 renderForeignError :: ForeignError -> String
 renderForeignError (ForeignError msg) = msg
@@ -94,7 +80,7 @@ renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <>
 
 -- | An error monad, used in this library to encode possible failures when
 -- | dealing with foreign data.
-type F a = Except (MultipleErrors ForeignError) a
+type F a = Except MultipleErrors a
 
 foreign import parseJSONImpl :: forall r. Fn3 (String -> r) (Foreign -> r) String r
 
@@ -141,7 +127,7 @@ readChar :: Foreign -> F Char
 readChar value = mapExcept (either (const error) fromString) (readString value)
   where
   fromString = maybe error pure <<< toChar
-  error = Left $ MultipleErrors $ NE.singleton $ TypeMismatch "Char" (tagOf value)
+  error = Left $ NEL.singleton $ TypeMismatch "Char" (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
 readBoolean :: Foreign -> F Boolean
@@ -156,7 +142,7 @@ readInt :: Foreign -> F Int
 readInt value = mapExcept (either (const error) fromNumber) (readNumber value)
   where
   fromNumber = maybe error pure <<< Int.fromNumber
-  error = Left $ MultipleErrors $ NE.singleton $ TypeMismatch "Int" (tagOf value)
+  error = Left $ NEL.singleton $ TypeMismatch "Int" (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: Foreign -> F (Array Foreign)
@@ -166,7 +152,7 @@ readArray value
 
 -- | Throws a failure error in `F`.
 fail :: forall a. ForeignError -> F a
-fail = throwError <<< MultipleErrors <<< NE.singleton
+fail = throwError <<< NEL.singleton
 
 -- | A key/value pair for an object to be written as a `Foreign` value.
 newtype Prop = Prop { key :: String, value :: Foreign }

@@ -79,7 +79,7 @@ readJSON :: forall a. IsForeign a => String -> F a
 readJSON json = parseJSON json >>= read
 
 -- | Attempt to read a foreign value, handling errors using the specified function
-readWith :: forall a e. IsForeign a => (MultipleErrors ForeignError -> e) -> Foreign -> Except e a
+readWith :: forall a e. IsForeign a => (MultipleErrors -> e) -> Foreign -> Except e a
 readWith f = mapExcept (lmap f) <<< read
 
 -- | Attempt to read a property of a foreign value at the specified index
