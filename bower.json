@@ -26,7 +26,7 @@
     "purescript-foldable-traversable": "^2.0.0",
     "purescript-functions": "^2.0.0",
     "purescript-integers": "^2.0.0",
-    "purescript-lists": "^2.1.0",
+    "purescript-lists": "^3.0.0",
     "purescript-strings": "^2.0.0",
     "purescript-transformers": "^2.0.0"
   },
