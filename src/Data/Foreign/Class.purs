@@ -57,7 +57,7 @@ instance intIsForeign :: IsForeign Int where
   read = readInt
 
 instance arrayIsForeign :: IsForeign a => IsForeign (Array a) where
-  read value = readArray value >>= readElements
+  read = readArray >=> readElements
     where
     readElements :: Array Foreign -> F (Array a)
     readElements arr = sequence (zipWith readElement (range zero (length arr)) arr)

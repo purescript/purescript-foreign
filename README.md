@@ -1,8 +1,7 @@
 # purescript-foreign
 
-[![Latest release](http://img.shields.io/bower/v/purescript-foreign.svg)](https://github.com/purescript/purescript-foreign/releases)
-[![Build Status](https://travis-ci.org/purescript/purescript-foreign.svg?branch=master)](https://travis-ci.org/purescript/purescript-foreign)
-[![Dependency Status](https://www.versioneye.com/user/projects/55848c14363861001d00030e/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55848c14363861001d00030e)
+[![Latest release](http://img.shields.io/github/release/purescript/purescript-foreign.svg)](https://github.com/purescript/purescript-foreign/releases)
+[![Build status](https://travis-ci.org/purescript/purescript-foreign.svg?branch=master)](https://travis-ci.org/purescript/purescript-foreign)
 
 Library for dealing with foreign data (JSON and JavaScript objects).
 
