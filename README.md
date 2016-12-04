@@ -3,7 +3,7 @@
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-foreign.svg)](https://github.com/purescript/purescript-foreign/releases)
 [![Build status](https://travis-ci.org/purescript/purescript-foreign.svg?branch=master)](https://travis-ci.org/purescript/purescript-foreign)
 
-Library for dealing with foreign data (JSON and JavaScript objects).
+Library for dealing with foreign data (JavaScript objects).
 
 ## Installation
 
@@ -13,7 +13,7 @@ bower install purescript-foreign
 
 ## Examples
 
-- [Simple JSON types](examples/JSONSimpleTypes.purs)
+- [Simple types](examples/JSONSimpleTypes.purs)
 - [Arrays](examples/JSONArrays.purs)
 - [Objects](examples/Objects.purs)
 - [Complex objects](examples/Complex.purs)
