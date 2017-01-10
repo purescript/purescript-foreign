@@ -36,6 +36,7 @@ import Data.Int as Int
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEL
 import Data.Maybe (maybe)
+import Data.Newtype (class Newtype)
 import Data.String (toChar)
 
 -- | A type for _foreign data_.
@@ -156,6 +157,8 @@ fail = throwError <<< NEL.singleton
 
 -- | A key/value pair for an object to be written as a `Foreign` value.
 newtype Prop = Prop { key :: String, value :: Foreign }
+
+derive instance newtypeProp :: Newtype Prop _
 
 -- | Constructs a JavaScript `Object` value (typed as `Foreign`) from an array
 -- | of `Prop`s.
