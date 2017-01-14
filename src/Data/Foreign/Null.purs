@@ -18,7 +18,7 @@ derive instance eqNull :: (Eq a) => Eq (Null a)
 derive instance ordNull :: (Ord a) => Ord (Null a)
 
 instance showNull :: (Show a) => Show (Null a) where
-  show x = "Null " <> show (unwrap x)
+  show x = "(Null " <> show (unwrap x) <> ")"
 
 -- | Unwrap a `Null` value
 unNull :: forall a. Null a -> Maybe a

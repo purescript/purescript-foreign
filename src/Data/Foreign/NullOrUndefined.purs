@@ -19,7 +19,7 @@ derive instance eqNullOrUndefined :: (Eq a) => Eq (NullOrUndefined a)
 derive instance ordNullOrUndefined :: (Ord a) => Ord (NullOrUndefined a)
 
 instance showNullOrUndefined :: (Show a) => Show (NullOrUndefined a) where
-  show x = "NullOrUndefined " <> show (unwrap x)
+  show x = "(NullOrUndefined " <> show (unwrap x) <> ")"
 
 -- | Unwrap a `NullOrUndefined` value
 unNullOrUndefined :: forall a. NullOrUndefined a -> Maybe a
