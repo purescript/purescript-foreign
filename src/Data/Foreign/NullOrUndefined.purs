@@ -2,7 +2,6 @@ module Data.Foreign.NullOrUndefined where
 
 import Prelude
 
-import Data.Function (on)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Maybe (Maybe(..))
 import Data.Foreign (F, Foreign, isUndefined, isNull)
