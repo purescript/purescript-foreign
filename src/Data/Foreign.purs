@@ -7,6 +7,7 @@ module Data.Foreign
   , MultipleErrors(..)
   , Prop(..)
   , F
+  , renderForeignError
   , parseJSON
   , toForeign
   , unsafeFromForeign
