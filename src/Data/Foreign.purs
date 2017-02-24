@@ -81,6 +81,8 @@ renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <>
 
 -- | An error monad, used in this library to encode possible failures when
 -- | dealing with foreign data.
+-- | `Except e` was chosen instead of `Either e` because `Except`'s `Alt` instance
+-- | accumulates multiple errors, whereas `Either`'s preserves the last error.
 type F a = Except MultipleErrors a
 
 foreign import parseJSONImpl :: forall r. Fn3 (String -> r) (Foreign -> r) String r
