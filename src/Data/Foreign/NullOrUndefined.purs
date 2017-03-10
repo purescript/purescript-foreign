@@ -2,6 +2,7 @@ module Data.Foreign.NullOrUndefined where
 
 import Prelude
 
+import Control.Alt (class Alt)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Maybe (Maybe(..))
 import Data.Foreign (F, Foreign, isUndefined, isNull)
@@ -16,6 +17,10 @@ newtype NullOrUndefined a = NullOrUndefined (Maybe a)
 derive instance newtypeNullOrUndefined :: Newtype (NullOrUndefined a) _
 derive instance eqNullOrUndefined :: (Eq a) => Eq (NullOrUndefined a)
 derive instance ordNullOrUndefined :: (Ord a) => Ord (NullOrUndefined a)
+derive newtype instance applyNullOrUndefined :: Apply NullOrUndefined
+derive newtype instance applicativeNullOrUndefined :: Applicative NullOrUndefined
+derive newtype instance functorNullOrUndefined :: Functor NullOrUndefined
+derive newtype instance altNullOrUndefined :: Alt NullOrUndefined
 
 instance showNullOrUndefined :: (Show a) => Show (NullOrUndefined a) where
   show x = "(NullOrUndefined " <> show (unwrap x) <> ")"
