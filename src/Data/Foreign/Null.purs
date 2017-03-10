@@ -1,10 +1,10 @@
 module Data.Foreign.Null where
 
 import Prelude
-
+import Control.Alt (class Alt)
+import Data.Foreign (F, Foreign, isNull)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap)
-import Data.Foreign (F, Foreign, isNull)
 
 -- | A `newtype` wrapper whose `IsForeign` instance correctly handles
 -- | null values.
@@ -16,6 +16,10 @@ newtype Null a = Null (Maybe a)
 derive instance newtypeNull :: Newtype (Null a) _
 derive instance eqNull :: (Eq a) => Eq (Null a)
 derive instance ordNull :: (Ord a) => Ord (Null a)
+derive newtype instance applyNull :: Apply Null
+derive newtype instance applicativeNull :: Applicative Null
+derive newtype instance functorNull :: Functor Null
+derive newtype instance altNull :: Alt Null
 
 instance showNull :: (Show a) => Show (Null a) where
   show x = "(Null " <> show (unwrap x) <> ")"
