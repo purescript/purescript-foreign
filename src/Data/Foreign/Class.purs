@@ -83,7 +83,7 @@ readWith :: forall a e. IsForeign a => (MultipleErrors -> e) -> Foreign -> Excep
 readWith f = mapExcept (lmap f) <<< read
 
 -- | Attempt to read a property of a foreign value at the specified index
-readProp :: forall a i. (IsForeign a, Index i) => i -> Foreign -> F a
+readProp :: forall a i. IsForeign a => Index i => i -> Foreign -> F a
 readProp prop value = value ! prop >>= readWith (map (errorAt prop))
 
 -- | A type class to convert to a `Foreign` value.
@@ -129,10 +129,10 @@ writeProp k v = Prop { key: k, value: write v }
 
 -- | Attempt to read a value that can be either one thing or another. This
 -- | implementation is right biased.
-readEitherR :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherR :: forall l r. IsForeign l => IsForeign r => Foreign -> F (Either l r)
 readEitherR value = Right <$> read value <|> Left <$> read value
 
 -- | Attempt to read a value that can be either one thing or another. This
 -- | implementation is left biased.
-readEitherL :: forall l r. (IsForeign l, IsForeign r) => Foreign -> F (Either l r)
+readEitherL :: forall l r. IsForeign l => IsForeign r => Foreign -> F (Either l r)
 readEitherL value = Left <$> read value <|> Right <$> read value

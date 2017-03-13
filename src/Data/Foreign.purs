@@ -49,7 +49,7 @@ import Data.String (toChar)
 -- |
 -- | - To represent responses from web services
 -- | - To integrate with external JavaScript libraries.
-foreign import data Foreign :: *
+foreign import data Foreign :: Type
 
 -- | A type for foreign type errors
 data ForeignError
