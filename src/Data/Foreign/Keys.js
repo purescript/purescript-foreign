@@ -1,4 +1,3 @@
-/* global exports */
 "use strict";
 
 exports.unsafeKeys = Object.keys || function (value) {

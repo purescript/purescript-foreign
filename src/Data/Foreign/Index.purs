@@ -3,9 +3,10 @@
 
 module Data.Foreign.Index
   ( class Index
-  , prop
-  , index
+  , readProp
+  , readIndex
   , ix, (!)
+  , ixKleisli, (!!)
   , hasProperty
   , hasOwnProperty
   , errorAt
@@ -27,6 +28,11 @@ class Index i where
 
 infixl 9 ix as !
 
+ixKleisli :: forall i. Index i => F Foreign -> i -> F Foreign
+ixKleisli f i = f >>= (_ ! i)
+
+infixl 9 ixKleisli as !!
+
 foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign r
 
 unsafeReadProp :: forall k. k -> Foreign -> F Foreign
@@ -34,12 +40,12 @@ unsafeReadProp k value =
   runFn4 unsafeReadPropImpl (fail (TypeMismatch "object" (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property
-prop :: String -> Foreign -> F Foreign
-prop = unsafeReadProp
+readProp :: String -> Foreign -> F Foreign
+readProp = unsafeReadProp
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
-index :: Int -> Foreign -> F Foreign
-index = unsafeReadProp
+readIndex :: Int -> Foreign -> F Foreign
+readIndex = unsafeReadProp
 
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
@@ -58,13 +64,13 @@ hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function"
 hasPropertyImpl _ value = false
 
 instance indexString :: Index String where
-  ix = flip prop
+  ix = flip readProp
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
 instance indexInt :: Index Int where
-  ix = flip index
+  ix = flip readIndex
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtIndex

@@ -6,15 +6,20 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
-import Data.Foreign (F)
-import Data.Foreign.Class (class IsForeign, readJSON, readProp)
-import Data.Foreign.NullOrUndefined (unNullOrUndefined)
+import Data.Foreign (F, Foreign, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
+import Data.Foreign.Index ((!))
+import Data.Traversable (traverse)
 import Data.Maybe (Maybe)
 
-data SomeObject = SomeObject { foo :: String
-                             , bar :: Boolean
-                             , baz :: Number
-                             , list :: Array ListItem }
+import Example.Util.Value (foreignValue)
+
+newtype SomeObject =
+  SomeObject
+    { foo :: String
+    , bar :: Boolean
+    , baz :: Number
+    , list :: Array ListItem
+    }
 
 instance showSomeObject :: Show SomeObject where
   show (SomeObject o) =
@@ -22,19 +27,22 @@ instance showSomeObject :: Show SomeObject where
     ", bar: " <> show o.bar <>
     ", baz: " <> show o.baz <>
     ", list: " <> show o.list <>
-    " })"
+    "})"
 
-instance objectIsForeign :: IsForeign SomeObject where
-  read value = do
-    foo  <- readProp "foo"  value
-    bar  <- readProp "bar"  value
-    baz  <- readProp "baz"  value
-    list <- readProp "list" value
-    pure $ SomeObject { foo: foo, bar: bar, baz: baz, list: list }
+readSomeObject :: Foreign -> F SomeObject
+readSomeObject value = do
+  foo <- value ! "foo" >>= readString
+  bar <- value ! "bar" >>= readBoolean
+  baz <- value ! "baz" >>= readNumber
+  list <- value ! "list" >>= readArray >>= traverse readListItem
+  pure $ SomeObject { foo, bar, baz, list }
 
-data ListItem = ListItem { x :: Number
-                         , y :: Number
-                         , z :: Maybe Number }
+newtype ListItem =
+  ListItem
+    { x :: Number
+    , y :: Number
+    , z :: Maybe Number
+    }
 
 instance showListItem :: Show ListItem where
   show (ListItem o) =
@@ -43,14 +51,14 @@ instance showListItem :: Show ListItem where
     ", z: " <> show o.z <>
     " })"
 
-instance listItemIsForeign :: IsForeign ListItem where
-  read value = do
-    x <- readProp "x" value
-    y <- readProp "y" value
-    z <- unNullOrUndefined <$> readProp "z" value
-    pure $ ListItem { x: x, y: y, z: z }
+readListItem :: Foreign -> F ListItem
+readListItem value = do
+  x <- value ! "x" >>= readNumber
+  y <- value ! "y" >>= readNumber
+  z <- value ! "z" >>= readNullOrUndefined >>= traverse readNumber
+  pure $ ListItem { x, y, z }
 
 main :: Eff (console :: CONSOLE) Unit
 main = do
   let json = """{"foo":"hello","bar":true,"baz":1,"list":[{"x":1,"y":2},{"x":3,"y":4,"z":999}]}"""
-  logShow $ runExcept $ readJSON json :: F SomeObject
+  logShow $ runExcept $ readSomeObject =<< foreignValue json
