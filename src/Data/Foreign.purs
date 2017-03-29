@@ -5,10 +5,8 @@ module Data.Foreign
   ( Foreign
   , ForeignError(..)
   , MultipleErrors(..)
-  , Prop(..)
   , F
   , renderForeignError
-  , parseJSON
   , toForeign
   , unsafeFromForeign
   , unsafeReadTagged
@@ -23,8 +21,10 @@ module Data.Foreign
   , readNumber
   , readInt
   , readArray
+  , readNull
+  , readUndefined
+  , readNullOrUndefined
   , fail
-  , writeObject
   ) where
 
 import Prelude
@@ -32,11 +32,10 @@ import Prelude
 import Control.Monad.Except (Except, throwError, mapExcept)
 
 import Data.Either (Either(..), either)
-import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Int as Int
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEL
-import Data.Maybe (maybe)
+import Data.Maybe (Maybe(..), maybe)
 import Data.String (toChar)
 
 -- | A type for _foreign data_.
@@ -49,7 +48,7 @@ import Data.String (toChar)
 -- |
 -- | - To represent responses from web services
 -- | - To integrate with external JavaScript libraries.
-foreign import data Foreign :: *
+foreign import data Foreign :: Type
 
 -- | A type for foreign type errors
 data ForeignError
@@ -84,13 +83,7 @@ renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <>
 -- |
 -- | The `Alt` instance for `Except` allows us to accumulate errors,
 -- | unlike `Either`, which preserves only the last error.
-type F a = Except MultipleErrors a
-
-foreign import parseJSONImpl :: forall r. Fn3 (String -> r) (Foreign -> r) String r
-
--- | Attempt to parse a JSON string, returning the result as foreign data.
-parseJSON :: String -> F Foreign
-parseJSON json = runFn3 parseJSONImpl (fail <<< JSONError) pure json
+type F = Except MultipleErrors
 
 -- | Coerce any value to the a `Foreign` value.
 foreign import toForeign :: forall a. a -> Foreign
@@ -154,13 +147,21 @@ readArray value
   | isArray value = pure $ unsafeFromForeign value
   | otherwise = fail $ TypeMismatch "array" (tagOf value)
 
+readNull :: Foreign -> F (Maybe Foreign)
+readNull value
+  | isNull value = pure Nothing
+  | otherwise = pure (Just value)
+
+readUndefined :: Foreign -> F (Maybe Foreign)
+readUndefined value
+  | isUndefined value = pure Nothing
+  | otherwise = pure (Just value)
+
+readNullOrUndefined :: Foreign -> F (Maybe Foreign)
+readNullOrUndefined value
+  | isNull value || isUndefined value = pure Nothing
+  | otherwise = pure (Just value)
+
 -- | Throws a failure error in `F`.
 fail :: forall a. ForeignError -> F a
 fail = throwError <<< NEL.singleton
-
--- | A key/value pair for an object to be written as a `Foreign` value.
-newtype Prop = Prop { key :: String, value :: Foreign }
-
--- | Constructs a JavaScript `Object` value (typed as `Foreign`) from an array
--- | of `Prop`s.
-foreign import writeObject :: Array Prop -> Foreign

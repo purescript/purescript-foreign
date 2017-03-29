@@ -6,19 +6,24 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
-import Data.Foreign (F)
-import Data.Foreign.Class (class IsForeign, readJSON, readProp)
+import Data.Foreign (F, Foreign, readNumber)
+import Data.Foreign.Index ((!))
+
+import Example.Util.Value (foreignValue)
 
 data Point = Point Number Number Number
 
 instance showPoint :: Show Point where
   show (Point x y z) = "(Point " <> show [x, y, z] <> ")"
 
-instance pointIsForeign :: IsForeign Point where
-  read value = Point <$> readProp "x" value
-                     <*> readProp "y" value
-                     <*> readProp "z" value
+readPoint :: Foreign -> F Point
+readPoint value = do
+  Point
+    <$> (value ! "x" >>= readNumber)
+    <*> (value ! "y" >>= readNumber)
+    <*> (value ! "z" >>= readNumber)
 
 main :: Eff (console :: CONSOLE) Unit
-main = logShow $ runExcept $
-  readJSON """{ "x": 1, "y": 2, "z": 3 }""" :: F Point
+main =
+  logShow $ runExcept $
+    readPoint =<< foreignValue """{ "x": 1, "y": 2, "z": 3 }"""

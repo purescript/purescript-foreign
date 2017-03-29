@@ -6,9 +6,10 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
-import Data.Foreign (F)
-import Data.Foreign.Class (class IsForeign, readJSON, readProp)
-import Data.Foreign.Index (prop)
+import Data.Foreign (F, Foreign, readNumber, readString)
+import Data.Foreign.Index ((!))
+
+import Example.Util.Value (foreignValue)
 
 data Foo = Foo Bar Baz
 
@@ -25,12 +26,13 @@ instance showBar :: Show Bar where
 instance showBaz :: Show Baz where
   show (Baz n) = "(Baz " <> show n <> ")"
 
-instance fooIsForeign :: IsForeign Foo where
-  read value = do
-    s <- value # (prop "foo" >=> readProp "bar")
-    n <- value # (prop "foo" >=> readProp "baz")
-    pure $ Foo (Bar s) (Baz n)
+readFoo :: Foreign -> F Foo
+readFoo value = do
+  s <- value ! "foo" ! "bar" >>= readString
+  n <- value ! "foo" ! "baz" >>= readNumber
+  pure $ Foo (Bar s) (Baz n)
 
 main :: Eff (console :: CONSOLE) Unit
-main = do
-  logShow $ runExcept $ readJSON """{ "foo": { "bar": "bar", "baz": 1 } }""" :: F Foo
+main =
+  logShow $ runExcept $
+    readFoo =<< foreignValue """{ "foo": { "bar": "bar", "baz": 1 } }"""

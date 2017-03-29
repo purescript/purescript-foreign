@@ -3,9 +3,11 @@
 
 module Data.Foreign.Index
   ( class Index
-  , prop
-  , index
+  , class Indexable
+  , readProp
+  , readIndex
   , ix, (!)
+  , index
   , hasProperty
   , hasOwnProperty
   , errorAt
@@ -13,17 +15,24 @@ module Data.Foreign.Index
 
 import Prelude
 
+import Control.Monad.Except.Trans (ExceptT)
+
 import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
+import Data.Identity (Identity)
+import Data.List.NonEmpty (NonEmptyList)
 
 -- | This type class identifies types that act like _property indices_.
 -- |
 -- | The canonical instances are for `String`s and `Int`s.
 class Index i where
-  ix :: Foreign -> i -> F Foreign
+  index :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
+
+class Indexable a where
+  ix :: forall i. Index i => a -> i -> F Foreign
 
 infixl 9 ix as !
 
@@ -34,12 +43,12 @@ unsafeReadProp k value =
   runFn4 unsafeReadPropImpl (fail (TypeMismatch "object" (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property
-prop :: String -> Foreign -> F Foreign
-prop = unsafeReadProp
+readProp :: String -> Foreign -> F Foreign
+readProp = unsafeReadProp
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
-index :: Int -> Foreign -> F Foreign
-index = unsafeReadProp
+readIndex :: Int -> Foreign -> F Foreign
+readIndex = unsafeReadProp
 
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
@@ -58,13 +67,19 @@ hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function"
 hasPropertyImpl _ value = false
 
 instance indexString :: Index String where
-  ix = flip prop
+  index = flip readProp
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
 instance indexInt :: Index Int where
-  ix = flip index
+  index = flip readIndex
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtIndex
+
+instance indexableForeign :: Indexable Foreign where
+  ix = index
+
+instance indexableExceptT :: Indexable (ExceptT (NonEmptyList ForeignError) Identity Foreign) where
+  ix f i = flip index i =<< f
