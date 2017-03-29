@@ -3,10 +3,11 @@
 
 module Data.Foreign.Index
   ( class Index
+  , class Indexable
   , readProp
   , readIndex
   , ix, (!)
-  , ixKleisli, (!!)
+  , index
   , hasProperty
   , hasOwnProperty
   , errorAt
@@ -14,24 +15,26 @@ module Data.Foreign.Index
 
 import Prelude
 
+import Control.Monad.Except.Trans (ExceptT)
+
 import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
+import Data.Identity (Identity)
+import Data.List.NonEmpty (NonEmptyList)
 
 -- | This type class identifies types that act like _property indices_.
 -- |
 -- | The canonical instances are for `String`s and `Int`s.
 class Index i where
-  ix :: Foreign -> i -> F Foreign
+  index :: Foreign -> i -> F Foreign
   hasProperty :: i -> Foreign -> Boolean
   hasOwnProperty :: i -> Foreign -> Boolean
   errorAt :: i -> ForeignError -> ForeignError
 
+class Indexable a where
+  ix :: forall i. Index i => a -> i -> F Foreign
+
 infixl 9 ix as !
-
-ixKleisli :: forall i. Index i => F Foreign -> i -> F Foreign
-ixKleisli f i = f >>= (_ ! i)
-
-infixl 9 ixKleisli as !!
 
 foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign r
 
@@ -64,13 +67,19 @@ hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function"
 hasPropertyImpl _ value = false
 
 instance indexString :: Index String where
-  ix = flip readProp
+  index = flip readProp
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtProperty
 
 instance indexInt :: Index Int where
-  ix = flip readIndex
+  index = flip readIndex
   hasProperty = hasPropertyImpl
   hasOwnProperty = hasOwnPropertyImpl
   errorAt = ErrorAtIndex
+
+instance indexableForeign :: Indexable Foreign where
+  ix = index
+
+instance indexableExceptT :: Indexable (ExceptT (NonEmptyList ForeignError) Identity Foreign) where
+  ix f i = flip index i =<< f

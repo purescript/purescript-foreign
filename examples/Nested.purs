@@ -7,7 +7,7 @@ import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
 import Data.Foreign (F, Foreign, readNumber, readString)
-import Data.Foreign.Index ((!), (!!))
+import Data.Foreign.Index ((!))
 
 import Example.Util.Value (foreignValue)
 
@@ -28,8 +28,8 @@ instance showBaz :: Show Baz where
 
 readFoo :: Foreign -> F Foo
 readFoo value = do
-  s <- value ! "foo" !! "bar" >>= readString
-  n <- value ! "foo" !! "baz" >>= readNumber
+  s <- value ! "foo" ! "bar" >>= readString
+  n <- value ! "foo" ! "baz" >>= readNumber
   pure $ Foo (Bar s) (Baz n)
 
 main :: Eff (console :: CONSOLE) Unit
