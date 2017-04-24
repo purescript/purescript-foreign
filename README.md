@@ -13,8 +13,8 @@ bower install purescript-foreign
 
 ## Examples
 
-- [Simple types](examples/JSONSimpleTypes.purs)
-- [Arrays](examples/JSONArrays.purs)
+- [Simple types](examples/SimpleTypes.purs)
+- [Arrays](examples/Arrays.purs)
 - [Objects](examples/Objects.purs)
 - [Complex objects](examples/Complex.purs)
 - [Applicative style parser](examples/Applicative.purs)
