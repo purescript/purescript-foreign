@@ -5,14 +5,10 @@ exports.unsafeReadPropImpl = function (f, f2, s, key, value) {
     // Fail with "not an object error"
     return f;
   } else {
-    if (key in value) {
-      return s(value[key]);
-    } else {
-      // Fail with "property does not
-      // exist or index does not existerror"
-      return f2;
-    }
-  };
+    // Succeed or fail with "property does not
+    // exist or index does not existerror"
+    return (key in value) ? s(value[key]) : f2;
+  }
 };
 
 exports.unsafeHasOwnProperty = function (prop, value) {
