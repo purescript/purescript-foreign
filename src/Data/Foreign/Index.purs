@@ -14,9 +14,11 @@ module Data.Foreign.Index
   ) where
 
 import Prelude
+
 import Control.Monad.Except.Trans (ExceptT)
-import Data.Foreign (F, Foreign, ForeignError(..), fail, isNull, isUndefined, typeOf)
-import Data.Function.Uncurried (Fn2, Fn5, runFn2, runFn5)
+
+import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
+import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
 import Data.Identity (Identity)
 import Data.List.NonEmpty (NonEmptyList)
 
@@ -34,21 +36,11 @@ class Indexable a where
 
 infixl 9 ix as !
 
-foreign import unsafeReadPropImpl :: forall r k. Fn5 r r (Foreign -> r) k Foreign r
+foreign import unsafeReadPropImpl :: forall r k. Fn4 r (Foreign -> r) k Foreign r
 
-unsafeReadProp :: String -> Foreign -> F Foreign
+unsafeReadProp :: forall k. k -> Foreign -> F Foreign
 unsafeReadProp k value =
-  runFn5 unsafeReadPropImpl
-    (fail (TypeMismatch "object" (typeOf value)))
-    (fail (ForeignError $ "Error reading non-existant property '" <> k <> "'"))
-    pure k value
-
-unsafeReadIndex :: Int -> Foreign -> F Foreign
-unsafeReadIndex k value =
-  runFn5 unsafeReadPropImpl
-    (fail (TypeMismatch "object" (typeOf value)))
-    (fail (ForeignError $ "Error reading non-existant index " <> (show k)))
-    pure k value
+  runFn4 unsafeReadPropImpl (fail (TypeMismatch "object" (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property
 readProp :: String -> Foreign -> F Foreign
@@ -56,7 +48,7 @@ readProp = unsafeReadProp
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
 readIndex :: Int -> Foreign -> F Foreign
-readIndex = unsafeReadIndex
+readIndex = unsafeReadProp
 
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 

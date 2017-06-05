@@ -1,18 +1,7 @@
 "use strict";
 
-exports.unsafeReadPropImpl = function (f, f2, s, key, value) {
-  if (value == null) {
-    // Fail with "not an object error"
-    return f;
-  } else {
-    if (key in value) {
-      return s(value[key]);
-    } else {
-      // Fail with "property does not
-      // exist or index does not existerror"
-      return f2;
-    }
-  };
+exports.unsafeReadPropImpl = function (f, s, key, value) {
+  return value == null ? f : s(value[key]);
 };
 
 exports.unsafeHasOwnProperty = function (prop, value) {
