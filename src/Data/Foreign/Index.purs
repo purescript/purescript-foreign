@@ -7,6 +7,7 @@ module Data.Foreign.Index
   , readProp
   , readProp'
   , readIndex
+  , readIndex'
   , ix, (!)
   , index
   , hasProperty
@@ -43,12 +44,12 @@ unsafeReadProp k value =
   runFn4 unsafeReadPropImpl (fail (TypeMismatch "object" (typeOf value))) pure k value
 
 -- | Attempt to read a value from a foreign value property,
--- | failing if the value is null
+-- | failing if the foreign value is null
 readProp :: String -> Foreign -> F Foreign
 readProp = unsafeReadProp
 
 -- | Attempt to read a value from a foreign value property,
--- | failing if the value is null, or the property does not
+-- | failing if the foreign value is null, or the property does not
 -- | exist
 readProp' :: String -> Foreign -> F Foreign
 readProp' s f = do
@@ -58,11 +59,24 @@ readProp' s f = do
       p <- readProp s f
       case hasProperty s f of
         true -> pure p
-        false -> fail $ ForeignError $ "Error reading non-existant property '" <> s <> "'."
+        false -> fail $ ForeignError $ "Error reading non-existent property '" <> s <> "'."
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
 readIndex :: Int -> Foreign -> F Foreign
 readIndex = unsafeReadProp
+
+-- | Attempt to read a value from a foreign value at the specified numeric index,
+-- | failing if the foreign value is null, or the index does not
+-- | exist
+readIndex' :: Int -> Foreign -> F Foreign
+readIndex' s f = do
+  case isNull f of
+    true -> fail $ ForeignError $ "Error reading index " <> (show s) <> " from null value."
+    false -> do
+      p <- readIndex s f
+      case hasProperty s f of
+        true -> pure p
+        false -> fail $ ForeignError $ "Error reading non-existent index " <> (show s)
 
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
