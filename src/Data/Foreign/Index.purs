@@ -53,8 +53,8 @@ readProp = unsafeReadProp
 -- | exist
 readProp' :: String -> Foreign -> F Foreign
 readProp' s f = do
-  case isNull f of
-    true -> fail $ ForeignError $ "Error reading property '" <> s <> "' from null value."
+  case (isNull f || isUndefined f) of
+    true -> fail $ ForeignError $ "Error reading property '" <> s <> "' from non-object."
     false -> do
       p <- readProp s f
       case hasProperty s f of
@@ -70,8 +70,8 @@ readIndex = unsafeReadProp
 -- | exist
 readIndex' :: Int -> Foreign -> F Foreign
 readIndex' s f = do
-  case isNull f of
-    true -> fail $ ForeignError $ "Error reading index " <> (show s) <> " from null value."
+  case (isNull f || isUndefined f) of
+    true -> fail $ ForeignError $ "Error reading index " <> (show s) <> " from non-object."
     false -> do
       p <- readIndex s f
       case hasProperty s f of
