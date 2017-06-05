@@ -16,7 +16,6 @@ module Data.Foreign.Index
   ) where
 
 import Prelude
-import AppPrelude (one)
 import Control.Monad.Except.Trans (ExceptT)
 import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
