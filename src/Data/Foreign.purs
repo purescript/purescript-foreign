@@ -62,7 +62,7 @@ derive instance eqForeignError :: Eq ForeignError
 derive instance ordForeignError :: Ord ForeignError
 
 instance showForeignError :: Show ForeignError where
-  show (ForeignError msg) = "(ForeignError " <> msg <> ")"
+  show (ForeignError msg) = "(ForeignError " <> show msg <> ")"
   show (ErrorAtIndex i e) = "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
   show (ErrorAtProperty prop e) = "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
   show (JSONError s) = "(JSONError " <> show s <> ")"
