@@ -41,8 +41,14 @@ import Data.String (toChar)
 -- | A type for _foreign data_.
 -- |
 -- | Foreign data is data from any external _unknown_ or _unreliable_
--- | source, for which it cannot be guaranteed that the runtime representation
--- | conforms to that of any particular type.
+-- | source for which it cannot be guaranteed that the runtime representation
+-- | conforms to that of any particular type. A common example of foreign data is
+-- | the value returned by a JavaScript function provided by a third-party JavaScript
+-- | library which is called in the JavaScript defined in a PS FFI file.
+-- | Foreign data is *not* a JSON string, though a JSON string can be parsed
+-- | to become foreign data. The `parseJSON` function will perform this parse to
+-- | create a `Foreign` type, while the `readJSON` function will, going further,
+-- | read it to produce the matching PureScript type.
 -- |
 -- | Suitable applications of `Foreign` are
 -- |
