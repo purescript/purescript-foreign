@@ -27,3 +27,11 @@ exports.isUndefined = function (value) {
 exports.isArray = Array.isArray || function (value) {
   return Object.prototype.toString.call(value) === "[object Array]";
 };
+
+exports.isObject = function (value) {
+    return typeof value == 'object';
+};
+
+exports.isDate = function (value) {
+    return value instanceof Date;
+};
