@@ -1,7 +1,7 @@
 -- | This module defines types and functions for working with _foreign_
 -- | data.
 
-module Data.Foreign
+module Foreign
   ( Foreign
   , ForeignError(..)
   , MultipleErrors(..)
