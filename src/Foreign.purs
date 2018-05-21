@@ -36,7 +36,7 @@ import Data.Int as Int
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEL
 import Data.Maybe (Maybe(..), maybe)
-import Data.String (toChar)
+import Data.String.CodeUnits (toChar)
 
 -- | A type for _foreign data_.
 -- |
