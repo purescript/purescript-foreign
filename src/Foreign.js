@@ -1,6 +1,6 @@
 "use strict";
 
-exports.toForeign = function (value) {
+exports.unsafeToForeign = function (value) {
   return value;
 };
 

@@ -7,7 +7,7 @@ module Foreign
   , MultipleErrors(..)
   , F
   , renderForeignError
-  , toForeign
+  , unsafeToForeign
   , unsafeFromForeign
   , unsafeReadTagged
   , typeOf
@@ -56,7 +56,6 @@ data ForeignError
   | TypeMismatch String String
   | ErrorAtIndex Int ForeignError
   | ErrorAtProperty String ForeignError
-  | JSONError String
 
 derive instance eqForeignError :: Eq ForeignError
 derive instance ordForeignError :: Ord ForeignError
@@ -65,7 +64,6 @@ instance showForeignError :: Show ForeignError where
   show (ForeignError msg) = "(ForeignError " <> show msg <> ")"
   show (ErrorAtIndex i e) = "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
   show (ErrorAtProperty prop e) = "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
-  show (JSONError s) = "(JSONError " <> show s <> ")"
   show (TypeMismatch exps act) = "(TypeMismatch " <> show exps <> " " <> show act <> ")"
 
 -- | A type for accumulating multiple `ForeignError`s.
@@ -75,7 +73,6 @@ renderForeignError :: ForeignError -> String
 renderForeignError (ForeignError msg) = msg
 renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
 renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
-renderForeignError (JSONError s) = "JSON error: " <> s
 renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
 
 -- | An error monad, used in this library to encode possible failures when
@@ -86,7 +83,12 @@ renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <>
 type F = Except MultipleErrors
 
 -- | Coerce any value to the a `Foreign` value.
-foreign import toForeign :: forall a. a -> Foreign
+-- |
+-- | This is considered unsafe as it's only intended to be used on primitive
+-- | JavaScript types, rather than PureScript types. Exporting PureScript values
+-- | via the FFI can be dangerous as they can be mutated by code outside the
+-- | PureScript program, resulting in difficult to diagnose problems elsewhere.
+foreign import unsafeToForeign :: forall a. a -> Foreign
 
 -- | Unsafely coerce a `Foreign` value.
 foreign import unsafeFromForeign :: forall a. Foreign -> a
