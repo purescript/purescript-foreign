@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Function.Uncurried (Fn3, runFn3)
 
-import Data.Foreign (F, Foreign, ForeignError(..), fail)
+import Foreign (F, Foreign, ForeignError(..), fail)
 
 foreign import foreignValueImpl :: forall r. Fn3 (String -> r) (Foreign -> r) String r
 

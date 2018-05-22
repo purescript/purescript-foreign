@@ -21,16 +21,16 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-arrays": "^4.0.0",
-    "purescript-either": "^3.0.0",
-    "purescript-foldable-traversable": "^3.0.0",
-    "purescript-functions": "^3.0.0",
-    "purescript-integers": "^3.0.0",
-    "purescript-lists": "^4.0.0",
-    "purescript-strings": "^3.0.0",
-    "purescript-transformers": "^3.0.0"
+    "purescript-arrays": "#compiler/0.12",
+    "purescript-either": "#compiler/0.12",
+    "purescript-foldable-traversable": "#compiler/0.12",
+    "purescript-functions": "#compiler/0.12",
+    "purescript-integers": "#compiler/0.12",
+    "purescript-lists": "#compiler/0.12",
+    "purescript-strings": "#compiler/0.12",
+    "purescript-transformers": "#compiler/0.12"
   },
   "devDependencies": {
-    "purescript-console": "^3.0.0"
+    "purescript-console": "#compiler/0.12"
   }
 }

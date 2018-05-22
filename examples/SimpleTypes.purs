@@ -6,7 +6,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
-import Data.Foreign (readString, readNumber, readBoolean)
+import Foreign (readString, readNumber, readBoolean)
 
 import Example.Util.Value (foreignValue)
 

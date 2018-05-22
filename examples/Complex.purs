@@ -6,8 +6,8 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
 
-import Data.Foreign (F, Foreign, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
-import Data.Foreign.Index ((!))
+import Foreign (F, Foreign, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
+import Foreign.Index ((!))
 import Data.Traversable (traverse)
 import Data.Maybe (Maybe)
 
