@@ -71,8 +71,8 @@ type MultipleErrors = NonEmptyList ForeignError
 
 renderForeignError :: ForeignError -> String
 renderForeignError (ForeignError msg) = msg
-renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> show e
-renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> show e
+renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> renderForeignError e
+renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> renderForeignError e
 renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
 
 -- | An error monad, used in this library to encode possible failures when
