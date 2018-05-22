@@ -2,14 +2,12 @@ module Example.Union where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
-
+import Effect (Effect)
+import Effect.Console (logShow)
+import Example.Util.Value (foreignValue)
 import Foreign (F, Foreign, readBoolean, readString)
 import Foreign.Index ((!))
-
-import Example.Util.Value (foreignValue)
 
 data StringList = Nil | Cons String StringList
 
@@ -28,7 +26,7 @@ readStringList value =
           <$> (value ! "head" >>= readString)
           <*> (value ! "tail" >>= readStringList)
 
-main :: Eff (console :: CONSOLE) Unit
+main :: Effect Unit
 main = do
 
   logShow $ runExcept $

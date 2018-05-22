@@ -2,15 +2,13 @@ module Example.ParseErrors where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
-
+import Data.Traversable (traverse)
+import Effect (Effect)
+import Effect.Console (logShow)
+import Example.Util.Value (foreignValue)
 import Foreign (F, Foreign, readArray, readBoolean, readNumber, readString)
 import Foreign.Index ((!))
-import Data.Traversable (traverse)
-
-import Example.Util.Value (foreignValue)
 
 newtype Point = Point { x :: Number, y :: Number }
 
@@ -23,7 +21,7 @@ readPoint value = do
   y <- value ! "y" >>= readNumber
   pure $ Point { x: x, y: y }
 
-main :: Eff (console :: CONSOLE) Unit
+main :: Effect Unit
 main = do
 
   -- When trying to parse invalid JSON we catch an exception from

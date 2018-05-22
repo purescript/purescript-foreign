@@ -2,17 +2,15 @@ module Example.SimpleTypes where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
-
-import Foreign (readString, readNumber, readBoolean)
-
+import Effect (Effect)
+import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
+import Foreign (readString, readNumber, readBoolean)
 
 -- Parsing of the simple JSON String, Number and Boolean types is provided
 -- out of the box.
-main :: Eff (console :: CONSOLE) Unit
+main :: Effect Unit
 main = do
   logShow $ runExcept $
     readString =<< foreignValue "\"a JSON string\""
