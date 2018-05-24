@@ -2,14 +2,12 @@ module Example.Nested where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Except (runExcept)
-
-import Data.Foreign (F, Foreign, readNumber, readString)
-import Data.Foreign.Index ((!))
-
+import Effect (Effect)
+import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
+import Foreign (F, Foreign, readNumber, readString)
+import Foreign.Index ((!))
 
 data Foo = Foo Bar Baz
 
@@ -32,7 +30,7 @@ readFoo value = do
   n <- value ! "foo" ! "baz" >>= readNumber
   pure $ Foo (Bar s) (Baz n)
 
-main :: Eff (console :: CONSOLE) Unit
+main :: Effect Unit
 main =
   logShow $ runExcept $
     readFoo =<< foreignValue """{ "foo": { "bar": "bar", "baz": 1 } }"""

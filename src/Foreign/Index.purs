@@ -1,7 +1,7 @@
 -- | This module defines a type class for types which act like
 -- | _property indices_.
 
-module Data.Foreign.Index
+module Foreign.Index
   ( class Index
   , class Indexable
   , readProp
@@ -17,7 +17,7 @@ import Prelude
 
 import Control.Monad.Except.Trans (ExceptT)
 
-import Data.Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
+import Foreign (Foreign, F, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
 import Data.Identity (Identity)
 import Data.List.NonEmpty (NonEmptyList)

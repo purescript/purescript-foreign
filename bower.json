@@ -1,7 +1,6 @@
 {
   "name": "purescript-foreign",
   "homepage": "https://github.com/purescript/purescript-foreign",
-  "description": "PureScript library for dealing with foreign data (JSON and JavaScript objects)",
   "authors": [
     "Gary Burgess <gary.burgess@gmail.com>",
     "Phil Freeman <paf31@cantab.net>"
@@ -10,7 +9,7 @@
     "type": "git",
     "url": "git://github.com/purescript/purescript-foreign.git"
   },
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "ignore": [
     "**/.*",
     "bower_components",
@@ -21,16 +20,17 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-arrays": "^4.0.0",
-    "purescript-either": "^3.0.0",
-    "purescript-foldable-traversable": "^3.0.0",
-    "purescript-functions": "^3.0.0",
-    "purescript-integers": "^3.0.0",
-    "purescript-lists": "^4.0.0",
-    "purescript-strings": "^3.0.0",
-    "purescript-transformers": "^3.0.0"
+    "purescript-either": "^4.0.0",
+    "purescript-functions": "^4.0.0",
+    "purescript-identity": "^4.0.0",
+    "purescript-integers": "^4.0.0",
+    "purescript-lists": "^5.0.0",
+    "purescript-maybe": "^4.0.0",
+    "purescript-prelude": "^4.0.0",
+    "purescript-strings": "^4.0.0",
+    "purescript-transformers": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^3.0.0"
+    "purescript-console": "^4.0.0"
   }
 }

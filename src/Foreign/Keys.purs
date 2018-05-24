@@ -1,13 +1,13 @@
 -- | This module provides functions for working with object properties
 -- | of Javascript objects.
 
-module Data.Foreign.Keys
+module Foreign.Keys
   ( keys
   ) where
 
 import Prelude
 
-import Data.Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
+import Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
 
 foreign import unsafeKeys :: Foreign -> Array String
 
