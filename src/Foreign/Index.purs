@@ -44,11 +44,17 @@ unsafeReadProp k value =
 
 -- | Attempt to read a value from a foreign value property
 readProp :: String -> Foreign -> F Foreign
-readProp = unsafeReadProp
+readProp key value = unsafeReadProp key value
+  >>= (\val -> if (isNull val || isUndefined val) 
+                then (fail (ForeignError $ "Property " <> key <> " is nullOrUndefined"))
+                else pure val)
 
 -- | Attempt to read a value from a foreign value at the specified numeric index
 readIndex :: Int -> Foreign -> F Foreign
-readIndex = unsafeReadProp
+readIndex index value = unsafeReadProp index value
+  >>= (\val -> if (isNull val || isUndefined val) 
+                then (fail (ForeignError $ "Value at index " <> show index <> " is nullOrUndefined"))
+                else pure val)
 
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
