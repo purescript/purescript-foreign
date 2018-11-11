@@ -30,13 +30,13 @@ module Foreign
 import Prelude
 
 import Control.Monad.Except (Except, throwError, mapExcept)
-
 import Data.Either (Either(..), either)
 import Data.Int as Int
 import Data.List.NonEmpty (NonEmptyList)
 import Data.List.NonEmpty as NEL
 import Data.Maybe (Maybe(..), maybe)
 import Data.String.CodeUnits (toChar)
+import Unsafe.Coerce (unsafeCoerce)
 
 -- | A type for _foreign data_.
 -- |
@@ -88,10 +88,12 @@ type F = Except MultipleErrors
 -- | JavaScript types, rather than PureScript types. Exporting PureScript values
 -- | via the FFI can be dangerous as they can be mutated by code outside the
 -- | PureScript program, resulting in difficult to diagnose problems elsewhere.
-foreign import unsafeToForeign :: forall a. a -> Foreign
+unsafeToForeign :: forall a. a -> Foreign
+unsafeToForeign = unsafeCoerce
 
 -- | Unsafely coerce a `Foreign` value.
-foreign import unsafeFromForeign :: forall a. Foreign -> a
+unsafeFromForeign :: forall a. Foreign -> a
+unsafeFromForeign = unsafeCoerce
 
 -- | Read the Javascript _type_ of a value
 foreign import typeOf :: Foreign -> String
