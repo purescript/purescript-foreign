@@ -149,7 +149,7 @@ readInt value = mapExcept (either (const error) fromNumber) (readNumber value)
 readArray :: Foreign -> F (Array Foreign)
 readArray value
   | isArray value = pure $ unsafeFromForeign value
-  | otherwise = fail $ TypeMismatch "array" (tagOf value)
+  | otherwise = fail $ TypeMismatch "Array" (tagOf value)
 
 readNull :: Foreign -> F (Maybe Foreign)
 readNull value
