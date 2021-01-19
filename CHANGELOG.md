@@ -5,12 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Added support for PureScript 0.14 and dropped support for all previous versions (#80)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Migrated CI to GitHub Actions and updated installation instructions to use Spago (#81)
+- Added a CHANGELOG.md file and pull request template (#82, #83)
+- Replaced `unsafeToForeign` and `unsafeFromForeign` with `unsafeCoerce` (#72)
 
 ## [v5.0.0](https://github.com/purescript/purescript-foreign/releases/tag/v5.0.0) - 2018-05-24
 
