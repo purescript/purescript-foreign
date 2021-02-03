@@ -7,12 +7,12 @@ module Foreign.Keys
 
 import Prelude
 
-import Foreign (F, Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
+import Foreign (FT, Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
 
 foreign import unsafeKeys :: Foreign -> Array String
 
 -- | Get an array of the properties defined on a foreign value
-keys :: Foreign -> F (Array String)
+keys :: forall m. Monad m => Foreign -> FT m (Array String)
 keys value
   | isNull value = fail $ TypeMismatch "object" "null"
   | isUndefined value = fail $ TypeMismatch "object" "undefined"

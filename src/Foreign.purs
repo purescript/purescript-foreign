@@ -6,6 +6,7 @@ module Foreign
   , ForeignError(..)
   , MultipleErrors(..)
   , F
+  , FT
   , renderForeignError
   , unsafeToForeign
   , unsafeFromForeign
@@ -29,7 +30,7 @@ module Foreign
 
 import Prelude
 
-import Control.Monad.Except (Except, throwError, mapExcept)
+import Control.Monad.Except (Except, ExceptT, mapExceptT, throwError)
 import Data.Either (Either(..), either)
 import Data.Int as Int
 import Data.List.NonEmpty (NonEmptyList)
@@ -81,6 +82,7 @@ renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <>
 -- | The `Alt` instance for `Except` allows us to accumulate errors,
 -- | unlike `Either`, which preserves only the last error.
 type F = Except MultipleErrors
+type FT = ExceptT MultipleErrors
 
 -- | Coerce any value to the a `Foreign` value.
 -- |
@@ -105,7 +107,7 @@ foreign import tagOf :: Foreign -> String
 
 -- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
 -- | value.
-unsafeReadTagged :: forall a. String -> Foreign -> F a
+unsafeReadTagged :: forall m a. Monad m => String -> Foreign -> FT m a
 unsafeReadTagged tag value
   | tagOf value == tag = pure (unsafeFromForeign value)
   | otherwise = fail $ TypeMismatch tag (tagOf value)
@@ -120,52 +122,52 @@ foreign import isUndefined :: Foreign -> Boolean
 foreign import isArray :: Foreign -> Boolean
 
 -- | Attempt to coerce a foreign value to a `String`.
-readString :: Foreign -> F String
+readString :: forall m. Monad m => Foreign -> FT m String
 readString = unsafeReadTagged "String"
 
 -- | Attempt to coerce a foreign value to a `Char`.
-readChar :: Foreign -> F Char
-readChar value = mapExcept (either (const error) fromString) (readString value)
+readChar :: forall m. Monad m => Foreign -> FT m Char
+readChar value = mapExceptT (map $ either (const error) fromString) (readString value)
   where
   fromString = maybe error pure <<< toChar
   error = Left $ NEL.singleton $ TypeMismatch "Char" (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
-readBoolean :: Foreign -> F Boolean
+readBoolean :: forall m. Monad m => Foreign -> FT m Boolean
 readBoolean = unsafeReadTagged "Boolean"
 
 -- | Attempt to coerce a foreign value to a `Number`.
-readNumber :: Foreign -> F Number
+readNumber :: forall m. Monad m => Foreign -> FT m Number
 readNumber = unsafeReadTagged "Number"
 
 -- | Attempt to coerce a foreign value to an `Int`.
-readInt :: Foreign -> F Int
-readInt value = mapExcept (either (const error) fromNumber) (readNumber value)
+readInt :: forall m. Monad m => Foreign -> FT m Int
+readInt value = mapExceptT (map $ either (const error) fromNumber) (readNumber value)
   where
   fromNumber = maybe error pure <<< Int.fromNumber
   error = Left $ NEL.singleton $ TypeMismatch "Int" (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
-readArray :: Foreign -> F (Array Foreign)
+readArray :: forall m. Monad m => Foreign -> FT m (Array Foreign)
 readArray value
   | isArray value = pure $ unsafeFromForeign value
   | otherwise = fail $ TypeMismatch "array" (tagOf value)
 
-readNull :: Foreign -> F (Maybe Foreign)
+readNull :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
 readNull value
   | isNull value = pure Nothing
   | otherwise = pure (Just value)
 
-readUndefined :: Foreign -> F (Maybe Foreign)
+readUndefined :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
 readUndefined value
   | isUndefined value = pure Nothing
   | otherwise = pure (Just value)
 
-readNullOrUndefined :: Foreign -> F (Maybe Foreign)
+readNullOrUndefined :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
 readNullOrUndefined value
   | isNull value || isUndefined value = pure Nothing
   | otherwise = pure (Just value)
 
--- | Throws a failure error in `F`.
-fail :: forall a. ForeignError -> F a
+-- | Throws a failure error in `FT`.
+fail :: forall m a. Monad m => ForeignError -> FT m a
 fail = throwError <<< NEL.singleton
