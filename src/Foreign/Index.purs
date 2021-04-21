@@ -55,7 +55,7 @@ hasOwnPropertyImpl :: forall k. k -> Foreign -> Boolean
 hasOwnPropertyImpl _ value | isNull value = false
 hasOwnPropertyImpl _ value | isUndefined value = false
 hasOwnPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasOwnProperty p value
-hasOwnPropertyImpl _ value = false
+hasOwnPropertyImpl _ _ = false
 
 foreign import unsafeHasProperty :: forall k. Fn2 k Foreign Boolean
 
@@ -63,7 +63,7 @@ hasPropertyImpl :: forall k. k -> Foreign -> Boolean
 hasPropertyImpl _ value | isNull value = false
 hasPropertyImpl _ value | isUndefined value = false
 hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty p value
-hasPropertyImpl _ value = false
+hasPropertyImpl _ _ = false
 
 instance indexString :: Monad m => Index String m where
   index = flip readProp
