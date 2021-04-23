@@ -151,7 +151,7 @@ readInt value = mapExceptT (map $ either (const error) fromNumber) (readNumber v
 readArray :: forall m. Monad m => Foreign -> FT m (Array Foreign)
 readArray value
   | isArray value = pure $ unsafeFromForeign value
-  | otherwise = fail $ TypeMismatch "array" (tagOf value)
+  | otherwise = fail $ TypeMismatch "Array" (tagOf value)
 
 readNull :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
 readNull value
