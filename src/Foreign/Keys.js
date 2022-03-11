@@ -1,5 +1,3 @@
-"use strict";
-
 export const unsafeKeys = Object.keys || function (value) {
   var keys = [];
   for (var prop in value) {

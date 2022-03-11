@@ -1,5 +1,3 @@
-"use strict";
-
 export function unsafeReadPropImpl(f, s, key, value) {
   return value == null ? f : s(value[key]);
 }
