@@ -1,6 +1,6 @@
 "use strict";
 
-export var unsafeKeys = Object.keys || function (value) {
+export const unsafeKeys = Object.keys || function (value) {
   var keys = [];
   for (var prop in value) {
     if (Object.prototype.hasOwnProperty.call(value, prop)) {
