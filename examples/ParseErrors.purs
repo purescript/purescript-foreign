@@ -2,12 +2,13 @@ module Example.ParseErrors where
 
 import Prelude
 
-import Control.Monad.Except (runExcept)
+import Control.Monad.Except (Except, runExcept)
+import Data.List.NonEmpty (NonEmptyList)
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (F, Foreign, readArray, readBoolean, readNumber, readString)
+import Foreign (Foreign, ForeignError, readArray, readBoolean, readNumber, readString)
 import Foreign.Index ((!))
 
 newtype Point = Point { x :: Number, y :: Number }
@@ -15,7 +16,7 @@ newtype Point = Point { x :: Number, y :: Number }
 instance showPoint :: Show Point where
   show (Point o) = "(Point { x: " <> show o.x <> ", y: " <> show o.y <> " })"
 
-readPoint :: Foreign -> F Point
+readPoint :: Foreign -> Except (NonEmptyList ForeignError) Point
 readPoint value = do
   x <- value ! "x" >>= readNumber
   y <- value ! "y" >>= readNumber

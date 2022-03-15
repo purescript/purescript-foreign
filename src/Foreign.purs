@@ -107,7 +107,7 @@ foreign import tagOf :: Foreign -> String
 
 -- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
 -- | value.
-unsafeReadTagged :: forall m a. Monad m => String -> Foreign -> FT m a
+unsafeReadTagged :: forall m a. Monad m => String -> Foreign -> ExceptT (NonEmptyList ForeignError) m a
 unsafeReadTagged tag value
   | tagOf value == tag = pure (unsafeFromForeign value)
   | otherwise = fail $ TypeMismatch tag (tagOf value)
@@ -122,52 +122,52 @@ foreign import isUndefined :: Foreign -> Boolean
 foreign import isArray :: Foreign -> Boolean
 
 -- | Attempt to coerce a foreign value to a `String`.
-readString :: forall m. Monad m => Foreign -> FT m String
+readString :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m String
 readString = unsafeReadTagged "String"
 
 -- | Attempt to coerce a foreign value to a `Char`.
-readChar :: forall m. Monad m => Foreign -> FT m Char
+readChar :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m Char
 readChar value = mapExceptT (map $ either (const error) fromString) (readString value)
   where
   fromString = maybe error pure <<< toChar
   error = Left $ NEL.singleton $ TypeMismatch "Char" (tagOf value)
 
 -- | Attempt to coerce a foreign value to a `Boolean`.
-readBoolean :: forall m. Monad m => Foreign -> FT m Boolean
+readBoolean :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m Boolean
 readBoolean = unsafeReadTagged "Boolean"
 
 -- | Attempt to coerce a foreign value to a `Number`.
-readNumber :: forall m. Monad m => Foreign -> FT m Number
+readNumber :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m Number
 readNumber = unsafeReadTagged "Number"
 
 -- | Attempt to coerce a foreign value to an `Int`.
-readInt :: forall m. Monad m => Foreign -> FT m Int
+readInt :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m Int
 readInt value = mapExceptT (map $ either (const error) fromNumber) (readNumber value)
   where
   fromNumber = maybe error pure <<< Int.fromNumber
   error = Left $ NEL.singleton $ TypeMismatch "Int" (tagOf value)
 
 -- | Attempt to coerce a foreign value to an array.
-readArray :: forall m. Monad m => Foreign -> FT m (Array Foreign)
+readArray :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Array Foreign)
 readArray value
   | isArray value = pure $ unsafeFromForeign value
   | otherwise = fail $ TypeMismatch "array" (tagOf value)
 
-readNull :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
+readNull :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
 readNull value
   | isNull value = pure Nothing
   | otherwise = pure (Just value)
 
-readUndefined :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
+readUndefined :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
 readUndefined value
   | isUndefined value = pure Nothing
   | otherwise = pure (Just value)
 
-readNullOrUndefined :: forall m. Monad m => Foreign -> FT m (Maybe Foreign)
+readNullOrUndefined :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
 readNullOrUndefined value
   | isNull value || isUndefined value = pure Nothing
   | otherwise = pure (Just value)
 
--- | Throws a failure error in `FT`.
-fail :: forall m a. Monad m => ForeignError -> FT m a
+-- | Throws a failure error in `ExceptT (NonEmptyList ForeignError) m`.
+fail :: forall m a. Monad m => ForeignError -> ExceptT (NonEmptyList ForeignError) m a
 fail = throwError <<< NEL.singleton

@@ -2,13 +2,14 @@ module Example.Complex where
 
 import Prelude
 
-import Control.Monad.Except (runExcept)
+import Control.Monad.Except (Except, runExcept)
+import Data.List.NonEmpty (NonEmptyList)
 import Data.Maybe (Maybe)
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (F, Foreign, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
+import Foreign (Foreign, ForeignError, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
 import Foreign.Index ((!))
 
 type SomeObject =
@@ -18,7 +19,7 @@ type SomeObject =
   , list :: Array ListItem
   }
 
-readSomeObject :: Foreign -> F SomeObject
+readSomeObject :: Foreign -> Except (NonEmptyList ForeignError) SomeObject
 readSomeObject value = do
   foo <- value ! "foo" >>= readString
   bar <- value ! "bar" >>= readBoolean
@@ -32,7 +33,7 @@ type ListItem =
   , z :: Maybe Number
   }
 
-readListItem :: Foreign -> F ListItem
+readListItem :: Foreign -> Except (NonEmptyList ForeignError) ListItem
 readListItem value = do
   x <- value ! "x" >>= readNumber
   y <- value ! "y" >>= readNumber

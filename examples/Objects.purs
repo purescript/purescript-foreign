@@ -2,16 +2,17 @@ module Example.Objects where
 
 import Prelude
 
-import Control.Monad.Except (runExcept)
+import Control.Monad.Except (Except, runExcept)
+import Data.List.NonEmpty (NonEmptyList)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (F, Foreign, readNumber)
+import Foreign (Foreign, ForeignError, readNumber)
 import Foreign.Index ((!))
 
 type Point = { x :: Number, y :: Number }
 
-readPoint :: Foreign -> F Point
+readPoint :: Foreign -> Except (NonEmptyList ForeignError) Point
 readPoint value = do
   x <- value ! "x" >>= readNumber
   y <- value ! "y" >>= readNumber
