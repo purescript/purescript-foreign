@@ -1,21 +1,19 @@
-"use strict";
-
-exports.typeOf = function (value) {
+export function typeOf(value) {
   return typeof value;
-};
+}
 
-exports.tagOf = function (value) {
+export function tagOf(value) {
   return Object.prototype.toString.call(value).slice(8, -1);
-};
+}
 
-exports.isNull = function (value) {
+export function isNull(value) {
   return value === null;
-};
+}
 
-exports.isUndefined = function (value) {
+export function isUndefined(value) {
   return value === undefined;
-};
+}
 
-exports.isArray = Array.isArray || function (value) {
+export const isArray = Array.isArray || function (value) {
   return Object.prototype.toString.call(value) === "[object Array]";
 };

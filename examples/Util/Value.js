@@ -1,6 +1,4 @@
-"use strict";
-
-exports.foreignValueImpl = function (left, right, str) {
+export const foreignValueImpl = function (left, right, str) {
   try {
     return right(JSON.parse(str));
   } catch (e) {
