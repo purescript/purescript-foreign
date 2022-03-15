@@ -1,6 +1,11 @@
 -- | This module defines types and functions for working with _foreign_
 -- | data.
-
+-- |
+-- | `ExceptT (NonEmptyList ForeignError) m` is used in this library
+-- | to encode possible failures when dealing with foreign data.
+-- |
+-- | The `Alt` instance for `ExceptT` allows us to accumulate errors,
+-- | unlike `Either`, which preserves only the last error.
 module Foreign
   ( Foreign
   , ForeignError(..)
@@ -76,12 +81,20 @@ renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": 
 renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> renderForeignError e
 renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
 
+-- | While this alias is not deprecated, it is recommended
+-- | that one use `Except (NonEmptyList ForeignError)` directly
+-- | for all future usages rather than this type alias.
+-- |
 -- | An error monad, used in this library to encode possible failures when
 -- | dealing with foreign data.
 -- |
 -- | The `Alt` instance for `Except` allows us to accumulate errors,
 -- | unlike `Either`, which preserves only the last error.
 type F = Except MultipleErrors
+
+-- | While this alias is not deprecated, it is recommended
+-- | that one use `ExceptT (NonEmptyList ForeignError)` directly
+-- | for all future usages rather than this type alias.
 type FT = ExceptT MultipleErrors
 
 -- | Coerce any value to the a `Foreign` value.
