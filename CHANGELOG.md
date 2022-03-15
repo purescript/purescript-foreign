@@ -12,6 +12,11 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Replace all usages of `F` and `FT` with `Except`/`ExceptT (NonEmptyList ForeignError)` (#87 by @JordanMartinez)
+
+  Often times, the `F` and `FT` aliases did more to hinder usage of this library than help. These aliases
+  haven't been deprecated, but usage of them is now discouraged. All code in the library now uses
+  the full type that is aliased by `F` and `FT`.
 
 ## [v6.0.1](https://github.com/purescript/purescript-foreign/releases/tag/v6.0.1) - 2021-04-20
 

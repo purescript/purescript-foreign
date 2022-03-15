@@ -2,11 +2,12 @@ module Example.Union where
 
 import Prelude
 
-import Control.Monad.Except (runExcept)
+import Control.Monad.Except (Except, runExcept)
+import Data.List.NonEmpty (NonEmptyList)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (F, Foreign, readBoolean, readString)
+import Foreign (Foreign, ForeignError, readBoolean, readString)
 import Foreign.Index ((!))
 
 data StringList = Nil | Cons String StringList
@@ -15,7 +16,7 @@ instance showStringList :: Show StringList where
   show Nil = "Nil"
   show (Cons s l) = "(Cons " <> show s <> " " <> show l <> ")"
 
-readStringList :: Foreign -> F StringList
+readStringList :: Foreign -> Except (NonEmptyList ForeignError) StringList
 readStringList value =
   value ! "nil" >>=
     readBoolean >>=

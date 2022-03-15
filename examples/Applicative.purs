@@ -2,11 +2,12 @@ module Example.Applicative where
 
 import Prelude
 
-import Control.Monad.Except (runExcept)
+import Control.Monad.Except (Except, runExcept)
+import Data.List.NonEmpty (NonEmptyList)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (F, Foreign, readNumber)
+import Foreign (Foreign, ForeignError, readNumber)
 import Foreign.Index ((!))
 
 data Point = Point Number Number Number
@@ -14,7 +15,7 @@ data Point = Point Number Number Number
 instance showPoint :: Show Point where
   show (Point x y z) = "(Point " <> show [x, y, z] <> ")"
 
-readPoint :: Foreign -> F Point
+readPoint :: Foreign -> Except (NonEmptyList ForeignError) Point
 readPoint value = do
   Point
     <$> (value ! "x" >>= readNumber)
