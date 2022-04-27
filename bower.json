@@ -20,17 +20,17 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-either": "master",
-    "purescript-functions": "master",
-    "purescript-identity": "master",
-    "purescript-integers": "master",
-    "purescript-lists": "master",
-    "purescript-maybe": "master",
-    "purescript-prelude": "master",
-    "purescript-strings": "master",
-    "purescript-transformers": "master"
+    "purescript-either": "^6.0.0",
+    "purescript-functions": "^6.0.0",
+    "purescript-identity": "^6.0.0",
+    "purescript-integers": "^6.0.0",
+    "purescript-lists": "^7.0.0",
+    "purescript-maybe": "^6.0.0",
+    "purescript-prelude": "^6.0.0",
+    "purescript-strings": "^6.0.0",
+    "purescript-transformers": "^6.0.0"
   },
   "devDependencies": {
-    "purescript-console": "master"
+    "purescript-console": "^6.0.0"
   }
 }
