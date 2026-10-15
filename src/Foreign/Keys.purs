@@ -7,9 +7,9 @@ module Foreign.Keys
 
 import Prelude
 
-import Foreign (Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
 import Control.Monad.Except (ExceptT)
 import Data.List.NonEmpty (NonEmptyList)
+import Foreign (Foreign, ForeignError(..), fail, isNull, isUndefined, typeOf)
 
 foreign import unsafeKeys :: Foreign -> Array String
 

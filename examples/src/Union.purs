@@ -18,10 +18,10 @@ instance showStringList :: Show StringList where
 
 readStringList :: Foreign -> Except (NonEmptyList ForeignError) StringList
 readStringList value =
-  value ! "nil" >>=
-    readBoolean >>=
-      if _
-      then
+  value ! "nil"
+    >>= readBoolean
+    >>=
+      if _ then
         pure Nil
       else
         Cons

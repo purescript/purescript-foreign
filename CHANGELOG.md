@@ -11,6 +11,7 @@ Other improvements:
 ## [v7.0.0](https://github.com/purescript/purescript-foreign/releases/tag/v7.0.0) - 2022-04-27
 
 Breaking changes:
+
 - Migrate FFI to ES modules (#86 by @kl0tl and @JordanMartinez)
 
 New features:
@@ -18,6 +19,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+
 - Replace all usages of `F` and `FT` with `Except`/`ExceptT (NonEmptyList ForeignError)` (#87 by @JordanMartinez)
 
   Often times, the `F` and `FT` aliases did more to hinder usage of this library than help. These aliases
@@ -27,14 +29,17 @@ Other improvements:
 ## [v6.0.1](https://github.com/purescript/purescript-foreign/releases/tag/v6.0.1) - 2021-04-20
 
 Other improvements:
+
 - Fix warnings revealed by v0.14.1 PureScript release (#85 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript/purescript-foreign/releases/tag/v6.0.0) - 2021-02-26
 
 Breaking changes:
+
 - Added support for PureScript 0.14 and dropped support for all previous versions (#80)
 
 Other improvements:
+
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#81)
 - Added a CHANGELOG.md file and pull request template (#82, #83)
 - Replaced `unsafeToForeign` and `unsafeFromForeign` with `unsafeCoerce` (#72)
@@ -55,8 +60,8 @@ Fix `Show` instance for `ForeignError` (@rightfold)
 
 - Updated for PureScript 0.11
 - The library has been drastically simplified to focus on its core use; validating and extracting data from foreign values. This involves changes such as:
-    - Removal of `IsForeign` / `AsForeign` classes
-    - Removal of `parseJSON` as this library is not intended for general JSON parsing
+  - Removal of `IsForeign` / `AsForeign` classes
+  - Removal of `parseJSON` as this library is not intended for general JSON parsing
 - New functions were added for `readNull`, `readUndefined`, `readNullOrUndefined` rather than using the newtypes to direct `IsForeign` choice as it was before
 - The `(!)` index/property reading operator has been enhanced to work with `Foreign` or `F Foreign` on the left hand side, allowing for chained property reads
 
@@ -134,6 +139,7 @@ Updated docs
 ## [v0.4.0](https://github.com/purescript/purescript-foreign/releases/tag/v0.4.0) - 2015-02-21
 
 **This release requires PureScript v0.6.8 or later**
+
 - Updated dependencies
 
 ## [v0.3.0](https://github.com/purescript/purescript-foreign/releases/tag/v0.3.0) - 2015-01-10
@@ -146,8 +152,6 @@ Updated docs
 
 ## [v0.2.2](https://github.com/purescript/purescript-foreign/releases/tag/v0.2.2) - 2014-11-19
 
-
-
 ## [v0.2.1](https://github.com/purescript/purescript-foreign/releases/tag/v0.2.1) - 2014-11-18
 
 - `IsForeign` instance for `Foreign`. (@MichaelXavier)
@@ -155,6 +159,7 @@ Updated docs
 ## [v0.2.0](https://github.com/purescript/purescript-foreign/releases/tag/v0.2.0) - 2014-08-20
 
 Quite a few breaking changes to both names and types:
+
 - A type for errors instead of using string concatenation.
 - Breaking a few functions out into their own submodules.
 - Adding types and instances to handle null-like values.
@@ -185,8 +190,4 @@ Quite a few breaking changes to both names and types:
 
 ## [v0.1.1](https://github.com/purescript/purescript-foreign/releases/tag/v0.1.1) - 2014-04-27
 
-
-
 ## [v0.1.0](https://github.com/purescript/purescript-foreign/releases/tag/v0.1.0) - 2014-04-26
-
-

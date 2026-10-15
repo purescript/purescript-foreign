@@ -6,7 +6,8 @@ module Foreign.Index
   , class Indexable
   , readProp
   , readIndex
-  , ix, (!)
+  , ix
+  , (!)
   , index
   , hasProperty
   , hasOwnProperty
@@ -16,10 +17,9 @@ module Foreign.Index
 import Prelude
 
 import Control.Monad.Except.Trans (ExceptT)
-
-import Foreign (Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
-import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
+import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
 import Data.List.NonEmpty (NonEmptyList)
+import Foreign (Foreign, ForeignError(..), fail, isNull, isUndefined, typeOf)
 
 -- | This type class identifies types that act like _property indices_.
 -- |
