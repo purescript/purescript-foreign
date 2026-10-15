@@ -1,0 +1,23 @@
+package:
+  name: foreign
+  description: Library for dealing with foreign data (JavaScript objects).
+  build:
+    strict: true
+    pedanticPackages: true
+  publish:
+    version: 7.0.1
+    license: BSD-3-Clause
+    location:
+      githubOwner: purescript
+      githubRepo: purescript-foreign
+  dependencies:
+    - either: ">=6.0.0 <7.0.0"
+    - functions: ">=6.0.0 <7.0.0"
+    - integers: ">=6.0.0 <7.0.0"
+    - lists: ">=7.0.0 <8.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - prelude: ">=6.0.0 <7.0.0"
+    - strings: ">=6.0.0 <7.0.0"
+    - transformers: ">=6.0.0 <7.0.0"
+    - unsafe-coerce: ">=6.0.0 <7.0.0"
+workspace: {}
