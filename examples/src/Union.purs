@@ -21,7 +21,8 @@ readStringList value =
   value ! "nil" >>=
     readBoolean >>=
       if _
-      then pure Nil
+      then
+        pure Nil
       else
         Cons
           <$> (value ! "head" >>= readString)
