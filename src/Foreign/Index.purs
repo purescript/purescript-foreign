@@ -52,18 +52,24 @@ readIndex = unsafeReadProp
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
 hasOwnPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasOwnPropertyImpl _ value | isNull value = false
-hasOwnPropertyImpl _ value | isUndefined value = false
-hasOwnPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasOwnProperty p value
-hasOwnPropertyImpl _ _ = false
+hasOwnPropertyImpl p = case _ of
+  value
+    | isNull value -> false
+    | isUndefined value -> false
+    | typeOf value == "object" || typeOf value == "function" ->
+        runFn2 unsafeHasOwnProperty p value
+    | otherwise -> false
 
 foreign import unsafeHasProperty :: forall k. Fn2 k Foreign Boolean
 
 hasPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasPropertyImpl _ value | isNull value = false
-hasPropertyImpl _ value | isUndefined value = false
-hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty p value
-hasPropertyImpl _ _ = false
+hasPropertyImpl p = case _ of
+  value
+    | isNull value -> false
+    | isUndefined value -> false
+    | typeOf value == "object" || typeOf value == "function" ->
+        runFn2 unsafeHasProperty p value
+    | otherwise -> false
 
 instance indexString :: Monad m => Index String m where
   index = flip readProp
