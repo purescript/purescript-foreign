@@ -13,7 +13,7 @@ import Foreign.Index ((!))
 data Point = Point Number Number Number
 
 instance showPoint :: Show Point where
-  show (Point x y z) = "(Point " <> show [x, y, z] <> ")"
+  show (Point x y z) = "(Point " <> show [ x, y, z ] <> ")"
 
 readPoint :: Foreign -> Except (NonEmptyList ForeignError) Point
 readPoint value = do

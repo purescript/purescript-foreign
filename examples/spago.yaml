@@ -1,0 +1,15 @@
+package:
+  name: foreign-examples
+  build:
+    strict: true
+    pedanticPackages: true
+  dependencies:
+    - console: ">=6.0.0 <7.0.0"
+    - effect: ">=4.0.0 <5.0.0"
+    - foldable-traversable: ">=6.0.0 <7.0.0"
+    - foreign: "*"
+    - functions: ">=6.0.0 <7.0.0"
+    - lists: ">=7.0.0 <8.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - prelude: ">=6.0.0 <7.0.0"
+    - transformers: ">=6.0.0 <7.0.0"

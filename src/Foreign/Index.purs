@@ -6,7 +6,8 @@ module Foreign.Index
   , class Indexable
   , readProp
   , readIndex
-  , ix, (!)
+  , ix
+  , (!)
   , index
   , hasProperty
   , hasOwnProperty
@@ -16,10 +17,9 @@ module Foreign.Index
 import Prelude
 
 import Control.Monad.Except.Trans (ExceptT)
-
-import Foreign (Foreign, ForeignError(..), typeOf, isUndefined, isNull, fail)
-import Data.Function.Uncurried (Fn2, runFn2, Fn4, runFn4)
+import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
 import Data.List.NonEmpty (NonEmptyList)
+import Foreign (Foreign, ForeignError(..), fail, isNull, isUndefined, typeOf)
 
 -- | This type class identifies types that act like _property indices_.
 -- |
@@ -52,18 +52,24 @@ readIndex = unsafeReadProp
 foreign import unsafeHasOwnProperty :: forall k. Fn2 k Foreign Boolean
 
 hasOwnPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasOwnPropertyImpl _ value | isNull value = false
-hasOwnPropertyImpl _ value | isUndefined value = false
-hasOwnPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasOwnProperty p value
-hasOwnPropertyImpl _ _ = false
+hasOwnPropertyImpl p = case _ of
+  value
+    | isNull value -> false
+    | isUndefined value -> false
+    | typeOf value == "object" || typeOf value == "function" ->
+        runFn2 unsafeHasOwnProperty p value
+    | otherwise -> false
 
 foreign import unsafeHasProperty :: forall k. Fn2 k Foreign Boolean
 
 hasPropertyImpl :: forall k. k -> Foreign -> Boolean
-hasPropertyImpl _ value | isNull value = false
-hasPropertyImpl _ value | isUndefined value = false
-hasPropertyImpl p value | typeOf value == "object" || typeOf value == "function" = runFn2 unsafeHasProperty p value
-hasPropertyImpl _ _ = false
+hasPropertyImpl p = case _ of
+  value
+    | isNull value -> false
+    | isUndefined value -> false
+    | typeOf value == "object" || typeOf value == "function" ->
+        runFn2 unsafeHasProperty p value
+    | otherwise -> false
 
 instance indexString :: Monad m => Index String m where
   index = flip readProp

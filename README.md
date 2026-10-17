@@ -14,15 +14,15 @@ spago install foreign
 
 ## Examples
 
-- [Simple types](examples/SimpleTypes.purs)
-- [Arrays](examples/Arrays.purs)
-- [Objects](examples/Objects.purs)
-- [Complex objects](examples/Complex.purs)
-- [Applicative style parser](examples/Applicative.purs)
-- [Maybe for nulls](examples/MaybeNullable.purs)
-- [Nested objects](examples/Nested.purs)
-- [Unions](examples/Union.purs)
-- [Parser errors](examples/ParseErrors.purs)
+- [Simple types](examples/src/SimpleTypes.purs)
+- [Arrays](examples/src/Arrays.purs)
+- [Objects](examples/src/Objects.purs)
+- [Complex objects](examples/src/Complex.purs)
+- [Applicative style parser](examples/src/Applicative.purs)
+- [Maybe for nulls](examples/src/MaybeNullable.purs)
+- [Nested objects](examples/src/Nested.purs)
+- [Unions](examples/src/Union.purs)
+- [Parser errors](examples/src/ParseErrors.purs)
 
 ## Documentation
 

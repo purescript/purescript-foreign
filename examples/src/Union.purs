@@ -13,19 +13,19 @@ import Foreign.Index ((!))
 data StringList = Nil | Cons String StringList
 
 instance showStringList :: Show StringList where
-  show Nil = "Nil"
-  show (Cons s l) = "(Cons " <> show s <> " " <> show l <> ")"
+  show = case _ of
+    Nil -> "Nil"
+    Cons s l -> "(Cons " <> show s <> " " <> show l <> ")"
 
 readStringList :: Foreign -> Except (NonEmptyList ForeignError) StringList
-readStringList value =
-  value ! "nil" >>=
-    readBoolean >>=
-      if _
-      then pure Nil
-      else
-        Cons
-          <$> (value ! "head" >>= readString)
-          <*> (value ! "tail" >>= readStringList)
+readStringList value = do
+  isNil <- value ! "nil" >>= readBoolean
+  if isNil then
+    pure Nil
+  else
+    Cons
+      <$> (value ! "head" >>= readString)
+      <*> (value ! "tail" >>= readStringList)
 
 main :: Effect Unit
 main = do
