@@ -6,7 +6,7 @@ import Control.Monad.Except (runExcept)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (readString, readNumber, readBoolean)
+import Foreign (readBoolean, readNumber, readString)
 
 -- Parsing of the simple JSON String, Number and Boolean types is provided
 -- out of the box.

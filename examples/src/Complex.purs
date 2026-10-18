@@ -9,7 +9,7 @@ import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Example.Util.Value (foreignValue)
-import Foreign (Foreign, ForeignError, readArray, readBoolean, readNumber, readString, readNullOrUndefined)
+import Foreign (Foreign, ForeignError, readArray, readBoolean, readNullOrUndefined, readNumber, readString)
 import Foreign.Index ((!))
 
 type SomeObject =

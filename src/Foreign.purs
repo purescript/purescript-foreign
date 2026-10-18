@@ -67,19 +67,21 @@ derive instance eqForeignError :: Eq ForeignError
 derive instance ordForeignError :: Ord ForeignError
 
 instance showForeignError :: Show ForeignError where
-  show (ForeignError msg) = "(ForeignError " <> show msg <> ")"
-  show (ErrorAtIndex i e) = "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
-  show (ErrorAtProperty prop e) = "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
-  show (TypeMismatch exps act) = "(TypeMismatch " <> show exps <> " " <> show act <> ")"
+  show = case _ of
+    ForeignError msg -> "(ForeignError " <> show msg <> ")"
+    ErrorAtIndex i e -> "(ErrorAtIndex " <> show i <> " " <> show e <> ")"
+    ErrorAtProperty prop e -> "(ErrorAtProperty " <> show prop <> " " <> show e <> ")"
+    TypeMismatch exps act -> "(TypeMismatch " <> show exps <> " " <> show act <> ")"
 
 -- | A type for accumulating multiple `ForeignError`s.
 type MultipleErrors = NonEmptyList ForeignError
 
 renderForeignError :: ForeignError -> String
-renderForeignError (ForeignError msg) = msg
-renderForeignError (ErrorAtIndex i e) = "Error at array index " <> show i <> ": " <> renderForeignError e
-renderForeignError (ErrorAtProperty prop e) = "Error at property " <> show prop <> ": " <> renderForeignError e
-renderForeignError (TypeMismatch exp act) = "Type mismatch: expected " <> exp <> ", found " <> act
+renderForeignError = case _ of
+  ForeignError msg -> msg
+  ErrorAtIndex i e -> "Error at array index " <> show i <> ": " <> renderForeignError e
+  ErrorAtProperty prop e -> "Error at property " <> show prop <> ": " <> renderForeignError e
+  TypeMismatch exp act -> "Type mismatch: expected " <> exp <> ", found " <> act
 
 -- | While this alias is not deprecated, it is recommended
 -- | that one use `Except (NonEmptyList ForeignError)` directly
@@ -121,9 +123,11 @@ foreign import tagOf :: Foreign -> String
 -- | Unsafely coerce a `Foreign` value when the value has a particular `tagOf`
 -- | value.
 unsafeReadTagged :: forall m a. Monad m => String -> Foreign -> ExceptT (NonEmptyList ForeignError) m a
-unsafeReadTagged tag value
-  | tagOf value == tag = pure (unsafeFromForeign value)
-  | otherwise = fail $ TypeMismatch tag (tagOf value)
+unsafeReadTagged tag value =
+  if tagOf value == tag then
+    pure (unsafeFromForeign value)
+  else
+    fail $ TypeMismatch tag (tagOf value)
 
 -- | Test whether a foreign value is null
 foreign import isNull :: Foreign -> Boolean
@@ -162,24 +166,32 @@ readInt value = mapExceptT (map $ either (const error) fromNumber) (readNumber v
 
 -- | Attempt to coerce a foreign value to an array.
 readArray :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Array Foreign)
-readArray value
-  | isArray value = pure $ unsafeFromForeign value
-  | otherwise = fail $ TypeMismatch "array" (tagOf value)
+readArray value =
+  if isArray value then
+    pure $ unsafeFromForeign value
+  else
+    fail $ TypeMismatch "array" (tagOf value)
 
 readNull :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
-readNull value
-  | isNull value = pure Nothing
-  | otherwise = pure (Just value)
+readNull value =
+  if isNull value then
+    pure Nothing
+  else
+    pure (Just value)
 
 readUndefined :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
-readUndefined value
-  | isUndefined value = pure Nothing
-  | otherwise = pure (Just value)
+readUndefined value =
+  if isUndefined value then
+    pure Nothing
+  else
+    pure (Just value)
 
 readNullOrUndefined :: forall m. Monad m => Foreign -> ExceptT (NonEmptyList ForeignError) m (Maybe Foreign)
-readNullOrUndefined value
-  | isNull value || isUndefined value = pure Nothing
-  | otherwise = pure (Just value)
+readNullOrUndefined value =
+  if isNull value || isUndefined value then
+    pure Nothing
+  else
+    pure (Just value)
 
 -- | Throws a failure error in `ExceptT (NonEmptyList ForeignError) m`.
 fail :: forall m a. Monad m => ForeignError -> ExceptT (NonEmptyList ForeignError) m a

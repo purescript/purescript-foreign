@@ -14,6 +14,8 @@ export function isUndefined(value) {
   return value === undefined;
 }
 
-export const isArray = Array.isArray || function (value) {
-  return Object.prototype.toString.call(value) === "[object Array]";
-};
+export const isArray =
+  Array.isArray ||
+  function (value) {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  };
